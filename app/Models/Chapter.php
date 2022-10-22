@@ -10,19 +10,19 @@ class Chapter extends Model {
     use HasFactory;
 
     public function contacts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
-        return $this->belongsToMany( YCPContact::class );
+        return $this->belongsToMany( YCPContact::class )->withPivot( 'home' );
     }
 
-    public static function getOrCreateFromName( Stringable $name ) {
-        $existing = Chapter::query()->where( 'name', '=', $name->value() )->get();
-        if ( ! $existing ) {
+    public static function getOrCreateFromName( string $name ) {
+        $existing = Chapter::query()->where( 'name', '=', $name )->get();
+        if ( $existing->isEmpty() ) {
             $chapter       = new Chapter();
-            $chapter->name = $name->value();
+            $chapter->name = $name;
             $chapter->save();
 
             return $chapter;
         }
 
-        return $existing;
+        return $existing->first();
     }
 }

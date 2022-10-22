@@ -11,37 +11,36 @@ class YCPContact extends Model {
     use HasFactory;
 
     public function chapters(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
-        return $this->belongsToMany( Chapter::class );
+        return $this->belongsToMany( Chapter::class )->withPivot( 'home' );
     }
 
-    private function __construct( array $attributes = [] ) {
-        parent::__construct();
-        $this->first_name = $attributes['first_name'];
-        $this->last_name  = $attributes['last_name'];
-        $this->email      = $attributes['email'];
-        $this->nb_tags    = $attributes['nationbuilder_tags'];
-        $chapters         = $this->parseChapters( $attributes['active_chapters'] );
-        $home_chapter     = Chapter::getOrCreateFromName( $attributes['home_chapter'] );
-        $other_chapters   = $this->parseChapters( $attributes['other_chapters'] );
-        $this->chapters()->save( $home_chapter );
+    public function fromCSV( array $row ): YCPContact {
+        $this->first_name = $row['first_name'];
+        $this->last_name  = $row['last_name'];
+        $this->full_name  = $row['name'];
+        $this->email      = $row['email'];
+        $this->nb_tags    = $row['nationbuilder_tags'];
+        $chapters         = $this->parseChapters( $row['active_chapters'] );
+        $home_chapter     = Chapter::getOrCreateFromName( $row['home_chapter'] );
+        $other_chapters   = $this->parseChapters( $row['other_chapters'] );
+        $this->save();
+        $this->chapters()->save( $home_chapter, [ 'home' => true ] );
         $this->chapters()->saveMany( $chapters, [] );
         $this->chapters()->saveMany( $other_chapters, [] );
-    }
 
-    public static function fromCSV( array $row ): YCPContact {
-        return new YCPContact( $row );
+        return $this;
     }
 
     /**
      * @throws ChapterException
      */
-    public function existsInDB(): bool {
-        if ( YCPContact::query()->where( 'email', '=', $this->email )->get() ) {
+    public static function existsInDB( array $contact ): bool {
+        if ( YCPContact::query()->where( 'email', '=', $contact['email'] )->get()->isNotEmpty() ) {
             return true;
         }
-        $matchingNames = YCPContact::query()->where( [ 'full_name' => $this->full_name ] )->get();
+        $matchingNames = YCPContact::query()->where( [ 'full_name' => $contact['name'] ] )->get();
         foreach ( $matchingNames as $match ) {
-            if ( $match->homeChapter()->name === $this->homeChapter()->name ) {
+            if ( $match->homeChapter()->name === $contact['home_chapter'] ) {
                 return true;
             }
         }
@@ -55,7 +54,7 @@ class YCPContact extends Model {
     public function homeChapter(): Chapter {
         $chapters = $this->chapters;
         foreach ( $chapters as $chapter ) {
-            if ( $chapter->home ) {
+            if ( $chapter->pivot->home ) {
                 return $chapter;
             }
         }
@@ -67,7 +66,10 @@ class YCPContact extends Model {
         if ( empty( $chapters ) ) {
             return $list;
         }
-        $chapter_strings = str( $chapters )->split( ',' )->collect();
+        if ( ! str_contains( $chapters, ',' ) ) {
+            return $list->add( Chapter::getOrCreateFromName( $chapters ) );
+        }
+        $chapter_strings = explode( ",", $chapters );
         foreach ( $chapter_strings as $chapter_string ) {
             $list->add( Chapter::getOrCreateFromName( $chapter_string ) );
         }

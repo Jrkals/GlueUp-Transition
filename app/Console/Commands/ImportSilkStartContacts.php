@@ -39,15 +39,15 @@ class ImportSilkStartContacts extends Command {
 
         $alreadyExists = [];
         $new           = [];
+        $count         = 0;
         foreach ( $data as $row ) {
-            $ycpContact = YCPContact::fromCSV( $row );
-
-            if ( $ycpContact->existsInDB() ) {
+            if ( YCPContact::existsInDB( $row ) ) {
                 $alreadyExists[] = $row;
                 continue;
             }
             if ( ! $dry ) {
-                $ycpContact->save();
+                $ycpContact = new YCPContact();
+                $ycpContact->fromCSV( $row );
             }
             $new[] = $row;
 
