@@ -43,6 +43,7 @@ class ImportSilkStartContacts extends Command {
         foreach ( $data as $row ) {
             if ( YCPContact::existsInDB( $row ) ) {
                 $alreadyExists[] = $row;
+                $count ++;
                 continue;
             }
             if ( ! $dry ) {
@@ -50,7 +51,10 @@ class ImportSilkStartContacts extends Command {
                 $ycpContact->fromCSV( $row );
             }
             $new[] = $row;
-
+            $count ++;
+            if ( $count % 50 === 0 ) {
+                $this->line( $count . ' Done. ' . ( sizeof( $data ) - $count ) . ' remaining' );
+            }
         }
         $this->line( 'Already Exists: ' . sizeof( $alreadyExists ) );
         $this->line( 'New Imports: ' . sizeof( $new ) );
