@@ -43,7 +43,7 @@ class ImportSilkStartContacts extends Command {
         $new           = [];
         $count         = 0;
 
-        $params  = array(
+        $params = array(
             "projection" => array(),
             "filter"     => array(
                 array(
@@ -74,8 +74,8 @@ class ImportSilkStartContacts extends Command {
             "offset"     => 0,
             "limit"      => 5
         );
-        $g       = new GlueUp();
-        $results = $g->post( 'membershipDirectory/members', $params );
+//        $g       = new GlueUp();
+//        $results = $g->post( 'membershipDirectory/members', $params );
 
         foreach ( $data as $row ) {
             if ( YCPContact::existsInDB( $row ) ) {

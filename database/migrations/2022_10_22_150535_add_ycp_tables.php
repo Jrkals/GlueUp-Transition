@@ -18,11 +18,13 @@ return new class extends Migration {
             $table->string( 'full_name' )->nullable();
             $table->string( 'email' )->nullable()->unique();
             $table->longText( 'nb_tags' )->nullable();
+            $table->string( 'membership_type' );
             $table->timestamps();
         } );
         Schema::create( 'y_c_p_companies', function ( Blueprint $table ) {
             $table->id();
             $table->timestamps();
+            $table->string( 'membership_type' );
         } );
         Schema::create( 'chapters', function ( Blueprint $table ) {
             $table->id();
@@ -35,6 +37,15 @@ return new class extends Migration {
             $table->foreignIdFor( \App\Models\YCPContact::class );
             $table->boolean( 'home' )->default( false );
             $table->timestamps();
+        } );
+        Schema::create( 'y_c_p_company_y_c_p_contact', function ( Blueprint $table ) {
+            $table->id();
+            $table->foreignIdFor( \App\Models\YCPContact::class );
+            $table->foreignIdFor( \App\Models\YCPCompany::class );
+            $table->boolean( 'admin' );
+            $table->boolean( 'contact' );
+            $table->timestamps();
+
         } );
     }
 

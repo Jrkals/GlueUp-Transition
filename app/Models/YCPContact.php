@@ -14,6 +14,10 @@ class YCPContact extends Model {
         return $this->belongsToMany( Chapter::class )->withPivot( 'home' );
     }
 
+    public function companies(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
+        return $this->belongsToMany( YCPCompany::class )->withPivot( [ 'admin', 'contact' ] );
+    }
+
     public function fromCSV( array $row ): YCPContact {
         $this->first_name = $row['first_name'];
         $this->last_name  = $row['last_name'];
@@ -71,7 +75,7 @@ class YCPContact extends Model {
         }
         $chapter_strings = explode( ",", $chapters );
         foreach ( $chapter_strings as $chapter_string ) {
-            $list->add( Chapter::getOrCreateFromName( $chapter_string ) );
+            $list->add( Chapter::getOrCreateFromName( str( $chapter_string )->trim() ) );
         }
 
         return $list;
