@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\ChapterException;
+use App\Helpers\Name;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -24,6 +25,7 @@ class YCPContact extends Model {
         $this->full_name  = $row['name'];
         $this->email      = $row['email'];
         $this->nb_tags    = $row['nationbuilder_tags'];
+        $this->plan       = $row['plan'];
         $chapters         = $this->parseChapters( $row['active_chapters'] );
         $home_chapter     = Chapter::getOrCreateFromName( $row['home_chapter'] );
         $other_chapters   = $this->parseChapters( $row['other_chapters'] );
@@ -50,6 +52,10 @@ class YCPContact extends Model {
         }
 
         return false;
+    }
+
+    public static function getContact( array $contact ): YCPContact {
+        return YCPContact::query()->where( 'email', '=', $contact['email'] )->get()->first();
     }
 
     /**
@@ -79,6 +85,23 @@ class YCPContact extends Model {
         }
 
         return $list;
+    }
 
+    public static function getOrCreateContact( string $name, string $email ): YCPContact {
+        if ( self::existsInDB( [ 'name' => $name, 'email' => $email ] ) ) {
+            return self::getContact( [ 'name' => $name, 'email' => $email ] );
+        }
+        $name               = Name::fromFullName( $name );
+        $contact            = new YCPContact();
+        $contact->name      = $name->firstName();
+        $contact->last_name = $name->lastName();
+        $contact->email     = $email;
+        $contact->save();
+
+        return $contact;
+    }
+
+    public function address() {
+        return $this->morphOne( \App\Models\Address::class, 'addressable' );
     }
 }
