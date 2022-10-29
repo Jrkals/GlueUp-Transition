@@ -34,12 +34,15 @@ class YcpContact extends Model {
         $this->full_name   = $row['name'];
         $this->email       = $row['email'];
         $this->nb_tags     = $row['nationbuilder_tags'];
+        $this->admin       = isset( $row['chapter_admin'] ) && $row['chapter_admin'] === 'TRUE';
         $this->date_joined = Carbon::parse( $row['date_joined'] )->toDateString();
         $this->expiry_date = Carbon::parse( $row['expiry_date'] )->toDateString();
         if ( $row['expiry_type'] ) {
             $this->expiry_type = $row['expiry_type'];
         }
-        $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
+        if ( isset( $row['date_of_birth'] ) ) {
+            $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
+        }
 
         $currentPlan    = Plan::getOrCreateFromName( $row['plan'] );
         $previousPlan   = Plan::getOrCreateFromName( $row['last_renewed_plan'] );
@@ -65,6 +68,16 @@ class YcpContact extends Model {
         $this->chapters()->save( $home_chapter, [ 'home' => true ] );
         $this->chapters()->saveMany( $chapters, [] );
         $this->chapters()->saveMany( $other_chapters, [] );
+
+        if ( $row ['home_street_address'] ) {
+            $this->address_id = Address::fromCSVHome( $row, 'contact', $this->id )->id;
+            $this->save();
+        }
+        if ( $row ['work_street_address'] ) {
+            $this->address_id = Address::fromCSVWork( $row, 'contact', $this->id )->id;
+            $this->save();
+        }
+
 
         return $this;
     }

@@ -48,6 +48,16 @@ class Address extends Model {
             $address['province'], $address['postalzip_code'], $address['country'], $type, $id );
     }
 
+    public static function fromCSVHome( array $address, string $type, int $id ): Address {
+        return self::createFromAddress( $address['home_street_address'], $address['home_address_2'], $address['home_city'],
+            $address['home_province'], $address['home_postal'], $address['home_country'], $type, $id );
+    }
+
+    public static function fromCSVWork( array $address, string $type, int $id ): Address {
+        return self::createFromAddress( $address['work_street_address'], $address['work_address_2'], $address['work_city'],
+            $address['work_province'], $address['work_postal'], $address['work_country'], $type, $id );
+    }
+
     public function street1(): string {
         return $this->street1;
     }

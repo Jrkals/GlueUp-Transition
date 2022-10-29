@@ -21,7 +21,6 @@ return new class extends Migration {
             $table->string( 'email' )->nullable()->unique();
             $table->longText( 'nb_tags' )->nullable();
             $table->boolean( 'admin' )->default( false );
-            //   $table->string( 'plan' )->default( 'Contact' );
             $table->foreignIdFor( Address::class )->nullable();
             $table->date( 'date_joined' )->nullable();
             $table->date( 'expiry_date' )->nullable();
@@ -53,6 +52,8 @@ return new class extends Migration {
             $table->string( 'term' )->nullable();
             $table->timestamps();
         } );
+
+        //Many to Many relation table
         Schema::create( 'chapter_ycp_contact', function ( Blueprint $table ) {
             $table->id();
             $table->foreignIdFor( \App\Models\Chapter::class );
@@ -60,6 +61,8 @@ return new class extends Migration {
             $table->boolean( 'home' )->default( false );
             $table->timestamps();
         } );
+
+        //Many to Many relation table
         Schema::create( 'plan_ycp_contact', function ( Blueprint $table ) {
             $table->id();
             $table->foreignIdFor( \App\Models\Plan::class );
@@ -67,6 +70,7 @@ return new class extends Migration {
             $table->boolean( 'active' )->default( true );
             $table->timestamps();
         } );
+
         //Many to Many relation table
         Schema::create( 'ycp_company_ycp_contact', function ( Blueprint $table ) {
             $table->id();

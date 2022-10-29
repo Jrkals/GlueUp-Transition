@@ -32,6 +32,7 @@ class ImportSilkStartContacts extends Command {
         foreach ( $data as $row ) {
             if ( YcpContact::existsInDB( $row ) ) {
                 $alreadyExists[] = $row;
+                //TODO update if details differ e.g. missing birth date or address.
                 $count ++;
                 continue;
             }
