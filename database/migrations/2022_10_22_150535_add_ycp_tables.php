@@ -23,8 +23,8 @@ return new class extends Migration {
             $table->boolean( 'admin' )->default( false );
             //   $table->string( 'plan' )->default( 'Contact' );
             $table->foreignIdFor( Address::class )->nullable();
-            $table->date( 'date_joined' );
-            $table->date( 'expiry_date' );
+            $table->date( 'date_joined' )->nullable();
+            $table->date( 'expiry_date' )->nullable();
             $table->enum( 'expiry_type', [ 'Recurring', 'Manual Renewal', 'Lifetime', ] )->nullable();
             $table->date( 'birthday' )->nullable();
         } );
