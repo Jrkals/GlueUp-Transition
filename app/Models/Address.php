@@ -8,33 +8,44 @@ use Illuminate\Database\Eloquent\Model;
 class Address extends Model {
     use HasFactory;
 
-    private string $street1;
-    private string $street2;
-    private string $postalCode;
-    private string $country;
-    private string $city;
-    private string $state;
+//    private string $street1;
+//    private string $street2;
+//    private string $postalCode;
+//    private string $country;
+//    private string $city;
+//    private string $state;
+
+    protected $fillable = [
+        'street1',
+        'street2',
+        'postal_code',
+        'country',
+        'city',
+        'state'
+    ];
 
     public function addressable() {
         return $this->morphTo();
     }
 
-    private static function createFromAddress( $street1, $street2, $city, $state, $zip, $country ): Address {
-        $address             = new Address();
-        $address->street1    = $street1;
-        $address->street2    = $street2;
-        $address->city       = $city;
-        $address->state      = $state;
-        $address->postalCode = $zip;
-        $address->country    = $country;
+    private static function createFromAddress( $street1, $street2, $city, $state, $zip, $country, $type, $id ): Address {
+        $address                   = new Address();
+        $address->street1          = $street1;
+        $address->street2          = $street2;
+        $address->city             = $city;
+        $address->state            = $state;
+        $address->postal_code      = $zip;
+        $address->country          = $country;
+        $address->addressable_type = $type === 'contact' ? YCPContact::class : YCPCompany::class;
+        $address->addressable_id   = $id;
         $address->save();
 
         return $address;
     }
 
-    public static function fromCSV( array $address ): Address {
+    public static function fromCSV( array $address, string $type, int $id ): Address {
         return self::createFromAddress( $address['street_address'], $address['street_address_2'], $address['city'],
-            $address['province'], $address['postalzip_code'], $address['country'] );
+            $address['province'], $address['postalzip_code'], $address['country'], $type, $id );
     }
 
     public function street1(): string {
@@ -54,7 +65,7 @@ class Address extends Model {
     }
 
     public function postalCode(): string {
-        return $this->postalCode;
+        return $this->postal_code;
     }
 
     public function country(): string {

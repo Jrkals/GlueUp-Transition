@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,16 +24,19 @@ class YCPCompany extends Model {
     public function fromCSV( array $row ) {
         $this->name              = $row['name'];
         $this->short_description = $row['short_description'];
-        $this->date_joined       = $row['date_joined'];
-        $this->expiry_date       = $row['expiry_date'];
+        $this->date_joined       = Carbon::parse( $row['date_joined'] )->toDateString();
+        $this->expiry_date       = $row['expiry_date'] === 'Lifetime' ? Carbon::now()->addYears( 99 )->toDateString()
+            : Carbon::parse( $row['expiry_date'] )->toDateString();
         $this->plan              = $row['plan'];
         $this->status            = $row['status'];
         $this->email             = $row['email'];
         $this->website           = $row['website'];
-        $this->address_id        = \App\Models\Address::fromCSV( $row )->id;
 
         $this->save();
-        $billing_person = YCPContact::getOrCreateContact( $row['business_person'], $row['business_person_email'] );
+        $this->address_id = \App\Models\Address::fromCSV( $row, 'company', $this->id )->id;
+        $this->save();
+
+        $billing_person = YCPContact::getOrCreateContact( $row['billing_person'], $row['billing_person_email'] );
         $contact_person = YCPContact::getOrCreateContact( $row['contact_person'], $row['contact_person_email'] );
         $this->contacts()->save( $billing_person, [ 'billing' => true, 'contact' => false ] );
         $this->contacts()->save( $contact_person, [ 'billing' => false, 'contact' => true ] );

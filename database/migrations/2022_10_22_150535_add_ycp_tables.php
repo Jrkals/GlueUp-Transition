@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string( 'full_name' )->nullable();
             $table->string( 'email' )->nullable()->unique();
             $table->longText( 'nb_tags' )->nullable();
-            $table->string( 'plan' );
+            $table->string( 'plan' )->default( 'Contact' );
             $table->foreignIdFor( Address::class )->nullable();
             $table->timestamps();
         } );
@@ -30,13 +30,13 @@ return new class extends Migration {
             $table->string( 'short_description' );
             $table->date( 'date_joined' );
             $table->date( 'expiry_date' );
-            $table->string( 'plan' );
+            $table->string( 'plan' )->nullable();
             $table->string( 'status' );
             $table->string( 'email' );
 //            $table->integer( 'billing_person_id' ); // foreign key
 //            $table->integer( 'contact_person_id' ); // foreign key
             $table->string( 'website' )->nullable();
-            $table->foreignIdFor( Address::class );
+            $table->foreignIdFor( Address::class )->nullable();
         } );
         Schema::create( 'chapters', function ( Blueprint $table ) {
             $table->id();

@@ -91,11 +91,12 @@ class YCPContact extends Model {
         if ( self::existsInDB( [ 'name' => $name, 'email' => $email ] ) ) {
             return self::getContact( [ 'name' => $name, 'email' => $email ] );
         }
-        $name               = Name::fromFullName( $name );
-        $contact            = new YCPContact();
-        $contact->name      = $name->firstName();
-        $contact->last_name = $name->lastName();
-        $contact->email     = $email;
+        $name                = Name::fromFullName( $name );
+        $contact             = new YCPContact();
+        $contact->first_name = $name->firstName();
+        $contact->last_name  = $name->lastName();
+        $contact->full_name  = $name->fullName();
+        $contact->email      = $email;
         $contact->save();
 
         return $contact;
