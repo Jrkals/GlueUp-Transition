@@ -6,11 +6,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class YCPCompany extends Model {
+class YcpCompany extends Model {
     use HasFactory;
 
     public function contacts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
-        return $this->belongsToMany( YCPContact::class )->withPivot( [ 'admin', 'contact' ] );
+        return $this->belongsToMany( YcpContact::class )->withPivot( [ 'admin', 'contact' ] );
     }
 
     public function address() {
@@ -18,7 +18,7 @@ class YCPCompany extends Model {
     }
 
     public static function existsInDB( array $row ): bool {
-        if ( YCPCompany::query()->where( 'name', '=', $row['name'] )->get()->isNotEmpty() ) {
+        if ( YcpCompany::query()->where( 'name', '=', $row['name'] )->get()->isNotEmpty() ) {
             return true;
         }
 
@@ -40,8 +40,8 @@ class YCPCompany extends Model {
         $this->address_id = Address::fromCSV( $row, 'company', $this->id )->id;
         $this->save();
 
-        $billing_person = YCPContact::getOrCreateContact( $row['billing_person'], $row['billing_person_email'] );
-        $contact_person = YCPContact::getOrCreateContact( $row['contact_person'], $row['contact_person_email'] );
+        $billing_person = YcpContact::getOrCreateContact( $row['billing_person'], $row['billing_person_email'] );
+        $contact_person = YcpContact::getOrCreateContact( $row['contact_person'], $row['contact_person_email'] );
         $this->contacts()->save( $billing_person, [ 'billing' => true, 'contact' => false ] );
         $this->contacts()->save( $contact_person, [ 'billing' => false, 'contact' => true ] );
     }

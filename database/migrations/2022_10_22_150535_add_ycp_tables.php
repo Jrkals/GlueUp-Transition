@@ -12,18 +12,23 @@ return new class extends Migration {
      * @return void
      */
     public function up() {
-        Schema::create( 'y_c_p_contacts', function ( Blueprint $table ) {
+        Schema::create( 'ycp_contacts', function ( Blueprint $table ) {
             $table->id();
+            $table->timestamps();
             $table->string( 'first_name' )->nullable();
             $table->string( 'last_name' )->nullable();
             $table->string( 'full_name' )->nullable();
             $table->string( 'email' )->nullable()->unique();
             $table->longText( 'nb_tags' )->nullable();
-            $table->string( 'plan' )->default( 'Contact' );
+            $table->boolean( 'admin' )->default( false );
+            //   $table->string( 'plan' )->default( 'Contact' );
             $table->foreignIdFor( Address::class )->nullable();
-            $table->timestamps();
+            $table->date( 'date_joined' );
+            $table->date( 'expiry_date' );
+            $table->enum( 'expiry_type', [ 'Recurring', 'Manual Renewal', 'Lifetime', ] )->nullable();
+            $table->date( 'birthday' )->nullable();
         } );
-        Schema::create( 'y_c_p_companies', function ( Blueprint $table ) {
+        Schema::create( 'ycp_companies', function ( Blueprint $table ) {
             $table->id();
             $table->timestamps();
             $table->string( 'name' )->unique();
@@ -33,8 +38,6 @@ return new class extends Migration {
             $table->string( 'plan' )->nullable();
             $table->string( 'status' );
             $table->string( 'email' );
-//            $table->integer( 'billing_person_id' ); // foreign key
-//            $table->integer( 'contact_person_id' ); // foreign key
             $table->string( 'website' )->nullable();
             $table->foreignIdFor( Address::class )->nullable();
         } );
@@ -43,18 +46,32 @@ return new class extends Migration {
             $table->string( 'name' );
             $table->timestamps();
         } );
-        Schema::create( 'chapter_y_c_p_contact', function ( Blueprint $table ) {
+        Schema::create( 'plans', function ( Blueprint $table ) {
+            $table->id();
+            $table->string( 'name' );
+            $table->integer( 'cost' )->default( 0 );
+            $table->string( 'term' )->nullable();
+            $table->timestamps();
+        } );
+        Schema::create( 'chapter_ycp_contact', function ( Blueprint $table ) {
             $table->id();
             $table->foreignIdFor( \App\Models\Chapter::class );
-            $table->foreignIdFor( \App\Models\YCPContact::class );
+            $table->foreignIdFor( \App\Models\YcpContact::class );
             $table->boolean( 'home' )->default( false );
             $table->timestamps();
         } );
-        //Many to Many relation table
-        Schema::create( 'y_c_p_company_y_c_p_contact', function ( Blueprint $table ) {
+        Schema::create( 'plan_ycp_contact', function ( Blueprint $table ) {
             $table->id();
-            $table->foreignIdFor( \App\Models\YCPContact::class );
-            $table->foreignIdFor( \App\Models\YCPCompany::class );
+            $table->foreignIdFor( \App\Models\Plan::class );
+            $table->foreignIdFor( \App\Models\YcpContact::class );
+            $table->boolean( 'active' )->default( true );
+            $table->timestamps();
+        } );
+        //Many to Many relation table
+        Schema::create( 'ycp_company_ycp_contact', function ( Blueprint $table ) {
+            $table->id();
+            $table->foreignIdFor( \App\Models\YcpContact::class );
+            $table->foreignIdFor( \App\Models\YcpCompany::class );
             $table->boolean( 'billing' );
             $table->boolean( 'contact' );
             $table->timestamps();
@@ -71,6 +88,14 @@ return new class extends Migration {
             $table->string( 'addressable_type' ); //one to one polymorphic companies and contacts
             $table->timestamps();
         } );
+
+        Schema::create( 'phones', function ( Blueprint $table ) {
+            $table->id();
+            $table->timestamps();
+            $table->foreignIdFor( \App\Models\YcpContact::class );
+            $table->enum( 'type', [ 'home', 'mobile', 'business' ] )->default( 'mobile' );
+            $table->string( 'number' );
+        } );
     }
 
     /**
@@ -81,5 +106,12 @@ return new class extends Migration {
     public function down() {
         Schema::dropIfExists( 'ycp_contacts' );
         Schema::dropIfExists( 'ycp_companies' );
+        Schema::dropIfExists( 'plans' );
+        Schema::dropIfExists( 'chapters' );
+        Schema::dropIfExists( 'chapter_ycp_contact' );
+        Schema::dropIfExists( 'plan_ycp_contact' );
+        Schema::dropIfExists( 'ycp_company_ycp_contact' );
+        Schema::dropIfExists( 'phones' );
+        Schema::dropIfExists( 'addresses' );
     }
 };

@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Helpers\CSVReader;
 use App\Helpers\CSVWriter;
-use App\Models\YCPCompany;
-use App\Models\YCPContact;
+use App\Models\YcpCompany;
+use App\Models\YcpContact;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
@@ -43,13 +43,13 @@ class ImportSilkStartCompanies extends Command {
         $count         = 0;
 
         foreach ( $data as $row ) {
-            if ( YCPCompany::existsInDB( $row ) ) {
+            if ( YcpCompany::existsInDB( $row ) ) {
                 $alreadyExists[] = $row;
                 $count ++;
                 continue;
             }
             if ( ! $dry ) {
-                $ycpCompany = new YCPCompany();
+                $ycpCompany = new YcpCompany();
                 $ycpCompany->fromCSV( $row );
             }
             $new[] = $row;

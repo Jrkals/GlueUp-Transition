@@ -10,7 +10,7 @@ class Chapter extends Model {
     use HasFactory;
 
     public function contacts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
-        return $this->belongsToMany( YCPContact::class )->withPivot( 'home' );
+        return $this->belongsToMany( YcpContact::class )->withPivot( 'home' );
     }
 
     public static function getOrCreateFromName( string $name ) {

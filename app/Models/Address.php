@@ -36,7 +36,7 @@ class Address extends Model {
         $address->state            = $state;
         $address->postal_code      = $zip;
         $address->country          = $country;
-        $address->addressable_type = $type === 'contact' ? YCPContact::class : YCPCompany::class;
+        $address->addressable_type = $type === 'contact' ? YcpContact::class : YcpCompany::class;
         $address->addressable_id   = $id;
         $address->save();
 
