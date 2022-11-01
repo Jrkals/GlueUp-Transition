@@ -24,15 +24,23 @@ class ImportSilkStartContacts extends Command {
 
         $newWriter      = new CSVWriter( './storage/app/exports/new.csv' );
         $existingWriter = new CSVWriter( './storage/app/exports/existing.csv' );
+        $updatedWriter  = new CSVWriter( './storage/app/exports/updated.csv' );
+
 
         $alreadyExists = [];
         $new           = [];
+        $updated       = [];
         $count         = 0;
 
         foreach ( $data as $row ) {
-            if ( YcpContact::existsInDB( $row ) ) {
+            $found = YcpContact::getContact( $row );
+            if ( $found ) {
                 $alreadyExists[] = $row;
-                //TODO update if details differ e.g. missing birth date or address.
+                $differences     = YcpContact::contactsMatch( $row, $found );
+                if ( $differences['any'] === true ) {
+                    YcpContact::updateContact( $row, $found, $differences );
+                    $updated[] = $row;
+                }
                 $count ++;
                 continue;
             }
@@ -48,9 +56,11 @@ class ImportSilkStartContacts extends Command {
         }
         $this->line( 'Already Exists: ' . sizeof( $alreadyExists ) );
         $this->line( 'New Imports: ' . sizeof( $new ) );
+        $this->line( 'Updated ' . sizeof( $updated ) );
 
         $newWriter->writeData( $new );
         $existingWriter->writeData( $alreadyExists );
+        $updatedWriter->writeData( $updated );
 
         return CommandAlias::SUCCESS;
     }

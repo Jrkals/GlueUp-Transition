@@ -17,12 +17,13 @@ class YcpCompany extends Model {
         return $this->morphOne( \App\Models\Address::class, 'addressable' );
     }
 
-    public static function existsInDB( array $row ): bool {
-        if ( YcpCompany::query()->where( 'name', '=', $row['name'] )->get()->isNotEmpty() ) {
-            return true;
+    public static function getCompany( array $row ): ?YcpCompany {
+        $company = YcpCompany::query()->where( 'name', '=', $row['name'] )->get()->first();
+        if ( $company ) {
+            return $company;
         }
 
-        return false;
+        return null;
     }
 
     public function fromCSV( array $row ) {
@@ -44,5 +45,24 @@ class YcpCompany extends Model {
         $contact_person = YcpContact::getOrCreateContact( $row['contact_person'], $row['contact_person_email'] );
         $this->contacts()->save( $billing_person, [ 'billing' => true, 'contact' => false ] );
         $this->contacts()->save( $contact_person, [ 'billing' => false, 'contact' => true ] );
+    }
+
+    public static function companyMatches( array $company1, YcpCompany $company2 ): array {
+        $differences = [
+            'any' => false,
+        ];
+
+        //TODO compare attributes
+        return $differences;
+    }
+
+    public static function updateCompany( array $company1, YcpCompany $company2, array $differences ): YcpCompany {
+        if ( ! $differences['any'] ) {
+            return $company2;
+        }
+
+        $company2->save();
+
+        return $company2;
     }
 }

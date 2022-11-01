@@ -37,14 +37,25 @@ class ImportSilkStartCompanies extends Command {
 
         $newWriter      = new CSVWriter( './storage/app/exports/newCompanies.csv' );
         $existingWriter = new CSVWriter( './storage/app/exports/existingCompanies.csv' );
+        $updatedWriter  = new CSVWriter( './storage/app/exports/updatedCompanies.csv' );
+
 
         $alreadyExists = [];
         $new           = [];
+        $updated       = [];
         $count         = 0;
 
         foreach ( $data as $row ) {
-            if ( YcpCompany::existsInDB( $row ) ) {
+            $company = YcpCompany::getCompany( $row );
+            if ( $company ) {
                 $alreadyExists[] = $row;
+
+                $differences = YcpCompany::companyMatches( $row, $company );
+                if ( $differences['any'] === true ) {
+                    YcpCompany::updateCompany( $row, $company, $differences );
+                    $updated[] = $row;
+                }
+
                 $count ++;
                 continue;
             }
@@ -60,9 +71,12 @@ class ImportSilkStartCompanies extends Command {
         }
         $this->line( 'Already Exists: ' . sizeof( $alreadyExists ) );
         $this->line( 'New Imports: ' . sizeof( $new ) );
+        $this->line( 'Updated: ' . sizeof( $updated ) );
+
 
         $newWriter->writeData( $new );
         $existingWriter->writeData( $alreadyExists );
+        $updatedWriter->writeData( $updated );
 
         return CommandAlias::SUCCESS;
     }

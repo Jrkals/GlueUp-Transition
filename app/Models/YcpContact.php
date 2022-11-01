@@ -82,25 +82,24 @@ class YcpContact extends Model {
         return $this;
     }
 
-    /**
-     * @throws ChapterException
-     */
-    public static function existsInDB( array $contact ): bool {
-        if ( YcpContact::query()->where( 'email', '=', $contact['email'] )->get()->isNotEmpty() ) {
-            return true;
+    public static function getContact( array $contact ): ?YcpContact {
+        $emailMatch = YcpContact::query()->where( 'email', '=', $contact['email'] )->get()->first();
+
+        if ( $emailMatch ) {
+            return $emailMatch;
         }
+        if ( ! isset( $contact['home_chapter'] ) ) {
+            return null;
+        }
+
         $matchingNames = YcpContact::query()->where( [ 'full_name' => $contact['name'] ] )->get();
         foreach ( $matchingNames as $match ) {
             if ( $match->homeChapter()->name === $contact['home_chapter'] ) {
-                return true;
+                return $match;
             }
         }
 
-        return false;
-    }
-
-    public static function getContact( array $contact ): YcpContact {
-        return YcpContact::query()->where( 'email', '=', $contact['email'] )->get()->first();
+        return null;
     }
 
     /**
@@ -133,8 +132,9 @@ class YcpContact extends Model {
     }
 
     public static function getOrCreateContact( string $name, string $email ): YcpContact {
-        if ( self::existsInDB( [ 'name' => $name, 'email' => $email ] ) ) {
-            return self::getContact( [ 'name' => $name, 'email' => $email ] );
+        $contact = self::getContact( [ 'name' => $name, 'email' => $email ] );
+        if ( $contact ) {
+            return $contact;
         }
         $name                = Name::fromFullName( $name );
         $contact             = new YcpContact();
@@ -149,5 +149,33 @@ class YcpContact extends Model {
 
     public function address() {
         return $this->morphOne( \App\Models\Address::class, 'addressable' );
+    }
+
+    public static function contactsMatch( array $contact1, YcpContact $contact2 ): array {
+        $differences = [
+            'any' => false,
+            'dob' => false
+        ];
+
+        if ( isset( $contact1['date_of_birth'] ) && Carbon::parse( $contact1['date_of_birth'] )->isSameDay( Carbon::parse( $contact2->birthday ) ) ) {
+            $differences['any']        = true;
+            $differences['dob']        = true;
+            $differences['dob_reason'] = $contact1['date_of_birth'] . ' is DOB not ' . $contact2->birthday;
+        }
+
+        //TODO compare other attributes
+
+        return $differences;
+    }
+
+    public static function updateContact( array $contact1, YcpContact $contact2, array $differences ): YcpContact {
+        if ( $differences['dob'] ) {
+            $contact2->birthday = $contact1['date_of_birth'];
+        }
+
+
+        $contact2->save();
+
+        return $contact2;
     }
 }
