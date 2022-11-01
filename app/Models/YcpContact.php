@@ -69,11 +69,11 @@ class YcpContact extends Model {
         $this->chapters()->saveMany( $chapters, [] );
         $this->chapters()->saveMany( $other_chapters, [] );
 
-        if ( $row ['home_street_address'] ) {
+        if ( ! empty( $row ['home_street_address'] ) ) {
             $this->address_id = Address::fromCSVHome( $row, 'contact', $this->id )->id;
             $this->save();
         }
-        if ( $row ['work_street_address'] ) {
+        if ( ! empty( $row ['work_street_address'] ) ) {
             $this->address_id = Address::fromCSVWork( $row, 'contact', $this->id )->id;
             $this->save();
         }
@@ -170,9 +170,8 @@ class YcpContact extends Model {
 
     public static function updateContact( array $contact1, YcpContact $contact2, array $differences ): YcpContact {
         if ( $differences['dob'] ) {
-            $contact2->birthday = $contact1['date_of_birth'];
+            $contact2->birthday = Carbon::parse( $contact1['date_of_birth'] )->toDateString();
         }
-
 
         $contact2->save();
 
