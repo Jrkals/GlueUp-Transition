@@ -12,6 +12,10 @@ use Illuminate\Support\Collection;
 class YcpContact extends Model {
     use HasFactory;
 
+    protected $fillable = [
+        'birthday'
+    ];
+
     public function chapters(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
         return $this->belongsToMany( Chapter::class )->withPivot( 'home' );
     }
@@ -29,10 +33,12 @@ class YcpContact extends Model {
     }
 
     public function fromCSV( array $row ): YcpContact {
-        $this->first_name  = $row['first_name'];
-        $this->last_name   = $row['last_name'];
-        $this->full_name   = $row['name'];
-        $this->email       = $row['email'];
+        $this->first_name = $row['first_name'];
+        $this->last_name  = $row['last_name'];
+        $this->full_name  = $row['name'];
+        if ( ! empty( $row['email'] ) ) {
+            $this->email = ! empty( $row['email'] );
+        }
         $this->nb_tags     = $row['nationbuilder_tags'];
         $this->admin       = isset( $row['chapter_admin'] ) && $row['chapter_admin'] === 'TRUE';
         $this->date_joined = Carbon::parse( $row['date_joined'] )->toDateString();
@@ -83,18 +89,21 @@ class YcpContact extends Model {
     }
 
     public static function getContact( array $contact ): ?YcpContact {
-        $emailMatch = YcpContact::query()->where( 'email', '=', $contact['email'] )->get()->first();
+        if ( ! empty( $contact['email'] ) ) {
+            $emailMatch = YcpContact::query()->where( 'email', '=', $contact['email'] )->get()->first();
 
-        if ( $emailMatch ) {
-            return $emailMatch;
+            if ( $emailMatch ) {
+                return $emailMatch;
+            }
         }
+
         if ( ! isset( $contact['home_chapter'] ) ) {
             return null;
         }
 
         $matchingNames = YcpContact::query()->where( [ 'full_name' => $contact['name'] ] )->get();
         foreach ( $matchingNames as $match ) {
-            if ( $match->homeChapter()->name === $contact['home_chapter'] ) {
+            if ( $match->homeChapter()?->name === $contact['home_chapter'] ) {
                 return $match;
             }
         }
@@ -105,14 +114,16 @@ class YcpContact extends Model {
     /**
      * @throws ChapterException
      */
-    public function homeChapter(): Chapter {
+    public function homeChapter(): ?Chapter {
         $chapters = $this->chapters;
         foreach ( $chapters as $chapter ) {
             if ( $chapter->pivot->home ) {
                 return $chapter;
             }
         }
-        throw ChapterException::NoChapterFound( $this );
+
+        return null;
+        //  throw ChapterException::NoChapterFound( $this );
     }
 
     private function parseChapters( string $chapters ): Collection {
@@ -157,7 +168,7 @@ class YcpContact extends Model {
             'dob' => false
         ];
 
-        if ( isset( $contact1['date_of_birth'] ) && Carbon::parse( $contact1['date_of_birth'] )->isSameDay( Carbon::parse( $contact2->birthday ) ) ) {
+        if ( ! empty( $contact1['date_of_birth'] ) && ! Carbon::parse( $contact1['date_of_birth'] )->isSameDay( Carbon::parse( $contact2->birthday ) ) ) {
             $differences['any']        = true;
             $differences['dob']        = true;
             $differences['dob_reason'] = $contact1['date_of_birth'] . ' is DOB not ' . $contact2->birthday;
@@ -170,10 +181,14 @@ class YcpContact extends Model {
 
     public static function updateContact( array $contact1, YcpContact $contact2, array $differences ): YcpContact {
         if ( $differences['dob'] ) {
+            echo "1." . $contact2->birthday . "\n";
             $contact2->birthday = Carbon::parse( $contact1['date_of_birth'] )->toDateString();
+            echo "2." . $contact2->birthday . "\n";
+
         }
 
-        $contact2->save();
+        $contact2->update( [ 'birthday' => Carbon::parse( $contact1['date_of_birth'] )->toDateString() ] );
+        echo "3." . $contact2->birthday . "\n";
 
         return $contact2;
     }

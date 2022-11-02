@@ -40,6 +40,7 @@ class ImportSilkStartContacts extends Command {
                 if ( $differences['any'] === true ) {
                     YcpContact::updateContact( $row, $found, $differences );
                     $updated[] = $row;
+                    echo "4. id #" . $found->id . ' birthday is ' . $found->birthday . "\n";
                 }
                 $count ++;
                 continue;
