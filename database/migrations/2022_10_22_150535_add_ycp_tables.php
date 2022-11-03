@@ -68,7 +68,7 @@ return new class extends Migration {
             $table->boolean( 'active' )->default( true );
             $table->date( 'start_date' )->nullable();
             $table->date( 'expiry_date' )->nullable();
-            $table->enum( 'expiry_type', [ 'Recurring', 'Manual Renewal', 'Lifetime', ] )->nullable();
+            $table->enum( 'expiry_type', [ 'Recurring', 'Manual Renewal', 'Lifetime', 'Unknown' ] )->nullable();
             $table->timestamps();
         } );
 

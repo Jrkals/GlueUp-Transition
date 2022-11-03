@@ -33,54 +33,57 @@ class YcpContact extends Model {
     }
 
     public function fromCSV( array $row ): YcpContact {
-        $this->first_name = $row['first_name'];
-        $this->last_name  = $row['last_name'];
+        $this->first_name = $row['first_name'] ?? '';
+        $this->last_name  = $row['last_name'] ?? '';
         $this->full_name  = $row['name'];
         if ( ! empty( $row['email'] ) ) {
             $this->email = $row['email'];
         }
-        $this->nb_tags     = $row['nationbuilder_tags'];
+        $this->nb_tags     = $row['nationbuilder_tags'] ?? '';
         $this->admin       = isset( $row['chapter_admin'] ) && $row['chapter_admin'] === 'TRUE';
         $this->date_joined = Carbon::parse( $row['date_joined'] )->toDateString();
         if ( isset( $row['date_of_birth'] ) ) {
             $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
         }
 
-        $currentPlan    = Plan::getOrCreatePlan( [
+        $currentPlan = Plan::getOrCreatePlan( [
             'name' => $row['plan']
         ] );
-        $previousPlan   = Plan::getOrCreatePlan( [
-            'name' => $row['last_renewed_plan']
-        ] );
-        $chapters       = $this->parseChapters( $row['active_chapters'] );
+        if ( ! empty( $row ['last_renewed_plan'] ) ) {
+            $previousPlan = Plan::getOrCreatePlan( [
+                'name' => $row['last_renewed_plan']
+            ] );
+        }
+
+        $chapters       = $this->parseChapters( $row['active_chapters'] ?? $row['chapter'] );
         $home_chapter   = Chapter::getOrCreateFromName( $row['home_chapter'] );
         $other_chapters = $this->parseChapters( $row['other_chapters'] );
         $this->save();
 
-        if ( $row['mobile_phone'] ) {
+        if ( ! empty( $row['mobile_phone'] ) ) {
             Phone::create( $row['mobile_phone'], $this->id, 'mobile' );
         }
-        if ( $row['business_phone'] ) {
+        if ( ! empty( $row['business_phone'] ) ) {
             Phone::create( $row['business_phone'], $this->id, 'business' );
         }
-        if ( $row['home_phone'] ) {
+        if ( ! empty( $row['home_phone'] ) ) {
             Phone::create( $row['home_phone'], $this->id, 'home' );
         }
         if ( $row['status'] !== 'Contact' ) {
             $this->plans()->save( $currentPlan, [
                 'active'      => true,
                 'expiry_date' => Carbon::parse( $row['expiry_date'] ),
-                'expiry_type' => $row['expiry_type'] ?: 'Manual Renewal', //TODO deal with blanks,
+                'expiry_type' => $row['expiry_type'] ?: 'Unknown',
                 'start_date'  => $row['last_renewal_date'] ? Carbon::parse( $row['last_renewal_date'] )
                     : Carbon::parse( $row['date_joined'] )
             ] );
-            if ( $previousPlan->differentPlan( $currentPlan ) ) {
+            if ( isset( $previousPlan ) && $previousPlan->differentPlan( $currentPlan ) ) {
                 $this->plans()->save( $previousPlan, [
                     'active'      => false,
                     'expiry_date' => Carbon::parse( $row['expiry_date'] ),
-                    'expiry_type' => $row['expiry_type'] ?: 'Manual Renewal', //TODO deal with blanks
+                    'expiry_type' => $row['expiry_type'] ?: 'Unknown',
                     'start_date'  => Carbon::parse( $row['date_joined'] )
-                ] ); //TODO find better date
+                ] );
             }
         }
 
@@ -188,20 +191,20 @@ class YcpContact extends Model {
         }
 
         //TODO compare other attributes
+        //NB Tags
+        //Phones
+        //Addresses
+        //First Name && Last Name
 
         return $differences;
     }
 
     public static function updateContact( array $contact1, YcpContact $contact2, array $differences ): YcpContact {
         if ( $differences['dob'] ) {
-            echo "1." . $contact2->birthday . "\n";
             $contact2->birthday = Carbon::parse( $contact1['date_of_birth'] )->toDateString();
-            echo "2." . $contact2->birthday . "\n";
-
         }
 
         $contact2->update( [ 'birthday' => Carbon::parse( $contact1['date_of_birth'] )->toDateString() ] );
-        echo "3." . $contact2->birthday . "\n";
 
         return $contact2;
     }
