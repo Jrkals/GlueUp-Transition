@@ -23,8 +23,6 @@ return new class extends Migration {
             $table->boolean( 'admin' )->default( false );
             $table->foreignIdFor( Address::class )->nullable();
             $table->date( 'date_joined' )->nullable();
-            $table->date( 'expiry_date' )->nullable();
-            $table->enum( 'expiry_type', [ 'Recurring', 'Manual Renewal', 'Lifetime', ] )->nullable();
             $table->date( 'birthday' )->nullable();
         } );
         Schema::create( 'ycp_companies', function ( Blueprint $table ) {
@@ -68,6 +66,9 @@ return new class extends Migration {
             $table->foreignIdFor( \App\Models\Plan::class );
             $table->foreignIdFor( \App\Models\YcpContact::class );
             $table->boolean( 'active' )->default( true );
+            $table->date( 'start_date' )->nullable();
+            $table->date( 'expiry_date' )->nullable();
+            $table->enum( 'expiry_type', [ 'Recurring', 'Manual Renewal', 'Lifetime', ] )->nullable();
             $table->timestamps();
         } );
 

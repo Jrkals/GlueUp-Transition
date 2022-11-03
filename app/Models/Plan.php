@@ -12,17 +12,16 @@ class Plan extends Model {
         return $this->belongsToMany( YcpContact::class )->withPivot( 'active' );
     }
 
-    public static function getOrCreateFromName( string $name ) {
-        $existing = Plan::query()->where( 'name', '=', $name )->get();
-        if ( $existing->isEmpty() ) {
-            $plan       = new Plan();
-            $plan->name = $name;
-            $plan->save();
-
-            return $plan;
+    public static function getOrCreatePlan( array $data ) {
+        $existing = Plan::query()->where( 'name', '=', $data['name'] )->get();
+        if ( $existing->isNotEmpty() ) {
+            return $existing->first();
         }
+        $plan       = new Plan();
+        $plan->name = $data['name'];
+        $plan->save();
 
-        return $existing->first();
+        return $plan;
     }
 
     public function differentPlan( Plan $p ): bool {

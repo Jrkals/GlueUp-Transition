@@ -37,21 +37,21 @@ class YcpContact extends Model {
         $this->last_name  = $row['last_name'];
         $this->full_name  = $row['name'];
         if ( ! empty( $row['email'] ) ) {
-            $this->email = ! empty( $row['email'] );
+            $this->email = $row['email'];
         }
         $this->nb_tags     = $row['nationbuilder_tags'];
         $this->admin       = isset( $row['chapter_admin'] ) && $row['chapter_admin'] === 'TRUE';
         $this->date_joined = Carbon::parse( $row['date_joined'] )->toDateString();
-        $this->expiry_date = Carbon::parse( $row['expiry_date'] )->toDateString();
-        if ( $row['expiry_type'] ) {
-            $this->expiry_type = $row['expiry_type'];
-        }
         if ( isset( $row['date_of_birth'] ) ) {
             $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
         }
 
-        $currentPlan    = Plan::getOrCreateFromName( $row['plan'] );
-        $previousPlan   = Plan::getOrCreateFromName( $row['last_renewed_plan'] );
+        $currentPlan    = Plan::getOrCreatePlan( [
+            'name' => $row['plan']
+        ] );
+        $previousPlan   = Plan::getOrCreatePlan( [
+            'name' => $row['last_renewed_plan']
+        ] );
         $chapters       = $this->parseChapters( $row['active_chapters'] );
         $home_chapter   = Chapter::getOrCreateFromName( $row['home_chapter'] );
         $other_chapters = $this->parseChapters( $row['other_chapters'] );
@@ -66,11 +66,24 @@ class YcpContact extends Model {
         if ( $row['home_phone'] ) {
             Phone::create( $row['home_phone'], $this->id, 'home' );
         }
-
-        $this->plans()->save( $currentPlan, [ 'active' => $row['status'] === 'Active' ] );
-        if ( $previousPlan->differentPlan( $currentPlan ) ) {
-            $this->plans()->save( $previousPlan, [ 'active' => false ] );
+        if ( $row['status'] !== 'Contact' ) {
+            $this->plans()->save( $currentPlan, [
+                'active'      => true,
+                'expiry_date' => Carbon::parse( $row['expiry_date'] ),
+                'expiry_type' => $row['expiry_type'] ?: 'Manual Renewal', //TODO deal with blanks,
+                'start_date'  => $row['last_renewal_date'] ? Carbon::parse( $row['last_renewal_date'] )
+                    : Carbon::parse( $row['date_joined'] )
+            ] );
+            if ( $previousPlan->differentPlan( $currentPlan ) ) {
+                $this->plans()->save( $previousPlan, [
+                    'active'      => false,
+                    'expiry_date' => Carbon::parse( $row['expiry_date'] ),
+                    'expiry_type' => $row['expiry_type'] ?: 'Manual Renewal', //TODO deal with blanks
+                    'start_date'  => Carbon::parse( $row['date_joined'] )
+                ] ); //TODO find better date
+            }
         }
+
         $this->chapters()->save( $home_chapter, [ 'home' => true ] );
         $this->chapters()->saveMany( $chapters, [] );
         $this->chapters()->saveMany( $other_chapters, [] );
