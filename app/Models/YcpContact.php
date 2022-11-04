@@ -203,19 +203,21 @@ class YcpContact extends Model {
         }
 
         //Addresses
-        if ( ! empty( $contact1['home_city'] || ! empty( $contact1['work_city'] ) ) && ! $contact2->hasAddress( $contact1 ) ) {
+        if ( ! empty( $contact1['home_city'] ) || ! empty( $contact1['work_city'] ) && ! $contact2->hasAddress( $contact1 ) ) {
             $differences['any']           = true;
             $differences['address']       = true;
             $differences['adress_reason'] = 'missing address ' . $contact1['city'];
         }
 
-        if ( ! empty( $contact1['first_name'] ) && $contact1['first_name'] !== $contact2->first_name ) {
+        if ( ! empty( $contact1['first_name'] ) && strtolower( $contact1['first_name'] )
+                                                   !== strtolower( $contact2->first_name ) ) {
             $differences['any']               = true;
             $differences['first_name']        = true;
             $differences['first_name_reason'] = $contact1['first_name'] . ' is not ' . $contact2->first_name;
         }
 
-        if ( ! empty( $contact1['last_name'] ) && $contact1['last_name'] !== $contact2->last_name ) {
+        if ( ! empty( $contact1['last_name'] ) && strtolower( $contact1['last_name'] )
+                                                  !== strtolower( $contact2->last_name ) ) {
             $differences['any']              = true;
             $differences['last_name']        = true;
             $differences['last_name_reason'] = $contact1['last_name'] . ' is not ' . $contact2->last_name;
@@ -228,8 +230,24 @@ class YcpContact extends Model {
         if ( $differences['dob'] ) {
             $contact2->birthday = Carbon::parse( $contact1['date_of_birth'] )->toDateString();
         }
-
-        $contact2->update( [ 'birthday' => Carbon::parse( $contact1['date_of_birth'] )->toDateString() ] );
+        if ( $differences['nationbuilder'] ) {
+            $contact2->nb_tags = $contact1['nationbuilder_tags'];
+        }
+        if ( $differences['phone'] ) {
+            //TODO update
+            //  $contact2->birthday =  $contact1['date_of_birth'];
+        }
+        if ( $differences['address'] ) {
+            //TODO update
+            //  $contact2->birthday =  $contact1['date_of_birth'];
+        }
+        if ( $differences['first_name'] ) {
+            $contact2->first_name = $contact1['first_name'];
+        }
+        if ( $differences['last_name'] ) {
+            $contact2->last_name = $contact1['last_name'];
+        }
+        $contact2->save();
 
         return $contact2;
     }
