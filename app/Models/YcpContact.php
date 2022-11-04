@@ -190,11 +190,36 @@ class YcpContact extends Model {
             $differences['dob_reason'] = $contact1['date_of_birth'] . ' is DOB not ' . $contact2->birthday;
         }
 
-        //TODO compare other attributes
-        //NB Tags
+        if ( ! empty( $contact1['nationbuilder_tags'] ) && $contact1['nationbuilder_tags'] !== $contact2->nb_tags ) {
+            $differences['any']                  = true;
+            $differences['nationbuilder']        = true;
+            $differences['nationbuilder_reason'] = $contact1['nationbuilder_tags'] . ' is not ' . $contact2->nb_tags;
+        }
         //Phones
+        if ( ! empty( $contact1['mobile_number'] ) && ! $contact2->hasPhone( $contact1 ) ) {
+            $differences['any']          = true;
+            $differences['phone']        = true;
+            $differences['phone_reason'] = 'missing phone number ' . $contact1['mobile_number'];
+        }
+
         //Addresses
-        //First Name && Last Name
+        if ( ! empty( $contact1['home_city'] || ! empty( $contact1['work_city'] ) ) && ! $contact2->hasAddress( $contact1 ) ) {
+            $differences['any']           = true;
+            $differences['address']       = true;
+            $differences['adress_reason'] = 'missing address ' . $contact1['city'];
+        }
+
+        if ( ! empty( $contact1['first_name'] ) && $contact1['first_name'] !== $contact2->first_name ) {
+            $differences['any']               = true;
+            $differences['first_name']        = true;
+            $differences['first_name_reason'] = $contact1['first_name'] . ' is not ' . $contact2->first_name;
+        }
+
+        if ( ! empty( $contact1['last_name'] ) && $contact1['last_name'] !== $contact2->last_name ) {
+            $differences['any']              = true;
+            $differences['last_name']        = true;
+            $differences['last_name_reason'] = $contact1['last_name'] . ' is not ' . $contact2->last_name;
+        }
 
         return $differences;
     }
@@ -207,5 +232,54 @@ class YcpContact extends Model {
         $contact2->update( [ 'birthday' => Carbon::parse( $contact1['date_of_birth'] )->toDateString() ] );
 
         return $contact2;
+    }
+
+    public function hasPhone( array $csvRow ): bool {
+        if ( empty( $csvRow['mobile_number'] ) && empty( $csvRow['business_number'] ) && empty( $csvRow['home_number'] ) ) {
+            return true;
+        }
+        $csvPhones   = [];
+        $csvPhones[] = $csvRow['mobile_number'] ?? null;
+        $csvPhones[] = $csvRow['business_number'] ?? null;
+        $csvPhones[] = $csvRow['home_number'] ?? null;
+
+        if ( empty( $this->phones ) ) {
+            return false;
+        }
+
+        foreach ( $csvPhones as $cphone ) {
+            $found = false;
+            foreach ( $this->phones as $phone ) {
+                if ( $cphone->sameAs( $phone ) ) {
+                    $found = true;
+                }
+            }
+            if ( ! $found ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function hasAddress( array $csvRow ): bool {
+        if ( empty( $csvRow['home_city'] ) && empty( $csvRow['work_city'] ) ) {
+            return true;
+        }
+
+
+        if ( empty( $this->phones ) ) {
+            return false;
+        }
+
+        $rowAddress = Address::makeAddressDto( $csvRow );
+
+        foreach ( $this->addresses as $address ) {
+            if ( $address->isSame( $rowAddress ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

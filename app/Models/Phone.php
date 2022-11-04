@@ -28,4 +28,8 @@ class Phone extends Model {
 
         return $phone;
     }
+
+    public function sameAs( string $phone ): bool {
+        return $this->number === $phone; //TODO format and validate
+    }
 }

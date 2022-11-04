@@ -24,6 +24,16 @@ class Address extends Model {
         'state'
     ];
 
+    public static function makeAddressDto( array $csvRow ) {
+        return [
+            'street'      => '',
+            'city'        => '',
+            'state'       => '',
+            'postal_code' => $csvRow['home_postal'],
+            'country'     => '',
+        ];
+    }
+
     public function addressable() {
         return $this->morphTo();
     }
@@ -80,5 +90,14 @@ class Address extends Model {
 
     public function country(): string {
         return $this->country;
+    }
+
+    public function isSame( array $address ): bool {
+        return $this->city() === $address['city'] && $this->postalCode() === $address['postal_code']
+               && $this->state() === $address['state'] && $this->similarStreet( $this->street1(), $address['street'] );
+    }
+
+    private function similarStreet( string $street1, string $street ): bool {
+        return true; // todo
     }
 }
