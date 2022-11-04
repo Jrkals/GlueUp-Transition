@@ -267,15 +267,20 @@ class YcpContact extends Model {
             return true;
         }
 
-
-        if ( empty( $this->phones ) ) {
+        if ( empty( $this->addresses ) ) {
             return false;
         }
 
-        $rowAddress = Address::makeAddressDto( $csvRow );
+        $homeAddress = Address::makeHomeAddressDto( $csvRow );
+        $workAddress = Address::makeWorkAddressDto( $csvRow );
 
         foreach ( $this->addresses as $address ) {
-            if ( $address->isSame( $rowAddress ) ) {
+            if ( $address->isSame( $homeAddress ) ) {
+                return true;
+            }
+        }
+        foreach ( $this->addresses as $address ) {
+            if ( $address->isSame( $workAddress ) ) {
                 return true;
             }
         }

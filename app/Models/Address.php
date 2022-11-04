@@ -24,13 +24,25 @@ class Address extends Model {
         'state'
     ];
 
-    public static function makeAddressDto( array $csvRow ) {
+    public static function makeHomeAddressDto( array $csvRow ) {
         return [
-            'street'      => '',
-            'city'        => '',
-            'state'       => '',
-            'postal_code' => $csvRow['home_postal'],
-            'country'     => '',
+            'street1'     => $csvRow['home_street_address'],
+            'street2'     => $csvRow['home_street_address_2'] ?? '',
+            'city'        => $csvRow['home_city'],
+            'state'       => $csvRow['home_province'] ?? '',
+            'postal_code' => $csvRow['home_postal'] ?? '',
+            'country'     => $csvRow['home_country'] ?? '',
+        ];
+    }
+
+    public static function makeWorkAddressDto( array $csvRow ) {
+        return [
+            'street1'     => $csvRow['work_street_address'],
+            'street2'     => $csvRow['work_street_address_2'] ?? '',
+            'city'        => $csvRow['work_city'],
+            'state'       => $csvRow['work_province'] ?? '',
+            'postal_code' => $csvRow['work_postal'] ?? '',
+            'country'     => $csvRow['work_country'] ?? '',
         ];
     }
 
@@ -94,10 +106,10 @@ class Address extends Model {
 
     public function isSame( array $address ): bool {
         return $this->city() === $address['city'] && $this->postalCode() === $address['postal_code']
-               && $this->state() === $address['state'] && $this->similarStreet( $this->street1(), $address['street'] );
+               && $this->state() === $address['state'] && $this->sameStreet( $this->street1(), $address['street1'] );
     }
 
-    private function similarStreet( string $street1, string $street ): bool {
-        return true; // todo
+    private function sameStreet( string $street1, string $street ): bool {
+        return $street1 === $street;
     }
 }

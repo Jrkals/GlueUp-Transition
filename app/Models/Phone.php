@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Propaganistas\LaravelPhone\PhoneNumber;
+
 
 class Phone extends Model {
     use HasFactory;
@@ -18,10 +20,15 @@ class Phone extends Model {
         return $this->belongsTo( YcpContact::class );
     }
 
-    public static function create( string $number, int $contact_id, string $type ): Phone {
+    public static function create( string $number, int $contact_id, string $type ): ?Phone {
         $phone = new Phone();
-        //TODO validate and format these
-        $phone->number         = $number;
+        try {
+            $formattedNumber = PhoneNumber::make( $number )->formatForCountry( 'US' );
+        } catch ( \Exception $e ) {
+            return null;
+        }
+
+        $phone->number         = $formattedNumber;
         $phone->type           = $type;
         $phone->ycp_contact_id = $contact_id;
         $phone->save();
@@ -29,7 +36,15 @@ class Phone extends Model {
         return $phone;
     }
 
+    /**
+     * @throws \Propaganistas\LaravelPhone\Exceptions\CountryCodeException
+     */
     public function sameAs( string $phone ): bool {
-        return $this->number === $phone; //TODO format and validate
+        return self::stripSpecialCharacters( $this->number ) ===
+               PhoneNumber::make( self::stripSpecialCharacters( $phone ) )->formatForCountry( 'US' );
+    }
+
+    public static function stripSpecialCharacters( string $phoneNumber ) {
+        return str_replace( [ '(', ')', '-', ' ', '+', "'", '.' ], '', $phoneNumber );
     }
 }
