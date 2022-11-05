@@ -32,6 +32,11 @@ class YcpContact extends Model {
         return $this->hasMany( Phone::class );
     }
 
+    //TODO make this many to many polymorphic or just ignore
+//    public function addresses(): \Illuminate\Database\Eloquent\Relations\MorphToMany {
+//        return $this->morphToMany( Address::class, 'address' );
+//    }
+
     public function fromCSV( array $row ): YcpContact {
         $this->first_name = $row['first_name'] ?? '';
         $this->last_name  = $row['last_name'] ?? '';
@@ -255,12 +260,12 @@ class YcpContact extends Model {
         if ( ! empty( $contact1['home_city'] ) && ! $contact2->hasAddress( $contact1 ) ) {
             $differences['any']                = true;
             $differences['home_address']       = true;
-            $differences['home_adress_reason'] = 'missing home address ' . $contact1['city'];
+            $differences['home_adress_reason'] = 'missing home address ' . $contact1['home_city'];
         }
         if ( ! empty( $contact1['work_city'] ) && ! $contact2->hasAddress( $contact1 ) ) {
             $differences['any']                = true;
             $differences['work_address']       = true;
-            $differences['work_adress_reason'] = 'missing work address ' . $contact1['city'];
+            $differences['work_adress_reason'] = 'missing work address ' . $contact1['work_city'];
         }
 
         if ( ! empty( $contact1['first_name'] ) && strtolower( $contact1['first_name'] )
@@ -346,19 +351,21 @@ class YcpContact extends Model {
             return true;
         }
 
-        if ( empty( $this->addresses ) ) {
-            return false;
-        }
+        //TODO perhaps replace with relationship many to many polymorphic
+        $addresses = Address::query()->where( [
+            'addressable_id'   => $this->id,
+            'addressable_type' => YcpContact::class
+        ] )->get();
 
         $homeAddress = Address::makeHomeAddressDto( $csvRow );
         $workAddress = Address::makeWorkAddressDto( $csvRow );
 
-        foreach ( $this->addresses as $address ) {
+        foreach ( $addresses as $address ) {
             if ( $address->isSame( $homeAddress ) ) {
                 return true;
             }
         }
-        foreach ( $this->addresses as $address ) {
+        foreach ( $addresses as $address ) {
             if ( $address->isSame( $workAddress ) ) {
                 return true;
             }
