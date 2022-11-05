@@ -104,6 +104,13 @@ class YcpContact extends Model {
         return $this;
     }
 
+    /**
+     * @param array $contact
+     * Returns an email match if found. If an email is given and no match is found, null is returned
+     * Returns a match by name and chapter if no email is given.
+     *
+     * @return YcpContact|null
+     */
     public static function getContact( array $contact ): ?YcpContact {
         if ( ! empty( $contact['email'] ) ) {
             $emailMatch = YcpContact::query()->where( 'email', '=', $contact['email'] )->get()->first();
@@ -111,6 +118,8 @@ class YcpContact extends Model {
             if ( $emailMatch ) {
                 return $emailMatch;
             }
+
+            return null;
         }
 
         if ( ! isset( $contact['home_chapter'] ) ) {
@@ -180,8 +189,14 @@ class YcpContact extends Model {
 
     public static function contactsMatch( array $contact1, YcpContact $contact2 ): array {
         $differences = [
-            'any' => false,
-            'dob' => false
+            'any'           => false,
+            'dob'           => false,
+            'phone'         => false,
+            'address'       => false,
+            'nationbuilder' => false,
+            'first_name'    => false,
+            'last_name'     => false,
+            'id'            => $contact2->id
         ];
 
         if ( ! empty( $contact1['date_of_birth'] ) && ! Carbon::parse( $contact1['date_of_birth'] )->isSameDay( Carbon::parse( $contact2->birthday ) ) ) {
@@ -247,6 +262,7 @@ class YcpContact extends Model {
         if ( $differences['last_name'] ) {
             $contact2->last_name = $contact1['last_name'];
         }
+        echo 'upating ' . $contact2->id . "\n";
         $contact2->save();
 
         return $contact2;
