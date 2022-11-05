@@ -21,11 +21,11 @@ class YcpContact extends Model {
     }
 
     public function companies(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
-        return $this->belongsToMany( YcpCompany::class )->withPivot( [ 'admin', 'contact' ] );
+        return $this->belongsToMany( YcpCompany::class )->withPivot( [ 'billing', 'contact' ] );
     }
 
     public function plans(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
-        return $this->belongsToMany( Plan::class )->withPivot( 'active' );
+        return $this->belongsToMany( Plan::class )->withPivot( 'active', 'start_date', 'expiry_date' );
     }
 
     public function phones(): \Illuminate\Database\Eloquent\Relations\HasMany {
@@ -36,6 +36,12 @@ class YcpContact extends Model {
         $this->first_name = $row['first_name'] ?? '';
         $this->last_name  = $row['last_name'] ?? '';
         $this->full_name  = $row['name'];
+
+        if ( $this->full_name && ! $this->first_name && ! $this->last_name ) {
+            $this->first_name = Name::fromFullName( $this->full_name )->firstName();
+            $this->last_name  = Name::fromFullName( $this->full_name )->lastName();
+        }
+
         if ( ! empty( $row['email'] ) ) {
             $this->email = $row['email'];
         }
@@ -149,6 +155,21 @@ class YcpContact extends Model {
 
         return null;
         //  throw ChapterException::NoChapterFound( $this );
+    }
+
+    /**
+     * @return string non home chapters in an array
+     */
+    public function chapterNames(): string {
+        $return = '';
+        foreach ( $this->chapters as $chapter ) {
+            if ( $chapter->pivot->home ) {
+                continue;
+            }
+            $return .= $chapter->name . ',';
+        }
+
+        return str( $return )->trim( ',' )->value();
     }
 
     private function parseChapters( string $chapters ): Collection {
@@ -357,5 +378,42 @@ class YcpContact extends Model {
         }
 
         return $this->phones->first();
+    }
+
+    public function primaryPhone(): ?Phone {
+        if ( $this->phones->isEmpty() ) {
+            return null;
+        }
+        foreach ( $this->phones as $phone ) {
+            if ( $phone->type === 'mobile' ) {
+                return $phone;
+            }
+        }
+
+        return $this->phones->first();
+    }
+
+    public function companyName(): string {
+        if ( $this->companies->isEmpty() ) {
+            return '';
+        }
+
+        return $this->companies->first()->name;
+    }
+
+    public function getPlan( $plan_id ): Plan {
+        foreach ( $this->plans as $plan ) {
+            if ( $plan->id === $plan_id ) {
+                return $plan;
+            }
+        }
+        throw ChapterException::NoPlanFound( $this->id, $plan_id );
+    }
+
+    public function billingAddress(): ?Address {
+        return Address::query()->where( [
+            'addressable_type' => YcpContact::class,
+            'addressable_id'   => $this->id
+        ] )->first();
     }
 }

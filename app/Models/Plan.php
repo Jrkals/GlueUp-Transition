@@ -9,7 +9,7 @@ class Plan extends Model {
     use HasFactory;
 
     public function contacts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
-        return $this->belongsToMany( YcpContact::class )->withPivot( 'active' );
+        return $this->belongsToMany( YcpContact::class )->withPivot( 'active', 'start_date', 'expiry_date' );
     }
 
     public static function getOrCreatePlan( array $data ) {
