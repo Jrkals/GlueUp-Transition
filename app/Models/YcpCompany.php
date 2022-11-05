@@ -10,7 +10,7 @@ class YcpCompany extends Model {
     use HasFactory;
 
     public function contacts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
-        return $this->belongsToMany( YcpContact::class )->withPivot( [ 'admin', 'contact' ] );
+        return $this->belongsToMany( YcpContact::class )->withPivot( [ 'billing', 'contact' ] );
     }
 
     public function address() {
@@ -41,10 +41,14 @@ class YcpCompany extends Model {
         $this->address_id = Address::fromCSV( $row, 'company', $this->id )->id;
         $this->save();
 
-        $billing_person = YcpContact::getOrCreateContact( $row['billing_person'], $row['billing_person_email'] );
-        $contact_person = YcpContact::getOrCreateContact( $row['contact_person'], $row['contact_person_email'] );
-        $this->contacts()->save( $billing_person, [ 'billing' => true, 'contact' => false ] );
-        $this->contacts()->save( $contact_person, [ 'billing' => false, 'contact' => true ] );
+        if ( ! empty( $row['billing_person'] ) ) {
+            $billing_person = YcpContact::getOrCreateContact( $row['billing_person'], $row['billing_person_email'] );
+            $this->contacts()->save( $billing_person, [ 'billing' => true, 'contact' => false ] );
+        }
+        if ( ! empty( $row['contact_person'] ) ) {
+            $contact_person = YcpContact::getOrCreateContact( $row['contact_person'], $row['contact_person_email'] );
+            $this->contacts()->save( $contact_person, [ 'billing' => false, 'contact' => true ] );
+        }
     }
 
     public static function companyMatches( array $company1, YcpCompany $company2 ): array {
@@ -63,5 +67,21 @@ class YcpCompany extends Model {
         $company2->save();
 
         return $company2;
+    }
+
+    public function getContactPerson(): ?YcpContact {
+        if ( empty( $this->contacts ) ) {
+            return null;
+        }
+        $contacts = $this->contacts;
+
+        foreach ( $contacts as $contact ) {
+            if ( $contact->pivot->contact ) {
+                return $contact;
+            }
+        }
+
+        return $contacts->first();
+
     }
 }

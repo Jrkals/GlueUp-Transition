@@ -345,4 +345,17 @@ class YcpContact extends Model {
 
         return false;
     }
+
+    public function workPhone(): ?Phone {
+        if ( $this->phones->isEmpty() ) {
+            return null;
+        }
+        foreach ( $this->phones as $phone ) {
+            if ( $phone->type === 'business' ) {
+                return $phone;
+            }
+        }
+
+        return $this->phones->first();
+    }
 }
