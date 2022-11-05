@@ -189,14 +189,17 @@ class YcpContact extends Model {
 
     public static function contactsMatch( array $contact1, YcpContact $contact2 ): array {
         $differences = [
-            'any'           => false,
-            'dob'           => false,
-            'phone'         => false,
-            'address'       => false,
-            'nationbuilder' => false,
-            'first_name'    => false,
-            'last_name'     => false,
-            'id'            => $contact2->id
+            'any'            => false,
+            'dob'            => false,
+            'mobile_phone'   => false,
+            'business_phone' => false,
+            'home_phone'     => false,
+            'home_address'   => false,
+            'work_address'   => false,
+            'nationbuilder'  => false,
+            'first_name'     => false,
+            'last_name'      => false,
+            'id'             => $contact2->id
         ];
 
         if ( ! empty( $contact1['date_of_birth'] ) && ! Carbon::parse( $contact1['date_of_birth'] )->isSameDay( Carbon::parse( $contact2->birthday ) ) ) {
@@ -212,16 +215,31 @@ class YcpContact extends Model {
         }
         //Phones
         if ( ! empty( $contact1['mobile_number'] ) && ! $contact2->hasPhone( $contact1 ) ) {
-            $differences['any']          = true;
-            $differences['phone']        = true;
-            $differences['phone_reason'] = 'missing phone number ' . $contact1['mobile_number'];
+            $differences['any']                 = true;
+            $differences['mobile_phone']        = true;
+            $differences['mobile_phone_reason'] = 'missing mobile phone number ' . $contact1['mobile_number'];
+        }
+        if ( ! empty( $contact1['business_number'] ) && ! $contact2->hasPhone( $contact1 ) ) {
+            $differences['any']                   = true;
+            $differences['business_phone']        = true;
+            $differences['business_phone_reason'] = 'missing business phone number ' . $contact1['mobile_number'];
+        }
+        if ( ! empty( $contact1['home_number'] ) && ! $contact2->hasPhone( $contact1 ) ) {
+            $differences['any']               = true;
+            $differences['home_phone']        = true;
+            $differences['home_phone_reason'] = 'missing home phone number ' . $contact1['mobile_number'];
         }
 
         //Addresses
-        if ( ! empty( $contact1['home_city'] ) || ! empty( $contact1['work_city'] ) && ! $contact2->hasAddress( $contact1 ) ) {
-            $differences['any']           = true;
-            $differences['address']       = true;
-            $differences['adress_reason'] = 'missing address ' . $contact1['city'];
+        if ( ! empty( $contact1['home_city'] ) && ! $contact2->hasAddress( $contact1 ) ) {
+            $differences['any']                = true;
+            $differences['home_address']       = true;
+            $differences['home_adress_reason'] = 'missing home address ' . $contact1['city'];
+        }
+        if ( ! empty( $contact1['work_city'] ) && ! $contact2->hasAddress( $contact1 ) ) {
+            $differences['any']                = true;
+            $differences['work_address']       = true;
+            $differences['work_adress_reason'] = 'missing work address ' . $contact1['city'];
         }
 
         if ( ! empty( $contact1['first_name'] ) && strtolower( $contact1['first_name'] )
@@ -248,13 +266,20 @@ class YcpContact extends Model {
         if ( $differences['nationbuilder'] ) {
             $contact2->nb_tags = $contact1['nationbuilder_tags'];
         }
-        if ( $differences['phone'] ) {
-            //TODO update
-            //  $contact2->birthday =  $contact1['date_of_birth'];
+        if ( $differences['mobile_phone'] ) {
+            $contact2->phones()->save( Phone::create( $contact1['mobile_phone'], $contact2->id, 'mobile' ) );
         }
-        if ( $differences['address'] ) {
-            //TODO update
-            //  $contact2->birthday =  $contact1['date_of_birth'];
+        if ( $differences['business_phone'] ) {
+            $contact2->phones()->save( Phone::create( $contact1['business_phone'], $contact2->id, 'business' ) );
+        }
+        if ( $differences['home_phone'] ) {
+            $contact2->phones()->save( Phone::create( $contact1['home_phone'], $contact2->id, 'home' ) );
+        }
+        if ( $differences['home_address'] ) {
+            $contact2->address()->save( Address::fromCSVHome( $contact1, 'contact', $contact2->id ) );
+        }
+        if ( $differences['work_address'] ) {
+            $contact2->address()->save( Address::fromCSVWork( $contact1, 'contact', $contact2->id ) );
         }
         if ( $differences['first_name'] ) {
             $contact2->first_name = $contact1['first_name'];
@@ -262,7 +287,6 @@ class YcpContact extends Model {
         if ( $differences['last_name'] ) {
             $contact2->last_name = $contact1['last_name'];
         }
-        echo 'upating ' . $contact2->id . "\n";
         $contact2->save();
 
         return $contact2;

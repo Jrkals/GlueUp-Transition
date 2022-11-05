@@ -52,7 +52,6 @@ class YcpCompany extends Model {
             'any' => false,
         ];
 
-        //TODO compare attributes
         return $differences;
     }
 
