@@ -165,13 +165,13 @@ class YcpContact extends Model {
     /**
      * @return string non home chapters in an array
      */
-    public function chapterNames(): string {
+    public function chapterIds(): string {
         $return = '';
         foreach ( $this->chapters as $chapter ) {
             if ( $chapter->pivot->home ) {
                 continue;
             }
-            $return .= $chapter->name . ',';
+            $return .= $chapter->glueUpId() . ',';
         }
 
         return str( $return )->trim( ',' )->value();

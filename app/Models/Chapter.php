@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\ChapterException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Stringable;
@@ -24,5 +25,17 @@ class Chapter extends Model {
         }
 
         return $existing->first();
+    }
+
+    /**
+     * @throws ChapterException
+     */
+    public function glueUpId(): int {
+        if ( $id = config( 'services.glueup.chapters.' . $this->name ) ) {
+            return $id;
+        }
+
+        return 0;
+        //   throw ChapterException::NoChapterMappingFound( $this );
     }
 }

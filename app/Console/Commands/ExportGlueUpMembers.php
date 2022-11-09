@@ -53,8 +53,8 @@ class ExportGlueUpMembers extends Command {
                     'Billing Postal Code/Zip Code' => isset( $address ) ? $address->postal_code : '',
                     'Billing City'                 => isset( $address ) ? $address->city : '',
                     'Billing Company'              => '',
-                    'Chapters'                     => $member->chapterNames(),
-                    'Primary Chapter'              => $member->homeChapter()->name,
+                    'Chapters'                     => $member->chapterIds(),
+                    'Primary Chapter'              => $member->homeChapter()->glueUpId(),
 
                 ];
             }
