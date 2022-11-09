@@ -27,35 +27,37 @@ class ExportGlueUpCompanies extends Command {
      * @return int
      */
     public function handle() {
-        $companies      = YcpCompany::query()->get();
-        $companyWriter  = new CSVWriter( './storage/app/exports/companyExport.csv' );
-        $companyColumns = [
-            'Membership ID',
-            'Membership Start Date',
-            'Membership End Date',
-            'Administrative Contact First Name',
-            'Administrative Contact Last Name',
-            'Administrative Contact Email',
-            'Administrative Contact Phone',
-            'Administrative Contact Company',
-            'Administrative Contact Position',
-            'Company Name',
-            'Billing Address',
-            'Billing Country/Region',
-            'Billing Province/State',
-            'Billing Post Code/Zip Code',
-            'Billing City',
-            'Billing Company',
-            'Chapters',
-            'Primary Chapter',
-        ];
-        $output         = [];
+        $companies           = YcpCompany::query()->get();
+        $companyWriter       = new CSVWriter( './storage/app/exports/companyExport.csv' );
+        $companyPeopleWriter = new CSVWriter( './storage/app/exports/companyPeopleExport.csv' );
+//        $companyColumns = [
+//            'Membership ID',
+//            'Membership Start Date',
+//            'Membership End Date',
+//            'Administrative Contact First Name',
+//            'Administrative Contact Last Name',
+//            'Administrative Contact Email',
+//            'Administrative Contact Phone',
+//            'Administrative Contact Company',
+//            'Administrative Contact Position',
+//            'Company Name',
+//            'Billing Address',
+//            'Billing Country/Region',
+//            'Billing Province/State',
+//            'Billing Post Code/Zip Code',
+//            'Billing City',
+//            'Billing Company',
+//            'Chapters',
+//            'Primary Chapter',
+//        ];
+        $companyOutput       = [];
+        $companyPeopleOutput = [];
 
         foreach ( $companies as $company ) {
-            $companyAddress = $company->address;
-            $contactPerson  = $company->getContactPerson();
-            $output[]       = [
-                'Membership ID'                     => config( 'membership.company.' . $company->plan ),
+            $companyAddress  = $company->address;
+            $contactPerson   = $company->getContactPerson();
+            $companyOutput[] = [
+                'Membership ID'                     => $company->id,
                 'Membership Start Date'             => $company->date_joined,
                 'Membership End Date'               => $company->expiry_date,
                 'Administrative Contact First Name' => isset( $contactPerson ) ? $contactPerson->first_name : '',
@@ -74,9 +76,22 @@ class ExportGlueUpCompanies extends Command {
                 'Chapters'                          => '',
                 'Primary Chapter'                   => 'YCP', //TODO make sure the national chapter name is right
             ];
+
+            foreach ( $company->contacts as $contact ) {
+                $companyPeopleOutput[] = [
+                    'Membership Id'  => $company->id,
+                    'Primary Member' => (bool) $contact->pivot->billing,
+                    'First Name'     => $contact->first_name,
+                    'Last Name'      => $contact->last_name,
+                    'Email'          => $contact->email,
+                    'Phone'          => $contact->workPhone()?->number,
+                    'Company Name'   => $company->name,
+                ];
+            }
         }
 
-        $companyWriter->writeData( $output, $companyColumns, 'w' );
+        $companyWriter->writeData( $companyOutput, [], 'w' );
+        $companyPeopleWriter->writeData( $companyPeopleOutput, [], 'w' );
 
         return Command::SUCCESS;
     }
