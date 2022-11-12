@@ -60,6 +60,9 @@ class ImportSilkStartCompanies extends Command {
                 }
 
                 $count ++;
+                if ( $count % 500 === 0 ) {
+                    $this->line( $count . ' Done. ' . ( sizeof( $data ) - $count ) . ' remaining' );
+                }
                 continue;
             }
             if ( ! $dry ) {
@@ -68,7 +71,7 @@ class ImportSilkStartCompanies extends Command {
             }
             $new[] = $row;
             $count ++;
-            if ( $count % 50 === 0 ) {
+            if ( $count % 500 === 0 ) {
                 $this->line( $count . ' Done. ' . ( sizeof( $data ) - $count ) . ' remaining' );
             }
         }

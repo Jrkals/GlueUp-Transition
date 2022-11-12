@@ -142,6 +142,10 @@ class YcpContact extends Model {
             if ( $match->homeChapter()?->name === $contact['home_chapter'] ) {
                 return $match;
             }
+            //Match same name both empty emails
+            if ( ! $match->email && ! $contact['email'] ) {
+                return $match;
+            }
         }
 
         return null;
@@ -203,7 +207,7 @@ class YcpContact extends Model {
         $contact->first_name = $name->firstName();
         $contact->last_name  = $name->lastName();
         $contact->full_name  = $name->fullName();
-        $contact->email      = $email;
+        $contact->email      = $email ?: null;
         $contact->save();
 
         return $contact;
