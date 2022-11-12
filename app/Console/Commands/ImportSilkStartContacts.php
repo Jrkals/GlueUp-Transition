@@ -43,6 +43,9 @@ class ImportSilkStartContacts extends Command {
                     $updated[] = $row;
                 }
                 $count ++;
+                if ( $count % 1000 === 0 ) {
+                    $this->line( $count . ' Done. ' . ( sizeof( $data ) - $count ) . ' remaining' );
+                }
                 continue;
             }
             if ( ! $dry ) {
@@ -51,7 +54,7 @@ class ImportSilkStartContacts extends Command {
             }
             $new[] = $row;
             $count ++;
-            if ( $count % 100 === 0 ) {
+            if ( $count % 1000 === 0 ) {
                 $this->line( $count . ' Done. ' . ( sizeof( $data ) - $count ) . ' remaining' );
             }
         }
