@@ -33,7 +33,7 @@ class ExportGlueUpMembers extends Command {
             $this->line( 'exporing csv for ' . $plan->name . '...' );
             $writer  = new CSVWriter( './storage/app/exports/members/' . $plan->name . '.csv' );
             $members = YcpContact::query()->whereRelation( 'plans', 'plan_id', '=', $plan->id )->get();
-            $this->line( 'plan has ' . sizeof( $members ) . ' members' );
+            $this->line( $plan->name . ' has ' . sizeof( $members ) . ' members' );
             $data = [];
             foreach ( $members as $member ) {
                 $address = $member->billingAddress();

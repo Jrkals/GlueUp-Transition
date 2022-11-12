@@ -13,12 +13,13 @@ class Plan extends Model {
     }
 
     public static function getOrCreatePlan( array $data ) {
-        $existing = Plan::query()->where( 'name', '=', $data['name'] )->get();
+        $clean_name = str_replace( '/', '_', $data['name'] );
+        $existing   = Plan::query()->where( 'name', '=', $clean_name )->get();
         if ( $existing->isNotEmpty() ) {
             return $existing->first();
         }
         $plan       = new Plan();
-        $plan->name = $data['name'];
+        $plan->name = $clean_name;
         $plan->save();
 
         return $plan;
