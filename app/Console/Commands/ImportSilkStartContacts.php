@@ -4,8 +4,7 @@ namespace App\Console\Commands;
 
 use App\Helpers\CSVReader;
 use App\Helpers\CSVWriter;
-use App\Helpers\GlueUp;
-use App\Helpers\GlueUpCurl;
+use App\Helpers\DirectoryReader;
 use App\Models\YcpContact;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
@@ -17,10 +16,12 @@ class ImportSilkStartContacts extends Command {
     protected $description = 'Imports SilkStart contacts to DB';
 
     public function handle() {
-        $dry    = $this->option( 'dry' );
-        $file   = $this->argument( 'file' );
-        $reader = new CSVReader( $file );
-        $data   = $reader->extract_data();
+        $dry  = $this->option( 'dry' );
+        $file = $this->argument( 'file' );
+        // $reader = new CSVReader( $file );
+        // $data   = $reader->extract_data();
+        $reader = new DirectoryReader( $file );
+        $data   = $reader->readDataFromDirectory();
 
         $newWriter      = new CSVWriter( './storage/app/exports/new.csv' );
         $existingWriter = new CSVWriter( './storage/app/exports/existing.csv' );
