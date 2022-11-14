@@ -42,7 +42,8 @@ class YcpCompany extends Model {
         $this->save();
 
         if ( ! empty( $row['billing_person'] ) ) {
-            $billing_person = YcpContact::getOrCreateContact( $row['billing_person'], $row['billing_person_email'] );
+            $billing_person = YcpContact::getOrCreateContact( $row['billing_person'], $row['billing_person_email'],
+                $row['billing_person_title'] );
             $this->contacts()->save( $billing_person, [ 'billing' => true, 'contact' => false ] );
 
             //If you just assigned a billing person don't do contact person too

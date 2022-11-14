@@ -24,6 +24,7 @@ return new class extends Migration {
             $table->foreignIdFor( Address::class )->nullable();
             $table->date( 'date_joined' )->nullable();
             $table->date( 'birthday' )->nullable();
+            $table->string( 'title' )->nullable();
         } );
         Schema::create( 'ycp_companies', function ( Blueprint $table ) {
             $table->id();

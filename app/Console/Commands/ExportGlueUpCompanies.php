@@ -65,7 +65,7 @@ class ExportGlueUpCompanies extends Command {
                 'Administrative Contact Email'      => isset( $contactPerson ) ? $contactPerson->email : '',
                 'Administrative Contact Phone'      => isset( $contactPerson ) ? $contactPerson->workPhone()?->number : '',
                 'Administrative Contact Company'    => $company->name,
-                'Administrative Contact Position'   => '', //TODO is this in SS?
+                'Administrative Contact Position'   => $contactPerson->title,
                 'Company Name'                      => $company->name,
                 'Billing Address'                   => $companyAddress->street1,
                 'Billing Country/Region'            => $companyAddress->country,
@@ -74,7 +74,7 @@ class ExportGlueUpCompanies extends Command {
                 'Billing City'                      => $companyAddress->city,
                 'Billing Company'                   => $company->name,
                 'Chapters'                          => '',
-                'Primary Chapter'                   => 'YCP', //TODO make sure the national chapter name is right
+                'Primary Chapter'                   => '', //TODO make sure the national chapter name is right
             ];
 
             foreach ( $company->contacts as $contact ) {

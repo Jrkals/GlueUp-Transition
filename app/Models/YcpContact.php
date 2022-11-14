@@ -197,7 +197,7 @@ class YcpContact extends Model {
         return $list;
     }
 
-    public static function getOrCreateContact( string $name, string $email ): YcpContact {
+    public static function getOrCreateContact( string $name, string $email, string $title = '' ): YcpContact {
         $contact = self::getContact( [ 'name' => $name, 'email' => $email ] );
         if ( $contact ) {
             return $contact;
@@ -208,6 +208,7 @@ class YcpContact extends Model {
         $contact->last_name  = $name->lastName();
         $contact->full_name  = $name->fullName();
         $contact->email      = $email ?: null;
+        $contact->title      = $title ?: null;
         $contact->save();
 
         return $contact;
