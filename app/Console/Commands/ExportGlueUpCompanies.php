@@ -27,29 +27,10 @@ class ExportGlueUpCompanies extends Command {
      * @return int
      */
     public function handle() {
-        $companies           = YcpCompany::query()->get();
+        $companies           = YcpCompany::query()->with( [ 'contacts', 'contacts.phones', 'address' ] )->get();
         $companyWriter       = new CSVWriter( './storage/app/exports/companyExport.csv' );
         $companyPeopleWriter = new CSVWriter( './storage/app/exports/companyPeopleExport.csv' );
-//        $companyColumns = [
-//            'Membership ID',
-//            'Membership Start Date',
-//            'Membership End Date',
-//            'Administrative Contact First Name',
-//            'Administrative Contact Last Name',
-//            'Administrative Contact Email',
-//            'Administrative Contact Phone',
-//            'Administrative Contact Company',
-//            'Administrative Contact Position',
-//            'Company Name',
-//            'Billing Address',
-//            'Billing Country/Region',
-//            'Billing Province/State',
-//            'Billing Post Code/Zip Code',
-//            'Billing City',
-//            'Billing Company',
-//            'Chapters',
-//            'Primary Chapter',
-//        ];
+
         $companyOutput       = [];
         $companyPeopleOutput = [];
 

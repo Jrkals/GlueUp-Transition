@@ -16,11 +16,8 @@ Exports a list of contacts with all custom fields and information. These are exc
 
 #### TODOS
 
-* make sure jacksonville chapter, cleveland and st louis mappings work
+* exclude ycp chapter template
 * test company export exp. inactive
 * test glue up inactive company import
 * use in memory DB for contact exports to speed it up
-* add a timer class
-
-
 

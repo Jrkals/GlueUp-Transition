@@ -218,6 +218,10 @@ class YcpContact extends Model {
         return $this->morphOne( \App\Models\Address::class, 'addressable' );
     }
 
+    public function hasEmail(): bool {
+        return ! empty( $this->email );
+    }
+
     public static function contactsMatch( array $contact1, YcpContact $contact2 ): array {
         $differences = [
             'any'            => false,

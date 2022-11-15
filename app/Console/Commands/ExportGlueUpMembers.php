@@ -46,7 +46,7 @@ class ExportGlueUpMembers extends Command {
                     'Email'                        => $member->email,
                     'Phone'                        => $member->primaryPhone()?->number,
                     'Company Name'                 => $member->companyName(),
-                    'Title/Position'               => '', //TODO in SS?
+                    'Title/Position'               => $member->title,
                     'Billing Address'              => isset( $address ) ? $address->street1 : '',
                     'Billing Country/Region'       => isset( $address ) ? $address->country : '',
                     'Billing Province/State'       => isset( $address ) ? $address->state : '',

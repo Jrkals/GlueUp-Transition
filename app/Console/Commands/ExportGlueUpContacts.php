@@ -30,7 +30,12 @@ class ExportGlueUpContacts extends Command {
         $this->line( 'exporing csv for Contacts ' );
         $writer   = new CSVWriter( './storage/app/exports/contacts/contacts.csv' );
         $data     = [];
-        $contacts = YcpContact::query()->whereDoesntHave( 'plans' )->get();
+        $contacts = YcpContact::query()->whereDoesntHave( 'plans' )->with( [
+            'plans',
+            'chapters',
+            'companies',
+            'phones'
+        ] )->get();
         $count    = 0;
         foreach ( $contacts as $contact ) {
             $address                = $contact->address;

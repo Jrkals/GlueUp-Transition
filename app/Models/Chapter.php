@@ -15,10 +15,11 @@ class Chapter extends Model {
     }
 
     public static function getOrCreateFromName( string $name ) {
-        $existing = Chapter::query()->where( 'name', '=', $name )->get();
+        $mapped_name = str_replace( '.', '', $name ) ?: 'Young Catholic Professionals';
+        $existing    = Chapter::query()->where( 'name', '=', $mapped_name )->get();
         if ( $existing->isEmpty() ) {
             $chapter       = new Chapter();
-            $chapter->name = $name;
+            $chapter->name = $mapped_name;
             $chapter->save();
 
             return $chapter;
