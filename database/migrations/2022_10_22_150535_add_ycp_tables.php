@@ -25,6 +25,11 @@ return new class extends Migration {
             $table->date( 'date_joined' )->nullable();
             $table->date( 'birthday' )->nullable();
             $table->string( 'title' )->nullable();
+            $table->enum( 'subscribed', [
+                'Subscribed',
+                'Not Subscribed',
+                'Unsubscribed'
+            ] )->default( 'Not Subscribed' );
         } );
         Schema::create( 'ycp_companies', function ( Blueprint $table ) {
             $table->id();

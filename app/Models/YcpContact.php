@@ -56,6 +56,9 @@ class YcpContact extends Model {
         if ( isset( $row['date_of_birth'] ) ) {
             $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
         }
+        if ( isset( $row['subscribed'] ) ) {
+            $this->subscribed = $row['Subscribed'];
+        }
 
         $currentPlan = Plan::getOrCreatePlan( [
             'name' => $row['plan']
@@ -234,6 +237,7 @@ class YcpContact extends Model {
             'nationbuilder'  => false,
             'first_name'     => false,
             'last_name'      => false,
+            'subscribed'     => false,
             'id'             => $contact2->id
         ];
 
@@ -289,6 +293,13 @@ class YcpContact extends Model {
             $differences['any']              = true;
             $differences['last_name']        = true;
             $differences['last_name_reason'] = $contact1['last_name'] . ' is not ' . $contact2->last_name;
+        }
+
+        if ( ! empty( $contact1['subscribed'] ) && $contact1['subscribed'] !== $contact2->subscribed ) {
+            $differences['any']               = true;
+            $differences['subscribed']        = true;
+            $differences['subscribed_reason'] = $contact1['subscribed'] . ' is not ' . $contact2->subscribed;
+
         }
 
         return $differences;

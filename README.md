@@ -16,8 +16,8 @@ Exports a list of contacts with all custom fields and information. These are exc
 
 #### TODOS
 
-* exclude ycp chapter template
 * test company export exp. inactive
 * test glue up inactive company import
-* use in memory DB for contact exports to speed it up
+* include custom fields for contacts
+* 
 
