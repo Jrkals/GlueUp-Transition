@@ -57,7 +57,7 @@ class YcpContact extends Model {
             $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
         }
         if ( isset( $row['subscribed'] ) ) {
-            $this->subscribed = $row['Subscribed'];
+            $this->subscribed = $row['subscribed'];
         }
 
         $currentPlan = Plan::getOrCreatePlan( [
