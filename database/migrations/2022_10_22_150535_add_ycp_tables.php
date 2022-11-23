@@ -107,6 +107,24 @@ return new class extends Migration {
             $table->enum( 'type', [ 'home', 'mobile', 'business' ] )->default( 'mobile' );
             $table->string( 'number' );
         } );
+
+        Schema::create( 'ycp_events', function ( Blueprint $table ) {
+            $table->id();
+            $table->timestamps();
+            $table->date( 'date' );
+            $table->foreignIdFor( \App\Models\Chapter::class );
+            $table->enum( 'type', [ 'ESS', 'Panel', 'Conference', 'NHH', 'SJS', 'Other' ] );
+            $table->string( 'name' );
+        } );
+
+        Schema::create( 'ycp_events_contacts', function ( Blueprint $table ) {
+            $table->id();
+            $table->timestamps();
+            $table->foreignIdFor( \App\Models\YcpContact::class );
+            $table->foreignIdFor( \App\Models\YcpEvent::class );
+            $table->boolean( 'attended' )->default( false );
+        } );
+
     }
 
     /**

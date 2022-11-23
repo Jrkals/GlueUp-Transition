@@ -32,6 +32,10 @@ class YcpContact extends Model {
         return $this->hasMany( Phone::class );
     }
 
+    public function events(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
+        return $this->belongsToMany( YcpEvent::class, 'ycp_events_contacts' )->withPivot( 'attended' );
+    }
+
     //TODO make this many to many polymorphic or just ignore
 //    public function addresses(): \Illuminate\Database\Eloquent\Relations\MorphToMany {
 //        return $this->morphToMany( Address::class, 'address' );
