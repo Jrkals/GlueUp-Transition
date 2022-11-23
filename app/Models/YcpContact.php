@@ -38,6 +38,10 @@ class YcpContact extends Model {
 //    }
 
     public function fromCSV( array $row ): YcpContact {
+        if ( $this->worthlessContact( $row ) ) {
+            return $this; //do nothing and save nothing
+        }
+
         $this->first_name = $row['first_name'] ?? '';
         $this->last_name  = $row['last_name'] ?? '';
         $this->full_name  = $row['name'];
@@ -56,7 +60,10 @@ class YcpContact extends Model {
         if ( isset( $row['date_of_birth'] ) ) {
             $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
         }
-        if ( isset( $row['subscribed'] ) ) {
+        if ( isset( $row['subscribed'] ) ||
+             ( isset( $row['nationbuilder_tags'] )
+               && str_contains( strtolower( $row['nationbuilder_tags'] ), 'unsubscribed' )
+             ) ) {
             $this->subscribed = $row['subscribed'];
         }
 
@@ -442,5 +449,15 @@ class YcpContact extends Model {
             'addressable_type' => YcpContact::class,
             'addressable_id'   => $this->id
         ] )->first();
+    }
+
+    /**
+     * @param array $row
+     * Returns
+     *
+     * @return bool true if the row has no email, no phone, and no chapter
+     */
+    private function worthlessContact( array $row ): bool {
+        return empty( $row['email'] ) && empty( $row['mobile_phone'] ) && empty( $row['home_chapter'] );
     }
 }

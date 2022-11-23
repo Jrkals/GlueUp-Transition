@@ -19,5 +19,5 @@ Exports a list of contacts with all custom fields and information. These are exc
 * test company export exp. inactive
 * test glue up inactive company import
 * include custom fields for contacts
-* 
+* add event data to person.
 
