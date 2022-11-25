@@ -38,8 +38,9 @@ class ExportGlueUpContacts extends Command {
         ] )->get();
         $count    = 0;
         foreach ( $contacts as $contact ) {
-            $address                = $contact->address;
-            $phone                  = $contact->primaryPhone();
+            $address = $contact->address;
+            $phone   = $contact->primaryPhone();
+
             $homeChapter            = $contact->homeChapter()?->glueupId() ?? '';
             $chapters               = $contact->chapterIds();
             $companyName            = $contact->companyName();
@@ -53,6 +54,7 @@ class ExportGlueUpContacts extends Command {
             $row['Primary Chapter'] = $homeChapter;
             $row['Chapters']        = $chapters;
             $row['Mobile Phone']    = $phone?->number;
+            $row['Email']           = $contact->email;
 
             $data[] = $row;
             $count ++;

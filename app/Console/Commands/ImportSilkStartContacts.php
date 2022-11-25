@@ -7,6 +7,7 @@ use App\Helpers\CSVWriter;
 use App\Helpers\DirectoryReader;
 use App\Helpers\Memo;
 use App\Helpers\Timer;
+use App\Models\EmailValidation;
 use App\Models\YcpContact;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
@@ -41,6 +42,11 @@ class ImportSilkStartContacts extends Command {
         $contactsMemo->formContactsByEmail();
 
         foreach ( $data as $row ) {
+            //treat bad emails as no email at all.
+            if ( ! EmailValidation::emailIsValid( $row['email'] ) ) {
+                unset( $row['email'] );
+            }
+
             //search by email first
             $found = $contactsMemo->findContactByEmail( $row['email'] );
             //then by name
