@@ -36,6 +36,7 @@ class YcpCompany extends Model {
         $this->status            = $row['status'];
         $this->email             = $row['email'];
         $this->website           = $row['website'];
+        $this->phone             = $row['company_phone'] ?? '';
 
         $this->save();
         $this->address_id = Address::fromCSV( $row, 'company', $this->id )->id;
