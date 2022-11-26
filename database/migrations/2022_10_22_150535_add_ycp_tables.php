@@ -140,5 +140,7 @@ return new class extends Migration {
         Schema::dropIfExists( 'ycp_company_ycp_contact' );
         Schema::dropIfExists( 'phones' );
         Schema::dropIfExists( 'addresses' );
+        Schema::dropIfExists( 'ycp_events' );
+        Schema::dropIfExists( 'ycp_events_contacts' );
     }
 };

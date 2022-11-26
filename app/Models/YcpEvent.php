@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\NBTagParser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -61,6 +62,19 @@ class YcpEvent extends Model {
         }
 
         return 'Other';
+    }
+
+    public static function fromNBTag( string $tag, string $date, YcpContact $contact = null ): YcpEvent {
+        $event       = new YcpEvent();
+        $event->name = $tag;
+        $event->date = $date;
+        $event->type = self::getEventType( $tag );
+        $event->save();
+        if ( $contact ) {
+            $event->contacts()->save( $contact );
+        }
+
+        return $event;
     }
 
 

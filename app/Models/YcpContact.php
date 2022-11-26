@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Exceptions\ChapterException;
 use App\Helpers\Name;
+use App\Helpers\NBTagParser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -115,6 +116,12 @@ class YcpContact extends Model {
         $this->chapters()->save( $home_chapter, [ 'home' => true ] );
         $this->chapters()->saveMany( $chapters, [] );
         $this->chapters()->saveMany( $other_chapters, [] );
+
+        if ( $row['nationbuilder_tags'] ) {
+            $nbTagParser = new NBTagParser( $row['nationbuilder_tags'], $this );
+            $events      = $nbTagParser->makeEvents();
+            $this->events()->saveMany( $events );
+        }
 
         if ( ! empty( $row ['home_street_address'] ) ) {
             $this->address_id = Address::fromCSVHome( $row, 'contact', $this->id )->id;
