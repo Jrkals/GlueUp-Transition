@@ -38,21 +38,14 @@ class ImportSilkStartContacts extends Command {
         $count         = 0;
         $total         = sizeof( $data );
 
-        $contactsMemo = new Memo();
-        $contactsMemo->formContactsByEmail();
-
         foreach ( $data as $row ) {
             //treat bad emails as no email at all.
             if ( ! EmailValidation::emailIsValid( $row['email'] ) ) {
                 unset( $row['email'] );
             }
 
-            //search by email first
-            $found = $contactsMemo->findContactByEmail( $row['email'] );
-            //then by name
-            if ( ! $found ) {
-                $found = YcpContact::getContact( $row );
-            }
+            $found = YcpContact::getContact( $row );
+
             if ( $found ) {
                 $alreadyExists[] = $row;
                 $differences     = YcpContact::contactsMatch( $row, $found );
@@ -69,7 +62,6 @@ class ImportSilkStartContacts extends Command {
             if ( ! $dry ) {
                 $ycpContact = new YcpContact();
                 $ycpContact->fromCSV( $row );
-                $contactsMemo->appendContact( $ycpContact );
             }
             $new[] = $row;
             $count ++;

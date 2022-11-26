@@ -53,8 +53,6 @@ return new class extends Migration {
         Schema::create( 'plans', function ( Blueprint $table ) {
             $table->id();
             $table->string( 'name' );
-            $table->integer( 'cost' )->default( 0 );
-            $table->string( 'term' )->nullable();
             $table->timestamps();
         } );
 

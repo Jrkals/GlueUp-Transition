@@ -23,7 +23,7 @@ class EmailValidation extends Model {
 
     public static function emailIsValid( string $email ): bool {
         $validation = EmailValidation::query()->find( $email );
-        if ( ! $email || $validation->valid ) {
+        if ( ! $email || ! $validation || $validation->valid ) {
             return true;
         }
 

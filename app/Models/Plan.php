@@ -13,13 +13,14 @@ class Plan extends Model {
     }
 
     public static function getOrCreatePlan( array $data ) {
-        $clean_name = str_replace( '/', '_', $data['name'] );
-        $existing   = Plan::query()->where( 'name', '=', $clean_name )->get();
+        $clean_name  = str_replace( '/', '_', $data['name'] );
+        $mapped_name = self::mapPlanNames( $clean_name );
+        $existing    = Plan::query()->where( 'name', '=', $mapped_name )->get();
         if ( $existing->isNotEmpty() ) {
             return $existing->first();
         }
         $plan       = new Plan();
-        $plan->name = $clean_name;
+        $plan->name = $mapped_name;
         $plan->save();
 
         return $plan;
@@ -27,5 +28,14 @@ class Plan extends Model {
 
     public function differentPlan( Plan $p ): bool {
         return $p->name === $this->name;
+    }
+
+    private static function mapPlanNames( string $name ): string {
+        return match ( $name ) {
+            'Admin' => 'Chapter Leader',
+            'Chapter Leader', 'Belong', 'Belong Plus', 'Executive Mentor',
+            'Chapter Chaplain', 'Chapter Board Member' => $name,
+            default => 'Legacy'
+        };
     }
 }

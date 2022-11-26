@@ -32,7 +32,7 @@ class YcpCompany extends Model {
         $this->date_joined       = Carbon::parse( $row['date_joined'] )->toDateString();
         $this->expiry_date       = $row['expiry_date'] === 'Lifetime' ? Carbon::now()->addYears( 99 )->toDateString()
             : Carbon::parse( $row['expiry_date'] )->toDateString();
-        $this->plan              = $row['plan'];
+        $this->plan              = $row['plan']; // TODO Perhaps default to company recruiter if blank. SS gives blank if Expired
         $this->status            = $row['status'];
         $this->email             = $row['email'];
         $this->website           = $row['website'];
