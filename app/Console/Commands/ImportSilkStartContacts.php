@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Helpers\CSVReader;
 use App\Helpers\ExcelWriter;
 use App\Helpers\DirectoryReader;
-use App\Helpers\Memo;
 use App\Helpers\Timer;
 use App\Models\EmailValidation;
 use App\Models\YcpContact;
@@ -14,14 +12,13 @@ use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class ImportSilkStartContacts extends Command {
 
-    protected $signature = 'silkstart:importContacts {file} {--dry}';
+    protected $signature = 'silkstart:importContacts {file}';
 
     protected $description = 'Imports SilkStart contacts to DB';
 
     public function handle() {
         $timer = new Timer();
         $timer->start();
-        $dry  = $this->option( 'dry' );
         $file = $this->argument( 'file' );
 
         $reader = new DirectoryReader( $file );
@@ -59,10 +56,8 @@ class ImportSilkStartContacts extends Command {
                 }
                 continue;
             }
-            if ( ! $dry ) {
-                $ycpContact = new YcpContact();
-                $ycpContact->fromCSV( $row );
-            }
+            $ycpContact = new YcpContact();
+            $ycpContact->fromCSV( $row );
             $new[] = $row;
             $count ++;
             if ( $count % 1000 === 0 ) {

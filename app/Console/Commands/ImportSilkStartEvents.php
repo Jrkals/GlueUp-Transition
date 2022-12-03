@@ -9,7 +9,7 @@ use App\Models\YcpEvent;
 use Illuminate\Console\Command;
 
 class ImportSilkStartEvents extends Command {
-    protected $signature = 'silkstart:importEvents {file} {--dry}';
+    protected $signature = 'silkstart:importEvents {file}';
 
     protected $description = 'Imports SilkStart events to DB';
 
@@ -21,7 +21,6 @@ class ImportSilkStartEvents extends Command {
     public function handle() {
         $timer = new Timer();
         $timer->start();
-        $dry  = $this->option( 'dry' );
         $file = $this->argument( 'file' );
 
         $reader = new DirectoryReader( $file );

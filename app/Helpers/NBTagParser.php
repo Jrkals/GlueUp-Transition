@@ -21,7 +21,10 @@ class NBTagParser {
         $events = [];
         foreach ( $this->tags as $tag ) {
             if ( $this->isEventTag( $tag ) ) {
-                $date     = $this->getTagDate( $tag );
+                $date = $this->getTagDate( $tag );
+                if ( ! $date ) {
+                    continue; //TODO what to do about no date events?
+                }
                 $event    = YcpEvent::fromNBTag( $tag, $date, $this->contact );
                 $events[] = $event;
             }
@@ -43,18 +46,27 @@ class NBTagParser {
         ) {
             return true;
         }
-        echo $tag . " is not event tag" . "\n";
+
+        //   echo $tag . " is not event tag" . "\n";
 
         return false;
     }
 
     private function getTagDate( string $tag ): string {
         $separator = $this->findSeparator( $tag );
-        $parts     = explode( $separator, $tag );
+        if ( ! $separator ) {
+            return ''; //TODO what to do about things like 'ESS14Aug2018'
+        }
+        $parts = explode( $separator, $tag );
         foreach ( $parts as $part ) {
-            if ( Carbon::parse( $part )->isValid() ) {
-                return $part;
+            try {
+                Carbon::parse( $part );
+                if ( Carbon::parse( $part )->isValid() ) {
+                    return Carbon::parse( $part )->toDateString();
+                }
+            } catch ( \Exception $exception ) {
             }
+
             if ( str_contains( $part, '16' ) || str_contains( $part, '2016' ) ) {
                 return Carbon::create( 2016 )->toDateString();
             }
@@ -72,16 +84,22 @@ class NBTagParser {
             }
         }
 
+        return '';
     }
 
     private function findSeparator( string $tag ): string {
-        if ( sizeof( str( $tag )->split( ' ' ) ) > 1 ) {
+        if ( empty( $tag ) ) {
+            return $tag;
+        }
+        $tag = str( $tag )->trim( ' ' )->value();
+        // $b = explode( ' ', str( $tag )->trim( ' ' )->value() );
+        if ( sizeof( explode( ' ', $tag ) ) > 1 ) {
             return ' ';
         }
-        if ( sizeof( str( $tag )->split( '-' ) ) > 1 ) {
+        if ( sizeof( explode( '-', $tag ) ) > 1 ) {
             return '-';
         }
-        if ( sizeof( str( $tag )->split( '_' ) ) > 1 ) {
+        if ( sizeof( explode( '_', $tag ) ) > 1 ) {
             return '_';
         }
 

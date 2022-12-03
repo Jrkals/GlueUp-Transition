@@ -68,7 +68,7 @@ return [
             'YCP - San Diego'                             => 5160,
             'YCP - Silicon Valley'                        => 5161,
             'YCP - St Louis'                              => 5162,
-        ]
+        ],
     ]
 
 ];

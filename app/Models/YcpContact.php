@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Exceptions\ChapterException;
 use App\Helpers\Name;
 use App\Helpers\NBTagParser;
+use App\Helpers\StringHelpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,10 @@ class YcpContact extends Model {
 
     public function events(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
         return $this->belongsToMany( YcpEvent::class, 'ycp_events_contacts' )->withPivot( 'attended' );
+    }
+
+    public function address(): \Illuminate\Database\Eloquent\Relations\MorphOne {
+        return $this->morphOne( \App\Models\Address::class, 'addressable' );
     }
 
     //TODO make this many to many polymorphic or just ignore
@@ -71,6 +76,18 @@ class YcpContact extends Model {
              ) ) {
             $this->subscribed = $row['subscribed'];
         }
+
+        $this->spiritual_assessment    = $row['spiritual_assessment'] ?? '';
+        $this->professional_assessment = $row['professional_assessment'] ?? '';
+        $this->t_shirt_size            = $row['t_shirt_size'] ?? null;
+        $this->virtual_mentoring       = $row['would_you_be_open_to_participating_in_virtual_mentoring'] ?? null;
+        $this->years_at_workplace      = $row['years_at_current_workplace'] ?? '';
+        $this->chapter_interest_list   = $this->formChapterInterestList(
+            $row['potential_ycp_city'] ?? '',
+            $row['chapter_interest_list'] ?? '' );
+        $this->linkedin                = StringHelpers::validateUrl( $row['linkedin_profile'] ?? '' );
+        $this->chapter_leader_role     = $row['current_chapter_role_category'] ?? '';
+
 
         $currentPlan = Plan::getOrCreatePlan( [
             'name' => $row['plan']
@@ -235,10 +252,6 @@ class YcpContact extends Model {
         return $contact;
     }
 
-    public function address() {
-        return $this->morphOne( \App\Models\Address::class, 'addressable' );
-    }
-
     public function hasEmail(): bool {
         return ! empty( $this->email );
     }
@@ -317,7 +330,6 @@ class YcpContact extends Model {
             $differences['any']               = true;
             $differences['subscribed']        = true;
             $differences['subscribed_reason'] = $contact1['subscribed'] . ' is not ' . $contact2->subscribed;
-
         }
 
         return $differences;
@@ -470,5 +482,22 @@ class YcpContact extends Model {
      */
     private function worthlessContact( array $row ): bool {
         return empty( $row['email'] ) && empty( $row['mobile_phone'] ) && empty( $row['home_chapter'] );
+    }
+
+    private function formChapterInterestList( string $potentialCity, string $chapterInterestList ): string {
+        if ( empty( $potentialCity ) && empty( $chapterInterestList ) ) {
+            return '';
+        }
+        if ( empty( $potentialCity ) ) {
+            return $chapterInterestList;
+        }
+        if ( empty( $chapterInterestList ) ) {
+            return $potentialCity;
+        }
+        if ( $potentialCity === $chapterInterestList ) {
+            return $potentialCity;
+        }
+
+        return $chapterInterestList . ',' . $potentialCity; //TODO maybe be smarter here and compare
     }
 }

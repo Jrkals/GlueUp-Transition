@@ -32,8 +32,8 @@ return new class extends Migration {
             ] )->default( 'Not Subscribed' );
             $table->string( 'spiritual_assessment' )->nullable();
             $table->string( 'professional_assessment' )->nullable();
-            $table->enum( 't_shirt_size', [ 'S', 'M', 'L', 'XL', 'XXL', 'XXXL' ] )->nullable();
-            $table->boolean( 'virtual_mentoring' )->nullable();
+            $table->enum( 't_shirt_size', [ 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', null ] )->nullable()->default( null );
+            $table->string( 'virtual_mentoring' )->nullable();
             $table->string( 'years_at_workplace' )->nullable();
             $table->string( 'chapter_interest_list' )->nullable();
             $table->string( 'linkedin' )->nullable();
