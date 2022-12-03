@@ -27,32 +27,36 @@ class ExportGlueUpCompanies extends Command {
      * @return int
      */
     public function handle() {
-        $inactiveCompanies = YcpCompany::query()->with( [ 'address' ] )
-                                       ->where( 'plan', '!=', 'Company Recruiter Membership' )->get();
-        $memberCompanies   = YcpCompany::query()->with( [ 'contacts', 'contacts.phones', 'address' ] )
-                                       ->where( 'plan', '=', 'Company Recruiter Membership' )->get();
+        $companies       = YcpCompany::query()->with( 'address' )->get();
+        $memberCompanies = YcpCompany::query()->with( [ 'contacts', 'contacts.phones', 'address' ] )
+                                     ->where( 'plan', '=', 'Company Recruiter Membership' )->get();
 
-        $inactiveCompanyWriter     = new CSVWriter( './storage/app/exports/companies/inactiveCompanyExport.csv' );
+        $companyContactWriter      = new CSVWriter( './storage/app/exports/companies/CompanyContactExport.csv' );
         $memberCompanyWriter       = new CSVWriter( './storage/app/exports/companies/memberCompanyExport.csv' );
         $memberCompanyPeopleWriter = new CSVWriter( './storage/app/exports/companies/memberCompanyPeopleExport.csv' );
 
-        $inactiveCompanyOutput     = [];
+        $companyContactOutput      = [];
         $memberCompanyOutput       = [];
         $memberCompanyPeopleOutput = [];
 
         foreach ( $memberCompanies as $company ) {
-            $companyAddress        = $company->address;
-            $contactPerson         = $company->getContactPerson();
+            $companyAddress = $company->address;
+            $contactPerson  = $company->getContactPerson();
+
+            //This is for conference sponsors
+            if ( ! isset( $contactPerson ) ) {
+                continue;
+            }
             $memberCompanyOutput[] = [
                 'Membership ID'                     => $company->id,
                 'Membership Start Date'             => $company->date_joined,
                 'Membership End Date'               => $company->expiry_date,
-                'Administrative Contact First Name' => isset( $contactPerson ) ? $contactPerson->first_name : '',
-                'Administrative Contact Last Name'  => isset( $contactPerson ) ? $contactPerson->last_name : '',
-                'Administrative Contact Email'      => isset( $contactPerson ) ? $contactPerson->email : '',
-                'Administrative Contact Phone'      => isset( $contactPerson ) ? $contactPerson->workPhone()?->number : '',
+                'Administrative Contact First Name' => $contactPerson->first_name,
+                'Administrative Contact Last Name'  => $contactPerson->last_name,
+                'Administrative Contact Email'      => $contactPerson->email,
+                'Administrative Contact Phone'      => $contactPerson->workPhone()?->number,
                 'Administrative Contact Company'    => $company->name,
-                'Administrative Contact Position'   => isset( $contactPerson ) ? $contactPerson->title : '',
+                'Administrative Contact Position'   => $contactPerson->title,
                 'Company Name'                      => $company->name,
                 'Billing Address'                   => $companyAddress->street1,
                 'Billing Country/Region'            => $companyAddress->country,
@@ -81,9 +85,9 @@ class ExportGlueUpCompanies extends Command {
             }
         }
 
-        foreach ( $inactiveCompanies as $company ) {
-            $companyAddress          = $company->address;
-            $inactiveCompanyOutput[] = [
+        foreach ( $companies as $company ) {
+            $companyAddress         = $company->address;
+            $companyContactOutput[] = [
                 'Company Name'               => $company->name,
                 'Billing Address'            => $companyAddress->street1,
                 'Billing Country/Region'     => $companyAddress->country,
@@ -98,9 +102,9 @@ class ExportGlueUpCompanies extends Command {
             ];
         }
 
-        $inactiveCompanyWriter->writeData( $inactiveCompanyOutput, [], 'w' );
-        $memberCompanyWriter->writeData( $memberCompanyOutput, [], 'w' );
-        $memberCompanyPeopleWriter->writeData( $memberCompanyPeopleOutput, [], 'w' );
+        $companyContactWriter->writeExcel( $companyContactOutput, [], 'w' );
+        $memberCompanyWriter->writeExcel( $memberCompanyOutput, [], 'w' );
+        $memberCompanyPeopleWriter->writeExcel( $memberCompanyPeopleOutput, [], 'w' );
 
         return Command::SUCCESS;
     }

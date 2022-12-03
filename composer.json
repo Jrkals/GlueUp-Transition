@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
@@ -11,7 +14,8 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "propaganistas/laravel-phone": "^4.3",
-      "ext-dom": "*"
+        "ext-dom": "*",
+        "ext-zip": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
