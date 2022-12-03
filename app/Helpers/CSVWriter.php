@@ -38,9 +38,19 @@ class CSVWriter {
         fclose( $this->file );
     }
 
-    public function writeExcel( $data ) {
-        $sheetName = 'Sheet1';
-        $header    = [];
+    public function writeSingleFileExcel( $data ) {
+        $this->writeSingleSheet( $data );
+        $this->excel->writeToFile( $this->path );
+    }
+
+    public function writeDualSheetExcelFile( $data1, $data2 ) {
+        $this->writeSingleSheet( $data1, 'Sheet1' );
+        $this->writeSingleSheet( $data2, 'Sheet2' );
+        $this->excel->writeToFile( $this->path );
+    }
+
+    private function writeSingleSheet( array $data, string $sheetName = 'Sheet' ) {
+        $header = [];
         foreach ( array_keys( $data[0] ) as $key ) {
             $header[ $key ] = '@';
         }
@@ -48,7 +58,5 @@ class CSVWriter {
         foreach ( $data as $row ) {
             $this->excel->writeSheetRow( $sheetName, array_values( $row ) );
         }
-        $this->path = str_replace( 'csv', 'xlsx', $this->path );
-        $this->excel->writeToFile( $this->path );
     }
 }

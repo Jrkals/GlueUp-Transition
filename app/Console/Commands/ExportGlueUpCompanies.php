@@ -31,9 +31,9 @@ class ExportGlueUpCompanies extends Command {
         $memberCompanies = YcpCompany::query()->with( [ 'contacts', 'contacts.phones', 'address' ] )
                                      ->where( 'plan', '=', 'Company Recruiter Membership' )->get();
 
-        $companyContactWriter      = new CSVWriter( './storage/app/exports/companies/CompanyContactExport.csv' );
-        $memberCompanyWriter       = new CSVWriter( './storage/app/exports/companies/memberCompanyExport.csv' );
-        $memberCompanyPeopleWriter = new CSVWriter( './storage/app/exports/companies/memberCompanyPeopleExport.csv' );
+        $companyContactWriter = new CSVWriter( './storage/app/exports/companies/CompanyContactExport.xlsx' );
+        $memberCompanyWriter  = new CSVWriter( './storage/app/exports/companies/memberCompanyExport.xlsx' );
+        // $memberCompanyPeopleWriter = new CSVWriter( './storage/app/exports/companies/memberCompanyPeopleExport.csv' );
 
         $companyContactOutput      = [];
         $memberCompanyOutput       = [];
@@ -61,11 +61,8 @@ class ExportGlueUpCompanies extends Command {
                 'Billing Address'                   => $companyAddress->street1,
                 'Billing Country/Region'            => $companyAddress->country,
                 'Billing Province/State'            => $companyAddress->state,
-                'Billing Post Code/Zip Code'        => $companyAddress->postal_code,
+                'Billing Postal Code/Zip Code'      => $companyAddress->postal_code,
                 'Billing City'                      => $companyAddress->city,
-                'Billing Company'                   => $company->name,
-                'Chapters'                          => '',
-                'Primary Chapter'                   => '',
                 'Phone'                             => $company->phone,
                 'Fax'                               => $company->fax,
                 'Number of Employees'               => $company->number_of_employees,
@@ -88,23 +85,21 @@ class ExportGlueUpCompanies extends Command {
         foreach ( $companies as $company ) {
             $companyAddress         = $company->address;
             $companyContactOutput[] = [
-                'Company Name'               => $company->name,
-                'Billing Address'            => $companyAddress->street1,
-                'Billing Country/Region'     => $companyAddress->country,
-                'Billing Province/State'     => $companyAddress->state,
-                'Billing Post Code/Zip Code' => $companyAddress->postal_code,
-                'Billing City'               => $companyAddress->city,
-                'Billing Company'            => $company->name,
-                'Phone'                      => $company->phone,
-                'Fax'                        => $company->fax,
-                'Number of Employees'        => $company->number_of_employees,
-                'Company Overview'           => $company->overview,
+                'Company Name'         => $company->name,
+                'Address'              => $companyAddress->street1,
+                'Country/Region'       => $companyAddress->country,
+                'Province/State'       => $companyAddress->state,
+                'Postal Code/Zip Code' => $companyAddress->postal_code,
+                'City'                 => $companyAddress->city,
+                'Phone'                => $company->phone,
+                'Fax'                  => $company->fax,
+                'Number of Employees'  => $company->number_of_employees,
+                'Company Overview'     => $company->overview,
             ];
         }
 
-        $companyContactWriter->writeExcel( $companyContactOutput, [], 'w' );
-        $memberCompanyWriter->writeExcel( $memberCompanyOutput, [], 'w' );
-        $memberCompanyPeopleWriter->writeExcel( $memberCompanyPeopleOutput, [], 'w' );
+        $companyContactWriter->writeSingleFileExcel( $companyContactOutput );
+        $memberCompanyWriter->writeDualSheetExcelFile( $memberCompanyOutput, $memberCompanyPeopleOutput );
 
         return Command::SUCCESS;
     }
