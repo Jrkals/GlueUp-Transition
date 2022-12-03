@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Helpers\CSVReader;
-use App\Helpers\CSVWriter;
+use App\Helpers\ExcelWriter;
 use App\Helpers\DirectoryReader;
 use App\Helpers\Memo;
 use App\Helpers\Timer;
@@ -28,9 +28,9 @@ class ImportSilkStartContacts extends Command {
         $data   = $reader->readDataFromDirectory();
         $timer->elapsed( 'Read files' );
 
-        $newWriter      = new CSVWriter( './storage/app/exports/new.csv' );
-        $existingWriter = new CSVWriter( './storage/app/exports/existing.csv' );
-        $updatedWriter  = new CSVWriter( './storage/app/exports/updated.csv' );
+        $newWriter      = new ExcelWriter( './storage/app/exports/new.xlsx' );
+        $existingWriter = new ExcelWriter( './storage/app/exports/existing.xlsx' );
+        $updatedWriter  = new ExcelWriter( './storage/app/exports/updated.xlsx' );
 
         $alreadyExists = [];
         $new           = [];
@@ -73,9 +73,9 @@ class ImportSilkStartContacts extends Command {
         $this->line( 'New Imports: ' . sizeof( $new ) );
         $this->line( 'Updated ' . sizeof( $updated ) );
 
-        $newWriter->writeData( $new );
-        $existingWriter->writeData( $alreadyExists );
-        $updatedWriter->writeData( $updated );
+        $newWriter->writeSingleFileExcel( $new );
+        $existingWriter->writeSingleFileExcel( $alreadyExists );
+        $updatedWriter->writeSingleFileExcel( $updated );
 
         return CommandAlias::SUCCESS;
     }

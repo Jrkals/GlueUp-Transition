@@ -30,6 +30,14 @@ return new class extends Migration {
                 'Not Subscribed',
                 'Unsubscribed'
             ] )->default( 'Not Subscribed' );
+            $table->string( 'spiritual_assessment' )->nullable();
+            $table->string( 'professional_assessment' )->nullable();
+            $table->enum( 't_shirt_size', [ 'S', 'M', 'L', 'XL', 'XXL', 'XXXL' ] )->nullable();
+            $table->boolean( 'virtual_mentoring' )->nullable();
+            $table->string( 'years_at_workplace' )->nullable();
+            $table->string( 'chapter_interest_list' )->nullable();
+            $table->string( 'linkedin' )->nullable();
+            $table->string( 'chapter_leader_role' )->nullable();
         } );
         Schema::create( 'ycp_companies', function ( Blueprint $table ) {
             $table->id();

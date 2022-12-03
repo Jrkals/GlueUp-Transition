@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Helpers\CSVReader;
-use App\Helpers\CSVWriter;
+use App\Helpers\ExcelWriter;
 use App\Helpers\DirectoryReader;
 use App\Models\YcpCompany;
 use App\Models\YcpContact;
@@ -36,9 +36,9 @@ class ImportSilkStartCompanies extends Command {
         $reader = new DirectoryReader( $file );
         $data   = $reader->readDataFromDirectory();
 
-        $newWriter      = new CSVWriter( './storage/app/exports/newCompanies.csv' );
-        $existingWriter = new CSVWriter( './storage/app/exports/existingCompanies.csv' );
-        $updatedWriter  = new CSVWriter( './storage/app/exports/updatedCompanies.csv' );
+        $newWriter      = new ExcelWriter( './storage/app/exports/newCompanies.xlsx' );
+        $existingWriter = new ExcelWriter( './storage/app/exports/existingCompanies.xlsx' );
+        $updatedWriter  = new ExcelWriter( './storage/app/exports/updatedCompanies.xlsx' );
 
         $alreadyExists = [];
         $new           = [];
@@ -77,9 +77,9 @@ class ImportSilkStartCompanies extends Command {
         $this->line( 'Updated: ' . sizeof( $updated ) );
 
 
-        $newWriter->writeData( $new );
-        $existingWriter->writeData( $alreadyExists );
-        $updatedWriter->writeData( $updated );
+        $newWriter->writeSingleFileExcel( $new );
+        $existingWriter->writeSingleFileExcel( $alreadyExists );
+        $updatedWriter->writeSingleFileExcel( $updated );
 
         return CommandAlias::SUCCESS;
     }

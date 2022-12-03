@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Helpers\CSVWriter;
+use App\Helpers\ExcelWriter;
 use App\Models\Plan;
 use App\Models\YcpContact;
 use Illuminate\Console\Command;
@@ -31,7 +31,7 @@ class ExportGlueUpMembers extends Command {
         $memberPlans = Plan::query()->get();
         foreach ( $memberPlans as $plan ) {
             $this->line( 'exporing csv for ' . $plan->name . '...' );
-            $writer  = new CSVWriter( './storage/app/exports/members/' . $plan->name . '.csv' );
+            $writer  = new ExcelWriter( './storage/app/exports/members/' . $plan->name . '.xlsx' );
             $members = YcpContact::query()->whereRelation( 'plans', 'plan_id', '=', $plan->id )->get();
             $this->line( $plan->name . ' has ' . sizeof( $members ) . ' members' );
             $data = [];
@@ -59,7 +59,7 @@ class ExportGlueUpMembers extends Command {
                 ];
             }
 
-            $writer->writeData( $data, [], 'w' );
+            $writer->writeSingleFileExcel( $data );
         }
         $this->line( 'done' );
 

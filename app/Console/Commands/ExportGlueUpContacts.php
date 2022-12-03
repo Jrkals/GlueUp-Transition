@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Helpers\CSVWriter;
+use App\Helpers\ExcelWriter;
 use App\Models\YcpContact;
 use Illuminate\Console\Command;
 
@@ -28,9 +28,9 @@ class ExportGlueUpContacts extends Command {
      */
     public function handle() {
         $this->line( 'exporing csv for Contacts ' );
-        $writer   = new CSVWriter( './storage/app/exports/contacts/contacts.csv' );
+        $writer   = new ExcelWriter( './storage/app/exports/contacts/contacts.xlsx' );
         $data     = [];
-        $contacts = YcpContact::query()->whereDoesntHave( 'plans' )->with( [
+        $contacts = YcpContact::query()->with( [
             'plans',
             'chapters',
             'companies',
@@ -62,7 +62,7 @@ class ExportGlueUpContacts extends Command {
                 $this->line( $count . ' done ' . ( sizeof( $contacts ) - $count ) . ' remaining ' );
             }
         }
-        $writer->writeData( $data, [], 'w' );
+        $writer->writeSingleFileExcel( $data );
 
         return Command::SUCCESS;
     }

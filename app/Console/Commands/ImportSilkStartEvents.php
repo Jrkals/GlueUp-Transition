@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Helpers\CSVWriter;
+use App\Helpers\ExcelWriter;
 use App\Helpers\DirectoryReader;
 use App\Helpers\Timer;
 use App\Models\YcpEvent;
@@ -28,8 +28,8 @@ class ImportSilkStartEvents extends Command {
         $data   = $reader->readDataFromDirectory();
         $timer->elapsed( 'Read files' );
 
-        $newWriter      = new CSVWriter( './storage/app/exports/newEvents.csv' );
-        $existingWriter = new CSVWriter( './storage/app/exports/existingEvents.csv' );
+        $newWriter      = new ExcelWriter( './storage/app/exports/newEvents.xlsx' );
+        $existingWriter = new ExcelWriter( './storage/app/exports/existingEvents.xlsx' );
 
         $alreadyExists = [];
         $new           = [];
@@ -54,8 +54,8 @@ class ImportSilkStartEvents extends Command {
             }
         }
 
-        $newWriter->writeData( $new, [], 'w' );
-        $existingWriter->writeData( $alreadyExists, [], 'w' );
+        $newWriter->writeSingleFileExcel( $new );
+        $existingWriter->writeSingleFileExcel( $alreadyExists );
 
         return Command::SUCCESS;
     }

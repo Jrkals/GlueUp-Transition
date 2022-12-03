@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Helpers\CSVWriter;
+use App\Helpers\ExcelWriter;
 use App\Models\YcpCompany;
 use Illuminate\Console\Command;
 
@@ -31,8 +31,8 @@ class ExportGlueUpCompanies extends Command {
         $memberCompanies = YcpCompany::query()->with( [ 'contacts', 'contacts.phones', 'address' ] )
                                      ->where( 'plan', '=', 'Company Recruiter Membership' )->get();
 
-        $companyContactWriter = new CSVWriter( './storage/app/exports/companies/CompanyContactExport.xlsx' );
-        $memberCompanyWriter  = new CSVWriter( './storage/app/exports/companies/memberCompanyExport.xlsx' );
+        $companyContactWriter = new ExcelWriter( './storage/app/exports/companies/CompanyContactExport.xlsx' );
+        $memberCompanyWriter  = new ExcelWriter( './storage/app/exports/companies/memberCompanyExport.xlsx' );
         // $memberCompanyPeopleWriter = new CSVWriter( './storage/app/exports/companies/memberCompanyPeopleExport.csv' );
 
         $companyContactOutput      = [];
