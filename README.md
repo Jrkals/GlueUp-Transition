@@ -47,5 +47,4 @@ Exports a list of contacts with all custom fields and information. These are exc
 * include custom fields for contacts
 * add event data to person in export.
 * extract event data from NB tags
-* Figure out what to do with company sponsor member imports. These don't have contact people. 
 
