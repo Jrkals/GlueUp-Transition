@@ -27,7 +27,10 @@ class YcpCompany extends Model {
     }
 
     public function fromCSV( array $row ) {
-        $this->name              = $row['name'];
+        $this->name = $row['name'];
+        if ( $this->name === 'N/A' ) {
+            return;
+        }
         $this->short_description = $row['short_description'];
         $this->date_joined       = Carbon::parse( $row['date_joined'] )->toDateString();
         $this->expiry_date       = $row['expiry_date'] === 'Lifetime' ? Carbon::now()->addYears( 99 )->toDateString()

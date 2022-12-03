@@ -83,7 +83,6 @@ class ExportGlueUpCompanies extends Command {
 
         foreach ( $inactiveCompanies as $company ) {
             $companyAddress          = $company->address;
-            $contactPerson           = $company->getContactPerson();
             $inactiveCompanyOutput[] = [
                 'Company Name'               => $company->name,
                 'Billing Address'            => $companyAddress->street1,
