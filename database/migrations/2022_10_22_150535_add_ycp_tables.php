@@ -43,6 +43,9 @@ return new class extends Migration {
             $table->string( 'email' );
             $table->string( 'website' )->nullable();
             $table->string( 'phone' )->nullable();
+            $table->longText( 'overview' )->nullable();
+            $table->string( 'fax' )->nullable();
+            $table->string( 'number_of_employees' )->nullable();
             $table->foreignIdFor( Address::class )->nullable();
         } );
         Schema::create( 'chapters', function ( Blueprint $table ) {

@@ -41,10 +41,21 @@ class Phone extends Model {
      */
     public function sameAs( string $phone ): bool {
         return self::stripSpecialCharacters( $this->number ) ===
-               PhoneNumber::make( self::stripSpecialCharacters( $phone ) )->formatForCountry( 'US' );
+               PhoneNumber::make( self::stripSpecialCharacters( $phone ), [ 'US' ] )->formatForCountry( 'US' );
     }
 
     public static function stripSpecialCharacters( string $phoneNumber ) {
         return str_replace( [ '(', ')', '-', ' ', '+', "'", '.' ], '', $phoneNumber );
+    }
+
+
+    public static function format( string $number ): string {
+        try {
+            $number = PhoneNumber::make( $number, [ 'US' ] )->formatForCountry( 'US' );
+        } catch ( \Exception $exception ) {
+            return '';
+        }
+
+        return $number;
     }
 }

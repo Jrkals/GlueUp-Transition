@@ -32,11 +32,18 @@ class YcpCompany extends Model {
         $this->date_joined       = Carbon::parse( $row['date_joined'] )->toDateString();
         $this->expiry_date       = $row['expiry_date'] === 'Lifetime' ? Carbon::now()->addYears( 99 )->toDateString()
             : Carbon::parse( $row['expiry_date'] )->toDateString();
-        $this->plan              = $row['plan']; // TODO Perhaps default to company recruiter if blank. SS gives blank if Expired
+        $this->plan              = $row['plan'];
         $this->status            = $row['status'];
-        $this->email             = $row['email'];
-        $this->website           = $row['website'];
-        $this->phone             = $row['company_phone'] ?? '';
+        if ( $this->status !== 'Inactive' ) {
+            $this->plan = 'Company Recruiter Membership';
+        }
+
+        $this->email               = $row['email'];
+        $this->website             = $row['website'];
+        $this->phone               = $row['company_phone'] ? Phone::format( $row['company_phone'] ) : '';
+        $this->overview            = $row['overview'] ? $this->stripHtml( $row['overview'] ) : '';
+        $this->fax                 = $row['fax'] ? Phone::format( $row['fax'] ) : '';
+        $this->number_of_employees = $row['number_of_employees'];
 
         $this->save();
         $this->address_id = Address::fromCSV( $row, 'company', $this->id )->id;
@@ -60,6 +67,8 @@ class YcpCompany extends Model {
         $differences = [
             'any' => false,
         ];
+
+        //TODO fill this out. Maybe? maybe just wipe and do fresh imports
 
         return $differences;
     }
@@ -88,5 +97,16 @@ class YcpCompany extends Model {
 
         return $contacts->first();
 
+    }
+
+    private function stripHtml( string $overview ) {
+        $html = new \DOMDocument();
+        try {
+            $html->loadHTML( $overview );
+        } catch ( \Exception $exception ) {
+            return $overview;
+        }
+
+        return $html->textContent;
     }
 }

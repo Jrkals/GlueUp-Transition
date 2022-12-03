@@ -27,17 +27,23 @@ class ExportGlueUpCompanies extends Command {
      * @return int
      */
     public function handle() {
-        $companies           = YcpCompany::query()->with( [ 'contacts', 'contacts.phones', 'address' ] )->get();
-        $companyWriter       = new CSVWriter( './storage/app/exports/companyExport.csv' );
-        $companyPeopleWriter = new CSVWriter( './storage/app/exports/companyPeopleExport.csv' );
+        $inactiveCompanies = YcpCompany::query()->with( [ 'address' ] )
+                                       ->where( 'plan', '!=', 'Company Recruiter Membership' )->get();
+        $memberCompanies   = YcpCompany::query()->with( [ 'contacts', 'contacts.phones', 'address' ] )
+                                       ->where( 'plan', '=', 'Company Recruiter Membership' )->get();
 
-        $companyOutput       = [];
-        $companyPeopleOutput = [];
+        $inactiveCompanyWriter     = new CSVWriter( './storage/app/exports/companies/inactiveCompanyExport.csv' );
+        $memberCompanyWriter       = new CSVWriter( './storage/app/exports/companies/memberCompanyExport.csv' );
+        $memberCompanyPeopleWriter = new CSVWriter( './storage/app/exports/companies/memberCompanyPeopleExport.csv' );
 
-        foreach ( $companies as $company ) {
-            $companyAddress  = $company->address;
-            $contactPerson   = $company->getContactPerson();
-            $companyOutput[] = [
+        $inactiveCompanyOutput     = [];
+        $memberCompanyOutput       = [];
+        $memberCompanyPeopleOutput = [];
+
+        foreach ( $memberCompanies as $company ) {
+            $companyAddress        = $company->address;
+            $contactPerson         = $company->getContactPerson();
+            $memberCompanyOutput[] = [
                 'Membership ID'                     => $company->id,
                 'Membership Start Date'             => $company->date_joined,
                 'Membership End Date'               => $company->expiry_date,
@@ -46,7 +52,7 @@ class ExportGlueUpCompanies extends Command {
                 'Administrative Contact Email'      => isset( $contactPerson ) ? $contactPerson->email : '',
                 'Administrative Contact Phone'      => isset( $contactPerson ) ? $contactPerson->workPhone()?->number : '',
                 'Administrative Contact Company'    => $company->name,
-                'Administrative Contact Position'   => $contactPerson->title,
+                'Administrative Contact Position'   => isset( $contactPerson ) ? $contactPerson->title : '',
                 'Company Name'                      => $company->name,
                 'Billing Address'                   => $companyAddress->street1,
                 'Billing Country/Region'            => $companyAddress->country,
@@ -55,11 +61,15 @@ class ExportGlueUpCompanies extends Command {
                 'Billing City'                      => $companyAddress->city,
                 'Billing Company'                   => $company->name,
                 'Chapters'                          => '',
-                'Primary Chapter'                   => '', //TODO make sure the national chapter name is right
+                'Primary Chapter'                   => '',
+                'Phone'                             => $company->phone,
+                'Fax'                               => $company->fax,
+                'Number of Employees'               => $company->number_of_employees,
+                'Company Overview'                  => $company->overview,
             ];
 
             foreach ( $company->contacts as $contact ) {
-                $companyPeopleOutput[] = [
+                $memberCompanyPeopleOutput[] = [
                     'Membership Id'  => $company->id,
                     'Primary Member' => (bool) $contact->pivot->billing,
                     'First Name'     => $contact->first_name,
@@ -71,8 +81,27 @@ class ExportGlueUpCompanies extends Command {
             }
         }
 
-        $companyWriter->writeData( $companyOutput, [], 'w' );
-        $companyPeopleWriter->writeData( $companyPeopleOutput, [], 'w' );
+        foreach ( $inactiveCompanies as $company ) {
+            $companyAddress          = $company->address;
+            $contactPerson           = $company->getContactPerson();
+            $inactiveCompanyOutput[] = [
+                'Company Name'               => $company->name,
+                'Billing Address'            => $companyAddress->street1,
+                'Billing Country/Region'     => $companyAddress->country,
+                'Billing Province/State'     => $companyAddress->state,
+                'Billing Post Code/Zip Code' => $companyAddress->postal_code,
+                'Billing City'               => $companyAddress->city,
+                'Billing Company'            => $company->name,
+                'Phone'                      => $company->phone,
+                'Fax'                        => $company->fax,
+                'Number of Employees'        => $company->number_of_employees,
+                'Company Overview'           => $company->overview,
+            ];
+        }
+
+        $inactiveCompanyWriter->writeData( $inactiveCompanyOutput, [], 'w' );
+        $memberCompanyWriter->writeData( $memberCompanyOutput, [], 'w' );
+        $memberCompanyPeopleWriter->writeData( $memberCompanyPeopleOutput, [], 'w' );
 
         return Command::SUCCESS;
     }

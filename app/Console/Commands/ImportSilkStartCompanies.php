@@ -31,17 +31,14 @@ class ImportSilkStartCompanies extends Command {
      * @return int
      */
     public function handle() {
-        $dry  = $this->option( 'dry' );
-        $file = $this->argument( 'file' );
-//        $reader = new CSVReader( $file );
-//        $data   = $reader->extract_data();
+        $dry    = $this->option( 'dry' );
+        $file   = $this->argument( 'file' );
         $reader = new DirectoryReader( $file );
         $data   = $reader->readDataFromDirectory();
 
         $newWriter      = new CSVWriter( './storage/app/exports/newCompanies.csv' );
         $existingWriter = new CSVWriter( './storage/app/exports/existingCompanies.csv' );
         $updatedWriter  = new CSVWriter( './storage/app/exports/updatedCompanies.csv' );
-
 
         $alreadyExists = [];
         $new           = [];
