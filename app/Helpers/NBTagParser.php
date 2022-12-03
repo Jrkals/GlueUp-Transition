@@ -7,14 +7,12 @@ use App\Models\YcpEvent;
 use Carbon\Carbon;
 
 class NBTagParser {
-    private string $tagString;
     private YcpContact $contact;
     private array $tags;
 
     public function __construct( string $tags, YcpContact $contact ) {
-        $this->tagString = $tags;
-        $this->tags      = explode( ',', $tags );
-        $this->contact   = $contact;
+        $this->tags    = explode( ',', $tags );
+        $this->contact = $contact;
     }
 
     public function makeEvents(): array {
@@ -47,17 +45,12 @@ class NBTagParser {
             return true;
         }
 
-        //   echo $tag . " is not event tag" . "\n";
-
         return false;
     }
 
     private function getTagDate( string $tag ): string {
         $separator = $this->findSeparator( $tag );
-        if ( ! $separator ) {
-            return ''; //TODO what to do about things like 'ESS14Aug2018'
-        }
-        $parts = explode( $separator, $tag );
+        $parts     = $separator ? explode( $separator, $tag ) : [ $tag ];
         foreach ( $parts as $part ) {
             try {
                 Carbon::parse( $part );
@@ -92,7 +85,6 @@ class NBTagParser {
             return $tag;
         }
         $tag = str( $tag )->trim( ' ' )->value();
-        // $b = explode( ' ', str( $tag )->trim( ' ' )->value() );
         if ( sizeof( explode( ' ', $tag ) ) > 1 ) {
             return ' ';
         }

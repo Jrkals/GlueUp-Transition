@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Helpers\ExcelWriter;
 use App\Helpers\StringHelpers;
+use App\Helpers\Timer;
 use App\Models\YcpContact;
 use Illuminate\Console\Command;
 
@@ -38,6 +39,8 @@ class ExportGlueUpContacts extends Command {
             'phones'
         ] )->get();
         $count    = 0;
+        $timer    = new Timer();
+        $total    = sizeof( $contacts );
         foreach ( $contacts as $contact ) {
             $address = $contact->address;
             $phone   = $contact->primaryPhone();
@@ -64,11 +67,12 @@ class ExportGlueUpContacts extends Command {
             $row['LinkedIn Profile URL']    = $contact->linkedin ?? '';
             $row['Chapter Interest List']   = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
             $row['Chapter Leader Role']     = StringHelpers::glueUpSlugify( $contact->chapter_leader_role );
+            $row['Event Attendance']        = $contact->event_attendance ?? '';
 
             $data[] = $row;
             $count ++;
             if ( $count % 1000 === 0 ) {
-                $this->line( $count . ' done ' . ( sizeof( $contacts ) - $count ) . ' remaining ' );
+                $this->line( $timer->progress( $count, $total ) );
             }
         }
         $writer->writeSingleFileExcel( $data );

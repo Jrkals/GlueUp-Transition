@@ -488,16 +488,10 @@ class YcpContact extends Model {
         if ( empty( $potentialCity ) && empty( $chapterInterestList ) ) {
             return '';
         }
-        if ( empty( $potentialCity ) ) {
-            return $chapterInterestList;
-        }
         if ( empty( $chapterInterestList ) ) {
             return $potentialCity;
         }
-        if ( $potentialCity === $chapterInterestList ) {
-            return $potentialCity;
-        }
 
-        return $chapterInterestList . ',' . $potentialCity; //TODO maybe be smarter here and compare
+        return $chapterInterestList;
     }
 }

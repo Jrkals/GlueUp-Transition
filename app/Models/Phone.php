@@ -21,14 +21,8 @@ class Phone extends Model {
     }
 
     public static function create( string $number, int $contact_id, string $type ): ?Phone {
-        $phone = new Phone();
-        try {
-            $formattedNumber = PhoneNumber::make( $number )->formatForCountry( 'US' );
-        } catch ( \Exception $e ) {
-            return null;
-        }
-
-        $phone->number         = $formattedNumber;
+        $phone                 = new Phone();
+        $phone->number         = self::format( $number );
         $phone->type           = $type;
         $phone->ycp_contact_id = $contact_id;
         $phone->save();

@@ -38,6 +38,7 @@ return new class extends Migration {
             $table->string( 'chapter_interest_list' )->nullable();
             $table->string( 'linkedin' )->nullable();
             $table->string( 'chapter_leader_role' )->nullable();
+            $table->longText( 'event_attendance' )->nullable();
         } );
         Schema::create( 'ycp_companies', function ( Blueprint $table ) {
             $table->id();
