@@ -73,7 +73,7 @@ class YcpContact extends Model {
         if ( isset( $row['subscribed'] ) ||
              ( isset( $row['nationbuilder_tags'] )
                && str_contains( strtolower( $row['nationbuilder_tags'] ), 'unsubscribed' )
-             ) ) {
+               || ( isset( $row['notes'] ) && str_contains( $row['notes'], 'Unsubscribed' ) ) ) ) {
             $this->subscribed = $row['subscribed'];
         }
 
@@ -474,6 +474,28 @@ class YcpContact extends Model {
         ] )->first();
     }
 
+    public function compileEventInfo(): string {
+        if ( $this->events->isEmpty() ) {
+            return '';
+        }
+        $eventInfo = []; // [Year -> [Events]]
+        foreach ( $this->events as $event ) {
+            if ( $event->date ) {
+                $year                 = Carbon::parse( $event->date )->year;
+                $eventInfo[ $year ][] = $event->name;
+            }
+        }
+        $formattedString = '';
+        foreach ( $eventInfo as $year => $events ) {
+            $formattedString .= "\n" . $year . "\n";
+            foreach ( $events as $eventName ) {
+                $formattedString .= $eventName . ",";
+            }
+        }
+
+        return $formattedString;
+    }
+
     /**
      * @param array $row
      * Returns
@@ -489,9 +511,19 @@ class YcpContact extends Model {
             return '';
         }
         if ( empty( $chapterInterestList ) ) {
-            return $potentialCity;
+            return $this->mapPotentialCity( $potentialCity );
         }
 
         return $chapterInterestList;
+    }
+
+    private function mapPotentialCity( string $potentialCity ): string {
+        $potentialCity = explode( ',', $potentialCity, )[0];
+
+        return match ( $potentialCity ) {
+            'Albuquerque/Rio Rancho' => 'Albuquerque',
+            'Bismark', 'Calgary', 'Monterrey', 'D.C.', 'Oklahoma City', 'Ottawa', 'Twin Cities' => $potentialCity,
+            default => '',
+        };
     }
 }

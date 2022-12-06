@@ -38,26 +38,27 @@ class YcpEvent extends Model {
             [ 'attended' => $row['attended'] === 'True' ] );
     }
 
-    private static function getEventType( string $eventName ) {
-        if ( str_contains( $eventName, 'ESS' ) || str_contains( $eventName, 'Speaker Series' )
-             || str_contains( $eventName, 'Executive Speaker' ) ) {
+    private static function getEventType( string $eventName ): string {
+        $eventName = strtolower( $eventName );
+        if ( str_contains( $eventName, 'ess' ) || str_contains( $eventName, 'speaker series' )
+             || str_contains( $eventName, 'executive speaker' ) ) {
             return 'ESS';
         }
-        if ( str_contains( $eventName, 'Saint Joseph' ) || str_contains( $eventName, 'St. Joseph' )
-             || str_contains( $eventName, 'Retreat' ) ) {
+        if ( str_contains( $eventName, 'saint joseph' ) || str_contains( $eventName, 'st. joseph' )
+             || str_contains( $eventName, 'retreat' ) ) {
             return 'SJS';
         }
-        if ( str_contains( $eventName, 'NHH' ) || str_contains( $eventName, 'Happy Hour' )
-             || str_contains( $eventName, 'Networking Social' ) ) {
+        if ( str_contains( $eventName, 'nhh' ) || str_contains( $eventName, 'happy hour' )
+             || str_contains( $eventName, 'hetworking social' ) ) {
             return 'NHH';
         }
-        if ( str_contains( $eventName, 'Panel' ) ) {
+        if ( str_contains( $eventName, 'panel' ) ) {
             return 'Panel';
         }
-        if ( str_contains( $eventName, 'Conference' ) ) {
+        if ( str_contains( $eventName, 'conference' ) ) {
             return 'Conference';
         }
-        if ( str_contains( $eventName, 'Launch' ) ) {
+        if ( str_contains( $eventName, 'launch' ) ) {
             return 'Launch';
         }
 

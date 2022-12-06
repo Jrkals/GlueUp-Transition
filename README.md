@@ -47,10 +47,5 @@ Exports a list of contacts with all custom fields and information. These are exc
 * include custom fields for contacts
     * Notes
     * Bio
-    * 2nd Email
     * Industry
-* add event data to person in export.
 * extract event data from NB tags
-* make potential YCP city and chapter interest list consistent
-* 
-

@@ -40,7 +40,8 @@ class ExportGlueUpContacts extends Command {
         ] )->get();
         $count    = 0;
         $timer    = new Timer();
-        $total    = sizeof( $contacts );
+        $timer->start();
+        $total = sizeof( $contacts );
         foreach ( $contacts as $contact ) {
             $address = $contact->address;
             $phone   = $contact->primaryPhone();
@@ -67,7 +68,7 @@ class ExportGlueUpContacts extends Command {
             $row['LinkedIn Profile URL']    = $contact->linkedin ?? '';
             $row['Chapter Interest List']   = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
             $row['Chapter Leader Role']     = StringHelpers::glueUpSlugify( $contact->chapter_leader_role );
-            $row['Event Attendance']        = $contact->event_attendance ?? '';
+            $row['Event Attendance']        = $contact->compileEventInfo();
 
             $data[] = $row;
             $count ++;
