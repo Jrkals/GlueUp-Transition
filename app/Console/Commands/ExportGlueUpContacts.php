@@ -69,6 +69,9 @@ class ExportGlueUpContacts extends Command {
             $row['Chapter Interest List']   = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
             $row['Chapter Leader Role']     = StringHelpers::glueUpSlugify( $contact->chapter_leader_role );
             $row['Event Attendance']        = $contact->compileEventInfo();
+            $row['SilkStart Profile Notes'] = $contact->notes ?? '';
+            $row['Bio']                     = $contact->bio ?? '';
+            $row['Industry']                = $contact->industry ?? '';
 
             $data[] = $row;
             $count ++;

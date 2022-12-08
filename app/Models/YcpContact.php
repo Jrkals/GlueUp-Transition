@@ -87,7 +87,12 @@ class YcpContact extends Model {
             $row['chapter_interest_list'] ?? '' );
         $this->linkedin                = StringHelpers::validateUrl( $row['linkedin_profile'] ?? '' );
         $this->chapter_leader_role     = $row['current_chapter_role_category'] ?? '';
-
+        $this->notes                   = $this->filterNotes( $row['notes'] );
+        if ( StringHelpers::isIndustry( $row['bio'] ) ) {
+            $this->industry = $this->mapIndustry( $row['bio'] );
+        } else {
+            $this->bio = $row['bio'] ?? '';
+        }
 
         $currentPlan = Plan::getOrCreatePlan( [
             'name' => $row['plan']
@@ -524,6 +529,45 @@ class YcpContact extends Model {
             'Albuquerque/Rio Rancho' => 'Albuquerque',
             'Bismark', 'Calgary', 'Monterrey', 'D.C.', 'Oklahoma City', 'Ottawa', 'Twin Cities' => $potentialCity,
             default => '',
+        };
+    }
+
+    private function filterNotes( string $notes ): string {
+        if ( $notes === '3-16-20 member import' ) {
+            return '';
+        }
+        if ( str_contains( $notes, 'Upload' ) ) {
+            return '';
+        }
+        if ( str_contains( $notes, 'Unsubscribed' ) ) {
+            return '';
+        }
+
+        return $notes;
+    }
+
+    private function mapIndustry( string $industry ): string {
+        return match ( $industry ) {
+            'Finance/Accounting' => 'ACCT',
+            'Non-profit' => 'NPRMGT',
+            'Operations & Logistics' => 'LOGIST',
+            'Real Estate' => 'COMMER',
+            'Software Developer', 'Software Engineer' => 'COMPSW',
+            'Television & Media' => 'TELCO',
+            'Marketing & Advertising' => 'MKTADV',
+            'Legal' => 'LAW',
+            'Insurance' => 'INSRCE',
+            'Information Technology' => 'COMPSC',
+            'Human Resources' => 'HR',
+            'Health Care', 'Healthcare' => 'HEALTH',
+            'Government' => 'GOVT',
+            'Financial Planning' => 'FINSER',
+            'Fashion & Design' => 'FASHN',
+            'Engineering' => 'MECHAN', // COULD BE CIVIL TOO
+            'Energy' => 'ENERGY',
+            'Education' => 'EDU',
+            'Communications' => 'PUBREL',
+            default => 'OT' //OTHER
         };
     }
 }

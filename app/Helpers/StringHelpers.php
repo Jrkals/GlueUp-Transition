@@ -30,4 +30,15 @@ class StringHelpers {
     public static function glueUpSlugify( string $answer ): string {
         return strtolower( str_replace( ' ', '-', $answer ) );
     }
+
+    public static function isIndustry( string $param ): bool {
+        return match ( $param ) {
+            'Non-profit', 'Operations & Logistics', 'Real Estate', 'Software Developer',
+            'Software Engineer', 'Television & Media', 'Marketing & Advertising', 'Legal', 'Insurance',
+            'Information Technology', 'Human Resources', 'Healthcare', 'Health Care', 'Government',
+            'Finance/Accounting', 'Financial Planning', 'Fashion & Design', 'Engineering', 'Energy',
+            'Education', 'Communications' => true,
+            default => false,
+        };
+    }
 }

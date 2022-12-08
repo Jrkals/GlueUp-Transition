@@ -45,7 +45,9 @@ Exports a list of contacts with all custom fields and information. These are exc
 #### TODOS
 
 * include custom fields for contacts
-    * Notes
     * Bio
     * Industry
 * extract event data from NB tags
+* YCP chapter leader emails that are inactive are not to be imported
+    * merge with their personal email if it exists and put their bio and other info
+    * in that profile
