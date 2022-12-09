@@ -64,6 +64,9 @@ class ImportSilkStartContacts extends Command {
                 $this->line( $timer->progress( $count, $total ) );
             }
         }
+        $this->line( 'merging defunct leaders...' );
+        $this->mergeDefunctChapterLeaders();
+
         $this->line( 'Already Exists: ' . sizeof( $alreadyExists ) );
         $this->line( 'New Imports: ' . sizeof( $new ) );
         $this->line( 'Updated ' . sizeof( $updated ) );
@@ -73,5 +76,20 @@ class ImportSilkStartContacts extends Command {
         $updatedWriter->writeSingleFileExcel( $updated );
 
         return CommandAlias::SUCCESS;
+    }
+
+    private function mergeDefunctChapterLeaders() {
+        $leadersByEmail = YcpContact::query()->where( 'email', 'like', '%@ycp%' )->get();
+        foreach ( $leadersByEmail as $leader ) {
+            if ( $leader->activeChapterLeader() ) {
+                continue;
+            }
+            $matchingName = YcpContact::getContact( [
+                'email'        => '',
+                'name'         => $leader->full_name,
+                'home_chapter' => $leader->homeChapter()
+            ] );
+            $matchingName?->mergeIn( $leader );
+        }
     }
 }

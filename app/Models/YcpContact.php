@@ -570,4 +570,65 @@ class YcpContact extends Model {
             default => 'OT' //OTHER
         };
     }
+
+    public function activeChapterLeader(): bool {
+        if ( $this->plans->isEmpty() ) {
+            return false;
+        }
+        foreach ( $this->plans as $plan ) {
+            if ( $plan->name === 'Chapter Leader' && $plan->pivot->active ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function mergeIn( YcpContact $contact ) {
+        //plans
+        foreach ( $contact->plans as $plan ) {
+            //TODO check duplicates
+            $this->plans()->save( $plan, [
+                'active'      => $plan->active, //context should mean this is always false
+                'expiry_date' => $plan->expiry_date,
+                'expiry_type' => $plan->expiry_type,
+                'start_date'  => $plan->start_date,
+            ] );
+        }
+        //phones
+        if ( $this->phones->isEmpty() && $contact->phones->isNotEmpty() ) {
+            $this->phones->saveMany( $contact->phones ); //does this work?
+        }
+
+        //events
+        if ( ! isset( $this->eventAttendance ) && $contact->eventAttendance ) {
+            $this->eventAttendance = $contact->eventAttendance;
+        }
+        //addresses
+        if ( $contact->address_id && ! isset( $this->address_id ) ) {
+            $this->address_id = $contact->address_id;
+        }
+        //companies
+        if ( $this->companies->isEmpty() && $contact->companies->isNotEmpty() ) {
+            $this->companies->saveMany( $contact->companies ); //does this work?
+        }
+
+        //bio
+        if ( ! isset( $this->bio ) ) {
+            $this->bio = $contact->bio;
+        }
+
+        //industry
+        if ( ! isset( $this->industry ) ) {
+            $this->industry = $contact->industry;
+        }
+
+        //linkedin
+        if ( ! isset( $this->linkedin ) && $contact->linkedin ) {
+            $this->linkedin = $contact->linkedin;
+        }
+
+        $this->save();
+        $contact->delete();
+    }
 }
