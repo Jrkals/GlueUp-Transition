@@ -23,9 +23,9 @@ class Name {
     }
 
     private function __construct( $fn, $ln, $full ) {
-        $this->firstName = $fn;
-        $this->lastName  = $ln;
-        $this->fullName  = $full;
+        $this->firstName = $fn ? str( $fn )->title() : '';
+        $this->lastName  = $ln ? str( $ln )->title() : '';
+        $this->fullName  = $full ? str( $full )->title() : '';
     }
 
     public function firstName(): string {

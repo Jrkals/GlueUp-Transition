@@ -52,9 +52,9 @@ class YcpContact extends Model {
             return $this; //do nothing and save nothing
         }
 
-        $this->first_name = $row['first_name'] ?? '';
-        $this->last_name  = $row['last_name'] ?? '';
-        $this->full_name  = $row['name'];
+        $this->first_name = isset( $row['first_name'] ) ? str( $row['first_name'] )->title()->value() : '';
+        $this->last_name  = isset( $row['last_name'] ) ? str( $row['last_name'] )->title()->value() : '';
+        $this->full_name  = str( $row['name'] )->title()->value();
 
         if ( $this->full_name && ! $this->first_name && ! $this->last_name ) {
             $this->first_name = Name::fromFullName( $this->full_name )->firstName();
@@ -67,7 +67,7 @@ class YcpContact extends Model {
         $this->nb_tags     = $row['nationbuilder_tags'] ?? '';
         $this->admin       = isset( $row['chapter_admin'] ) && $row['chapter_admin'] === 'TRUE';
         $this->date_joined = Carbon::parse( $row['date_joined'] )->toDateString();
-        if ( isset( $row['date_of_birth'] ) ) {
+        if ( ! empty( $row['date_of_birth'] ) ) {
             $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
         }
         if ( isset( $row['subscribed'] ) ||
