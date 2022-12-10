@@ -39,6 +39,7 @@ class ImportSilkStartContacts extends Command {
             //treat bad emails as no email at all.
             if ( ! EmailValidation::emailIsValid( $row['email'] ) ) {
                 unset( $row['email'] );
+                continue; // Skip these people
             }
 
             $found = YcpContact::getContact( $row );

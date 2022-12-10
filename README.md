@@ -46,3 +46,4 @@ Exports a list of contacts with all custom fields and information. These are exc
 
 * test contact import with all custom fields
 * Is there a way to import contacts to chapters?
+* Merge emailess rows with people with emails or delete
