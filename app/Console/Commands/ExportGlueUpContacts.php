@@ -30,17 +30,21 @@ class ExportGlueUpContacts extends Command {
      */
     public function handle() {
         $this->line( 'exporing csv for Contacts ' );
-        $writer   = new ExcelWriter( './storage/app/exports/contacts/contacts.xlsx' );
-        $data     = [];
+        $writer = new ExcelWriter( './storage/app/exports/contacts/contacts.xlsx' );
+        $data   = [];
+        $timer  = new Timer();
+        $timer->start();
+        $this->line( 'running query...' );
         $contacts = YcpContact::query()->with( [
             'plans',
             'chapters',
             'companies',
-            'phones'
-        ] )->get();
-        $count    = 0;
-        $timer    = new Timer();
-        $timer->start();
+            'phones',
+            'events',
+        ] )->get()->take( 5000 );
+        $this->line( $timer->elapsed( 'Contacts Fetched' ) );
+        $count = 0;
+
         $total = sizeof( $contacts );
         foreach ( $contacts as $contact ) {
             $address = $contact->address;
@@ -49,7 +53,9 @@ class ExportGlueUpContacts extends Command {
             $homeChapter                    = $contact->homeChapter()?->glueupId() ?? '';
             $chapters                       = $contact->chapterIds();
             $companyName                    = $contact->companyName();
-            $row                            = $contact->attributesToArray();
+            $row['First Name']              = $contact->first_name ?? '';
+            $row['Last Name']               = $contact->last_name ?? '';
+            $row['Full Name']               = $contact->full_name ?? '';
             $row['Street']                  = $address->street1 ?? '';
             $row['Street 2']                = $address->street2 ?? '';
             $row['City']                    = $address->city ?? '';
@@ -60,6 +66,9 @@ class ExportGlueUpContacts extends Command {
             $row['Chapters']                = $chapters;
             $row['Mobile Phone']            = $phone?->number;
             $row['Email']                   = $contact->email;
+            $row['Job Title']               = $contact->title ?? '';
+            $row['Birthday']                = $contact->birthday ?? '';
+            $row['Email Status']            = $contact->subscribed;
             $row['Spiritual Assessment']    = StringHelpers::glueUpSlugify( $contact->spiritual_assessment ) ?? '';
             $row['Professional Assessment'] = StringHelpers::glueUpSlugify( $contact->professional_assessment ) ?? '';
             $row['T Shirt Size']            = StringHelpers::glueUpSlugify( $contact->t_shirt_size ) ?? '';
@@ -79,7 +88,9 @@ class ExportGlueUpContacts extends Command {
                 $this->line( $timer->progress( $count, $total ) );
             }
         }
+        $this->line( 'writing to a file' );
         $writer->writeSingleFileExcel( $data );
+        $this->line( $timer->elapsed( 'Wrote to file' ) );
 
         return Command::SUCCESS;
     }

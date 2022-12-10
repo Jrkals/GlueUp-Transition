@@ -88,7 +88,7 @@ class YcpContact extends Model {
         $this->linkedin                = StringHelpers::validateUrl( $row['linkedin_profile'] ?? '' );
         $this->chapter_leader_role     = $row['current_chapter_role_category'] ?? '';
         $this->notes                   = $this->filterNotes( $row['notes'] );
-        if ( StringHelpers::isIndustry( $row['bio'] ) ) {
+        if ( isset( $row['bio'] ) && StringHelpers::isIndustry( $row['bio'] ) ) {
             $this->industry = $this->mapIndustry( $row['bio'] );
         } else {
             $this->bio = $row['bio'] ?? '';
@@ -585,14 +585,15 @@ class YcpContact extends Model {
     }
 
     public function mergeIn( YcpContact $contact ) {
+        echo "merging in $contact->email with $this->email \n";
         //plans
         foreach ( $contact->plans as $plan ) {
             //TODO check duplicates
             $this->plans()->save( $plan, [
-                'active'      => $plan->active, //context should mean this is always false
-                'expiry_date' => $plan->expiry_date,
-                'expiry_type' => $plan->expiry_type,
-                'start_date'  => $plan->start_date,
+                'active'      => $plan->pivot->active, //context should mean this is always false
+                'expiry_date' => $plan->pivot->expiry_date,
+                'expiry_type' => $plan->pivot->expiry_type,
+                'start_date'  => $plan->pivot->start_date,
             ] );
         }
         //phones

@@ -27,7 +27,11 @@ class StringHelpers {
      *
      * @return string
      */
-    public static function glueUpSlugify( string $answer ): string {
+    public static function glueUpSlugify( ?string $answer ): string {
+        if ( ! $answer ) {
+            return '';
+        }
+
         return strtolower( str_replace( ' ', '-', $answer ) );
     }
 

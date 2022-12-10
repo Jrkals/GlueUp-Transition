@@ -24,6 +24,9 @@ class ExcelWriter {
 
     private function writeSingleSheet( array $data, string $sheetName = 'Sheet' ) {
         $header = [];
+        if ( empty( $data ) ) {
+            return;
+        }
         foreach ( array_keys( $data[0] ) as $key ) {
             $header[ $key ] = '@';
         }

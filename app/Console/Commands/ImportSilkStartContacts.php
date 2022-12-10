@@ -23,7 +23,7 @@ class ImportSilkStartContacts extends Command {
 
         $reader = new DirectoryReader( $file );
         $data   = $reader->readDataFromDirectory();
-        $timer->elapsed( 'Read files' );
+        $this->line( $timer->elapsed( 'Read files' ) );
 
         $newWriter      = new ExcelWriter( './storage/app/exports/new.xlsx' );
         $existingWriter = new ExcelWriter( './storage/app/exports/existing.xlsx' );
@@ -79,17 +79,34 @@ class ImportSilkStartContacts extends Command {
     }
 
     private function mergeDefunctChapterLeaders() {
-        $leadersByEmail = YcpContact::query()->where( 'email', 'like', '%@ycp%' )->get();
+        $timer = new Timer();
+        $timer->start();
+        $leadersByEmail   = YcpContact::query()->where( 'email', 'like', '%@ycp%' )->get();
+        $count            = 0;
+        $activeLeaders    = 0;
+        $nonActiveLeaders = 0;
         foreach ( $leadersByEmail as $leader ) {
             if ( $leader->activeChapterLeader() ) {
+                $activeLeaders ++;
+                $count ++;
+                if ( $count % 100 === 0 ) {
+                    echo $timer->progress( $count, sizeof( $leadersByEmail ) ) . "\n";
+                }
                 continue;
             }
+            $nonActiveLeaders ++;
             $matchingName = YcpContact::getContact( [
                 'email'        => '',
                 'name'         => $leader->full_name,
                 'home_chapter' => $leader->homeChapter()
             ] );
             $matchingName?->mergeIn( $leader );
+            $count ++;
+            if ( $count % 100 === 0 ) {
+                echo $timer->progress( $count, sizeof( $leadersByEmail ) ) . "\n";
+            }
         }
+        echo "Active Leaders " . $activeLeaders . "\nNon active leaders " . $nonActiveLeaders . "\n";
+        echo $timer->elapsed( 'Don with merging leaders' );
     }
 }

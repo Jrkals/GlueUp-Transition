@@ -30,15 +30,13 @@ class Timer {
         $rate              = $progress / $this->timeElapsed;
         $amountRemaining   = $total - $progress;
         $timeRemaining     = $amountRemaining / $rate;
+        if ( $amountRemaining <= 0 ) {
+            return 'Done in ' . $this->timeElapsed;
+        }
 
         return ' Elapsed: ' . number_format( $this->timeElapsed, 1 ) . 's' . "\t" .
                number_format( $rate, 1 ) . '/s' . "\t" . number_format( $timeRemaining, 1 )
                . 's remaining' . "\t" . number_format( $amountRemaining ) . ' items remaining ';
     }
-
-    public function end() {
-        $this->timeElapsed = microtime() - $this->start;
-    }
-
 
 }
