@@ -47,15 +47,18 @@ class ExportGlueUpContacts extends Command {
 
         $total = sizeof( $contacts );
         foreach ( $contacts as $contact ) {
+            if ( ! $contact->email ) {
+                echo $contact->full_name . " missing email\n";
+                continue;
+            }
             $address = $contact->address;
             $phone   = $contact->primaryPhone();
 
-            $homeChapter       = $contact->homeChapter()?->glueupId() ?? '';
-            $chapters          = $contact->chapterIds();
-            $companyName       = $contact->companyName();
-            $row['First Name'] = $contact->first_name ?? '';
-            $row['Last Name']  = $contact->last_name ?? '';
-            // $row['Full Name']               = $contact->full_name ?? '';
+            $homeChapter                       = $contact->homeChapter()?->glueupId() ?? '';
+            $chapters                          = $contact->chapterIds();
+            $companyName                       = $contact->companyName();
+            $row['First Name']                 = $contact->first_name ?? '';
+            $row['Last Name']                  = $contact->last_name ?? '';
             $row['Address']                    = $address->street1 ?? '';
             $row['Address 2']                  = $address->street2 ?? '';
             $row['City']                       = $address->city ?? '';
@@ -64,7 +67,7 @@ class ExportGlueUpContacts extends Command {
             $row['Company']                    = $companyName;
             $row['Primary Chapter']            = $homeChapter;
             $row['Chapters']                   = $chapters;
-            $row['Mobile Phone']               = $phone?->number;
+            $row['Phone']                      = $phone?->number;
             $row['Email']                      = $contact->email;
             $row['Job Title']                  = $contact->title ?? '';
             $row['Date of Birth']              = $contact->birthday ?? '';
