@@ -52,5 +52,4 @@ Exports a list of contacts with all custom fields and information. These are exc
 * run email validation and import
 * import email unsubscribe
     * can't do with batch
-* assistant email:
 * mark sekaz phone: 571-289-5701

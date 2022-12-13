@@ -52,8 +52,8 @@ class YcpContact extends Model {
             return $this; //do nothing and save nothing
         }
 
-        $this->first_name = isset( $row['first_name'] ) ? str( $row['first_name'] )->title()->value() : '';
-        $this->last_name  = isset( $row['last_name'] ) ? str( $row['last_name'] )->title()->value() : '';
+        $this->first_name = ! empty( $row['first_name'] ) ? str( $row['first_name'] )->title()->value() : 'Unknown';
+        $this->last_name  = ! empty( $row['last_name'] ) ? str( $row['last_name'] )->title()->value() : 'Unknown';
         $this->full_name  = str( $row['name'] )->title()->value();
 
         if ( $this->full_name && ! $this->first_name && ! $this->last_name ) {
