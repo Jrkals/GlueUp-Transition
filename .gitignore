@@ -15,3 +15,5 @@ yarn-error.log
 /.idea
 /.vscode
 !/storage/app/exports
+storage/.DS_Store
+.DS_Store

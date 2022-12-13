@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Helpers\ExcelWriter;
+use App\Helpers\Timer;
 use App\Models\Plan;
 use App\Models\YcpContact;
 use Illuminate\Console\Command;
@@ -28,13 +29,17 @@ class ExportGlueUpMembers extends Command {
      * @return int
      */
     public function handle() {
+        $timer = new Timer();
+        $timer->start();
         $memberPlans = Plan::query()->get();
+        $this->line( $timer->elapsed( 'fetched members' ) );
         foreach ( $memberPlans as $plan ) {
             $this->line( 'exporing csv for ' . $plan->name . '...' );
             $writer  = new ExcelWriter( './storage/app/exports/members/' . $plan->name . '.xlsx' );
             $members = YcpContact::query()->whereRelation( 'plans', 'plan_id', '=', $plan->id )->get();
             $this->line( $plan->name . ' has ' . sizeof( $members ) . ' members' );
-            $data = [];
+            $data  = [];
+            $count = 0;
             foreach ( $members as $member ) {
                 $address = $member->billingAddress();
                 $plan    = $member->getPlan( $plan->id );
@@ -57,11 +62,14 @@ class ExportGlueUpMembers extends Command {
                     'Primary Chapter'              => $member->homeChapter()->glueUpId(),
 
                 ];
+                $count ++;
+                if ( $count % 100 === 0 ) {
+                    $this->line( $timer->progress( $count, sizeof( $members ) ) );
+                }
             }
-
+            $this->line( 'writing to file...' );
             $writer->writeSingleFileExcel( $data );
         }
-        $this->line( 'done' );
 
         return Command::SUCCESS;
     }

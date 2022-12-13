@@ -33,7 +33,7 @@ class Plan extends Model {
     private static function mapPlanNames( string $name ): string {
         return match ( $name ) {
             'Admin' => 'Chapter Leader',
-            'Chapter Leader', 'Belong', 'Belong Plus', 'Executive Mentor',
+            'Chapter Leader', 'Belong', 'Belong Plus', 'Executive Mentor Membership',
             'Chapter Chaplain', 'Chapter Board Member' => $name,
             default => 'Legacy'
         };
