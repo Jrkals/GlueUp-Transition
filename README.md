@@ -46,5 +46,11 @@ Exports a list of contacts with all custom fields and information. These are exc
 
 * test contact import with all custom fields
 * Is there a way to import contacts to chapters?
+    * individually import at chapter level
 * why did last contact import fail?
+    * blank names
 * run email validation and import
+* import email unsubscribe
+    * can't do with batch
+* assistant email:
+* mark sekaz phone: 571-289-5701
