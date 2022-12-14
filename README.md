@@ -45,8 +45,6 @@ Exports a list of contacts with all custom fields and information. These are exc
 #### TODOS
 
 * test contact import with all custom fields
-* Is there a way to import contacts to chapters?
-    * individually import at chapter level
 * why did last contact import fail?
     * blank names
 * run email validation and import
