@@ -45,8 +45,10 @@ Exports a list of contacts with all custom fields and information. These are exc
 #### TODOS
 
 * test contact import with all custom fields
-* why did last contact import fail?
-    * blank names
+* test to make sure chapter leader merging is working
+* todo possibly expand contact details match to include custom fields. This can
+    * probably be avoided if you import the contact stuff first
+* Test chapter import
 * run email validation and import
 * import email unsubscribe
     * can't do with batch
