@@ -30,8 +30,6 @@ class ExportGlueUpContacts extends Command {
      * @return int
      */
     public function handle() {
-
-        $data  = [];
         $timer = new Timer();
         $timer->start();
         $this->line( 'running query...' );
@@ -44,6 +42,7 @@ class ExportGlueUpContacts extends Command {
         ] )->get()->take( 2 );
         $this->line( $timer->elapsed( 'Contacts Fetched' ) );
         foreach ( $chapters as $chapter ) {
+            $data     = [];
             $contacts = $chapter->contacts;
             $count    = 0;
 

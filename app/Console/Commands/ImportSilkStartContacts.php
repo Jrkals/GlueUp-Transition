@@ -108,6 +108,6 @@ class ImportSilkStartContacts extends Command {
             }
         }
         echo "Active Leaders " . $activeLeaders . "\nNon active leaders " . $nonActiveLeaders . "\n";
-        echo $timer->elapsed( 'Don with merging leaders' );
+        echo $timer->elapsed( 'Done with merging leaders' );
     }
 }
