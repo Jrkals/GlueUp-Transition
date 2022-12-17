@@ -8,8 +8,6 @@ use Carbon\Exceptions\Exception;
 class Timer {
     private float $start;
     private float $timeElapsed;
-    private float $previousTotal;
-    private float $previousRate;
 
     public function __construct() {
         $this->timeElapsed = 0;
@@ -22,7 +20,7 @@ class Timer {
     public function elapsed( string $prepend = '' ) {
         $this->timeElapsed = ( microtime( true ) - $this->start );
 
-        return $prepend . ' Elapsed: ' . $this->timeElapsed . ' s';
+        return $prepend . ' Elapsed: ' . number_format( $this->timeElapsed, 1 ) . ' s';
     }
 
     public function progress( $progress, $total ) {

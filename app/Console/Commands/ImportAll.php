@@ -3,8 +3,16 @@
 namespace App\Console\Commands;
 
 use App\Helpers\Timer;
+use App\Models\Address;
+use App\Models\Chapter;
+use App\Models\EmailValidation;
+use App\Models\Phone;
+use App\Models\YcpCompany;
+use App\Models\YcpContact;
+use App\Models\YcpEvent;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use PharIo\Manifest\Email;
 
 class ImportAll extends Command {
     /**
@@ -46,6 +54,23 @@ class ImportAll extends Command {
         Artisan::call( 'silkstart:importEvents ' . $eventsDir );
         $this->line( $timer->elapsed( 'Done with event import' ) );
         $this->line( 'Done' );
+
+        $contacts    = YcpContact::query()->count();
+        $chapters    = Chapter::query()->count();
+        $addresses   = Address::query()->count();
+        $validEmails = EmailValidation::query()->where( 'valid', '=', true )->count();
+        $phones      = Phone::query()->count();
+        $companies   = YcpCompany::query()->count();
+        $events      = YcpEvent::query()->count();
+
+        $this->line( 'Imported ' . $contacts . ' contacts' );
+        $this->line( 'Imported ' . $chapters . ' chapters' );
+        $this->line( 'Imported ' . $addresses . ' addresses' );
+        $this->line( 'Imported ' . $validEmails . ' valid emails' );
+        $this->line( 'Imported ' . $phones . ' phones' );
+        $this->line( 'Imported ' . $companies . ' companies' );
+        $this->line( 'Imported ' . $events . ' events' );
+
 
         return Command::SUCCESS;
     }
