@@ -39,7 +39,7 @@ class ExportGlueUpContacts extends Command {
             'contacts.companies',
             'contacts.phones',
             'contacts.plans',
-        ] )->get()->take( 2 );
+        ] )->get();
         $this->line( $timer->elapsed( 'Contacts Fetched' ) );
         foreach ( $chapters as $chapter ) {
             $data     = [];
@@ -55,7 +55,7 @@ class ExportGlueUpContacts extends Command {
             $writer = new ExcelWriter( './storage/app/exports/contacts/' . $chapter->name . '.xlsx' );
             foreach ( $contacts as $contact ) {
                 if ( ! $contact->email ) {
-                    echo $contact->full_name . " missing email\n";
+                    //    echo $contact->full_name . " missing email\n";
                     continue;
                 }
                 $address = $contact->address;
@@ -97,11 +97,6 @@ class ExportGlueUpContacts extends Command {
             $this->line( 'Writing Data for ' . $chapter->name );
             $writer->writeSingleFileExcel( $data );
         }
-
-
-        $this->line( 'writing to a file' );
-
-        $this->line( $timer->elapsed( 'Wrote to file' ) );
 
         return Command::SUCCESS;
     }

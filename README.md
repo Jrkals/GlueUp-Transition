@@ -45,6 +45,7 @@ Exports a list of contacts with all custom fields and information. These are exc
 #### TODOS
 
 * test to make sure chapter leader merging is working
+* fix duplicate events
 * how does relation between umbrella and chapter custom fields work?
     * do we want to import some fields at chapter and some at national?
     *

@@ -27,7 +27,7 @@ class ImportAll extends Command {
      *
      * @var string
      */
-    protected $description = 'Runs All SilkStart Imports';
+    protected $description = 'Runs All SilkStart Imports. It takes about 45 minutes to run from scratch';
 
     /**
      * Execute the console command.

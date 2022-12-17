@@ -51,19 +51,11 @@ class ImportSilkStartContacts extends Command {
                     YcpContact::updateContact( $row, $found, $differences );
                     $updated[] = $row;
                 }
-                $count ++;
-                if ( $count % 1000 === 0 ) {
-                    $this->line( $timer->progress( $count, $total ) );
-                }
                 continue;
             }
             $ycpContact = new YcpContact();
             $ycpContact->fromCSV( $row );
             $new[] = $row;
-            $count ++;
-            if ( $count % 1000 === 0 ) {
-                $this->line( $timer->progress( $count, $total ) );
-            }
         }
         $this->line( 'merging defunct leaders...' );
         $this->mergeDefunctChapterLeaders();
@@ -108,6 +100,6 @@ class ImportSilkStartContacts extends Command {
             }
         }
         echo "Active Leaders " . $activeLeaders . "\nNon active leaders " . $nonActiveLeaders . "\n";
-        echo $timer->elapsed( 'Done with merging leaders' );
+        echo $timer->elapsed( 'Done with merging leaders' ) . "\n";
     }
 }

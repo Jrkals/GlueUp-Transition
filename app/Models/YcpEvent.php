@@ -14,7 +14,6 @@ class YcpEvent extends Model {
         return $this->belongsToMany( YcpContact::class, 'ycp_events_contacts' )->withPivot( 'attended' );
     }
 
-    //TODO make sure these criteria are strick enough
     public static function getEvent( array $row ): ?YcpEvent {
         $event = YcpEvent::query()->where( [
             'name' => $row['event'],
@@ -49,7 +48,7 @@ class YcpEvent extends Model {
             return 'SJS';
         }
         if ( str_contains( $eventName, 'nhh' ) || str_contains( $eventName, 'happy hour' )
-             || str_contains( $eventName, 'hetworking social' ) ) {
+             || str_contains( $eventName, 'networking social' ) ) {
             return 'NHH';
         }
         if ( str_contains( $eventName, 'panel' ) ) {
@@ -67,7 +66,7 @@ class YcpEvent extends Model {
 
     public static function fromNBTag( string $tag, string $date, YcpContact $contact = null ): YcpEvent {
         $event       = new YcpEvent();
-        $event->name = $tag;
+        $event->name = str( $tag )->trim()->value();
         $event->date = $date;
         $event->type = self::getEventType( $tag );
         $event->save();

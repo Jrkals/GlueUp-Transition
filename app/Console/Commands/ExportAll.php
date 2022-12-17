@@ -26,7 +26,7 @@ class ExportAll extends \Illuminate\Console\Command {
      *
      * @var string
      */
-    protected $description = 'Runs All GlueUp Exports';
+    protected $description = 'Runs All GlueUp Exports. Takes about 8 minutes to run on a full DB';
 
     /**
      * Execute the console command.
