@@ -45,10 +45,10 @@ Exports a list of contacts with all custom fields and information. These are exc
 #### TODOS
 
 * test to make sure chapter leader merging is working
-* todo possibly expand contact details match to include custom fields. This can
-    * probably be avoided if you import the contact stuff first
-* Test chapter import with custom fields
-* run email validation and import
+* how does relation between umbrella and chapter custom fields work?
+    * do we want to import some fields at chapter and some at national?
+    *
 * import email unsubscribe
-    * can't do with batch. 860 of them per query
+    * can't do with batch. 860 of them
+    * do after import
 * mark sekaz phone: 571-289-5701
