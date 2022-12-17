@@ -44,12 +44,11 @@ Exports a list of contacts with all custom fields and information. These are exc
 
 #### TODOS
 
-* test contact import with all custom fields
 * test to make sure chapter leader merging is working
 * todo possibly expand contact details match to include custom fields. This can
     * probably be avoided if you import the contact stuff first
-* Test chapter import
+* Test chapter import with custom fields
 * run email validation and import
 * import email unsubscribe
-    * can't do with batch
+    * can't do with batch. 860 of them per query
 * mark sekaz phone: 571-289-5701

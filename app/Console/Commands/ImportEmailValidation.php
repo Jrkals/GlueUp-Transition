@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Helpers\CSVReader;
+use App\Helpers\Timer;
 use App\Models\EmailValidation;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class ImportEmailValidation extends Command {
     /**
@@ -27,19 +29,45 @@ class ImportEmailValidation extends Command {
      * @return int
      */
     public function handle() {
+
+        $timer = new Timer();
+        $timer->start();
         $reader = new CSVReader( $this->argument( 'file' ) );
         $data   = $reader->extract_data();
+        $this->line( $timer->elapsed( 'read file' ) );
+        $count = 0;
 
+        $emailValidations = EmailValidation::query()->get();
+        $this->line( 'Fetched data...' );
+        $emailValidationArray = [];
+        foreach ( $emailValidations as $validation ) {
+            $emailValidationArray[ $validation->email ] = $validation->valid;
+        }
+        $this->line( 'Built array' );
+        $toInsert = [];
         foreach ( $data as $row ) {
-            if ( EmailValidation::query()->find( $row['email_in'] ) ) {
+            $exists = isset( $emailValidationArray[ $row['email'] ] );
+            if ( $exists ) {
+                $count ++;
+                if ( $count % 1000 === 0 ) {
+                    $this->line( $timer->progress( $count, sizeof( $data ) ) );
+                }
                 continue;
             }
-            $validation = new EmailValidation( [
-                'email' => $row['email_in'],
+            $toInsert[] = [
+                'email' => $row['email'],
                 'valid' => $row['result'] === 'valid',
-            ] );
-            $validation->save();
+            ];
+            $count ++;
+            if ( $count % 1000 === 0 ) {
+                $this->line( $timer->progress( $count, sizeof( $data ) ) );
+            }
         }
+        $this->line( 'Inserting into db...' );
+        foreach ( array_chunk( $toInsert, 2000 ) as $data ) {
+            EmailValidation::query()->insert( $data );
+        }
+        $this->line( 'Done' );
 
         return Command::SUCCESS;
     }
