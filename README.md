@@ -48,7 +48,4 @@ Exports a list of contacts with all custom fields and information. These are exc
 * fix duplicate events
 * how does relation between umbrella and chapter custom fields work?
     * do we want to import some fields at chapter and some at national?
-* import email unsubscribe
-    * can't do with batch. 860 of them
-    * do after import
 * mark sekaz phone: 571-289-5701

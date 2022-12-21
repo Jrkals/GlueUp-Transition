@@ -54,8 +54,7 @@ class ExportGlueUpContacts extends Command {
             $this->line( 'exporting ' . sizeof( $contacts ) . ' contacts for ' . $chapter->name );
             $writer = new ExcelWriter( './storage/app/exports/contacts/' . $chapter->name . '.xlsx' );
             foreach ( $contacts as $contact ) {
-                if ( ! $contact->email ) {
-                    //    echo $contact->full_name . " missing email\n";
+                if ( ! $contact->email || $contact->status === 'Unsubscribed' ) {
                     continue;
                 }
                 $address = $contact->address;

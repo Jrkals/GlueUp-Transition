@@ -43,7 +43,10 @@ class ExportGlueUpMembers extends Command {
             foreach ( $members as $member ) {
                 $address = $member->billingAddress();
                 $plan    = $member->getPlan( $plan->id );
-                $data[]  = [
+                if ( ! $member->email || $member->status === 'Unsubscribed' ) {
+                    continue;
+                }
+                $data[] = [
                     'Membership Start Date'        => $plan->pivot->start_date,
                     'Membership End Date'          => $plan->pivot->expiry_date,
                     'First Name'                   => $member->first_name,
@@ -60,7 +63,6 @@ class ExportGlueUpMembers extends Command {
                     'Billing Company'              => '',
                     'Chapters'                     => $member->chapterIds(),
                     'Primary Chapter'              => $member->homeChapter()->glueUpId(),
-
                 ];
                 $count ++;
                 if ( $count % 100 === 0 ) {

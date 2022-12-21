@@ -19,10 +19,7 @@ class NBTagParser {
         $events = [];
         foreach ( $this->tags as $tag ) {
             if ( $this->isEventTag( $tag ) ) {
-                $date = $this->getTagDate( $tag );
-                if ( ! $date ) {
-                    continue; //TODO what to do about no date events?
-                }
+                $date     = $this->getTagDate( $tag );
                 $event    = YcpEvent::fromNBTag( $tag, $date, $this->contact );
                 $events[] = $event;
             }
@@ -51,33 +48,64 @@ class NBTagParser {
     private function getTagDate( string $tag ): string {
         $separator = $this->findSeparator( $tag );
         $parts     = $separator ? explode( $separator, $tag ) : [ $tag ];
+        $builder   = '';
         foreach ( $parts as $part ) {
-            try {
-                Carbon::parse( $part );
-                if ( Carbon::parse( $part )->isValid() ) {
-                    return Carbon::parse( $part )->toDateString();
-                }
-            } catch ( \Exception $exception ) {
-            }
+            if ( $this->isDate( $part ) ) {
+                $builder = '';
 
-            if ( str_contains( $part, '16' ) || str_contains( $part, '2016' ) ) {
-                return Carbon::create( 2016 )->toDateString();
+                return $this->getDate( $part );
             }
-            if ( str_contains( $part, '17' ) || str_contains( $part, '2017' ) ) {
-                return Carbon::create( 2017 )->toDateString();
-            }
-            if ( str_contains( $part, '18' ) || str_contains( $part, '2018' ) ) {
-                return Carbon::create( 2018 )->toDateString();
-            }
-            if ( str_contains( $part, '19' ) || str_contains( $part, '2019' ) ) {
-                return Carbon::create( 2019 )->toDateString();
-            }
-            if ( str_contains( $part, '20' ) || str_contains( $part, '2020' ) ) {
-                return Carbon::create( 2020 )->toDateString();
+            if ( is_numeric( $part ) ) {
+                $builder .= $part . '-';
+                if ( $this->isDate( str( $builder )->trim( '-' )->value() ) ) {
+                    return $this->getDate( str( $builder )->trim( '-' )->value() );
+                }
             }
         }
 
         return '';
+    }
+
+    private function isDate( $part ): bool {
+        $part      = str( $part )->trim()->value();
+        $len       = strlen( $part );
+        $isNumeric = is_numeric( $part );
+        // e.g. 2018, 030119
+        if ( ( $len === 6 || $len === 4 ) && $isNumeric ) {
+            return true;
+        }
+        if ( $len === 2 ) {
+            return false;
+        }
+        if ( str_contains( $part, '/' ) ) {
+            return true;
+        }
+        if ( substr_count( $part, '-' ) === 2 && ! str_ends_with( $part, '-' ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function getDate( string $part ): string {
+        $part      = str( $part )->trim()->value();
+        $len       = strlen( $part );
+        $isNumeric = is_numeric( $part );
+        if ( $isNumeric && $len === 4 ) {
+            return Carbon::create( $part )->toDateString();
+        }
+
+        if ( $len === 6 && $isNumeric ) {
+            $a = Carbon::create( '20' . substr( $part, 0, 2 ), substr( $part, 2, 2 ),
+                substr( $part, 4, 2 ) )->toDateString();
+
+            return Carbon::create( '20' . substr( $part, 0, 2 ), substr( $part, 2, 2 ),
+                substr( $part, 4, 2 ) );
+        }
+
+        $a = Carbon::parse( $part )->toDateString();
+
+        return Carbon::parse( $part )->toDateString();
     }
 
     private function findSeparator( string $tag ): string {

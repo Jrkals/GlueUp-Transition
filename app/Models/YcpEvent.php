@@ -17,7 +17,7 @@ class YcpEvent extends Model {
     public static function getEvent( array $row ): ?YcpEvent {
         $event = YcpEvent::query()->where( [
             'name' => $row['event'],
-            'date' => Carbon::parse( $row['event_date'] )->toDateString()
+            //   'date' => Carbon::parse( $row['event_date'] )->toDateString()
         ] )->first();
 
         if ( ! $event ) {
@@ -67,7 +67,7 @@ class YcpEvent extends Model {
     public static function fromNBTag( string $tag, string $date, YcpContact $contact = null ): YcpEvent {
         $event       = new YcpEvent();
         $event->name = str( $tag )->trim()->value();
-        $event->date = $date;
+        $event->date = $date ?: null;
         $event->type = self::getEventType( $tag );
         $event->save();
         if ( $contact ) {

@@ -125,7 +125,7 @@ return new class extends Migration {
         Schema::create( 'ycp_events', function ( Blueprint $table ) {
             $table->id();
             $table->timestamps();
-            $table->date( 'date' );
+            $table->date( 'date' )->nullable();
             $table->enum( 'type', [ 'ESS', 'Panel', 'Conference', 'NHH', 'SJS', 'Launch', 'Other' ] );
             $table->string( 'name' );
         } );
