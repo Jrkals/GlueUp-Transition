@@ -18,8 +18,14 @@ class NBTagParser {
     public function makeEvents(): array {
         $events = [];
         foreach ( $this->tags as $tag ) {
+            $tag = str( $tag )->trim()->value();
             if ( $this->isEventTag( $tag ) ) {
-                $date     = $this->getTagDate( $tag );
+                $date   = $this->getTagDate( $tag );
+                $exists = YcpEvent::getEvent( [ 'event' => $tag, 'event_date' => $date ] );
+                if ( $exists ) {
+                    $events[] = $exists;
+                    continue;
+                }
                 $event    = YcpEvent::fromNBTag( $tag, $date, $this->contact );
                 $events[] = $event;
             }

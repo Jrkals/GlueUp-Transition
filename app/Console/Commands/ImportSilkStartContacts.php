@@ -39,6 +39,10 @@ class ImportSilkStartContacts extends Command {
             //treat bad emails as no email at all.
             if ( ! EmailValidation::emailIsValid( $row['email'] ) ) {
                 unset( $row['email'] );
+                $count ++;
+                if ( $count % 1000 === 0 ) {
+                    $this->line( $timer->progress( $count, $total ) );
+                }
                 continue; // Skip these people
             }
 
@@ -51,11 +55,19 @@ class ImportSilkStartContacts extends Command {
                     YcpContact::updateContact( $row, $found, $differences );
                     $updated[] = $row;
                 }
+                $count ++;
+                if ( $count % 1000 === 0 ) {
+                    $this->line( $timer->progress( $count, $total ) );
+                }
                 continue;
             }
             $ycpContact = new YcpContact();
             $ycpContact->fromCSV( $row );
             $new[] = $row;
+            $count ++;
+            if ( $count % 1000 === 0 ) {
+                $this->line( $timer->progress( $count, $total ) );
+            }
         }
         $this->line( 'merging defunct leaders...' );
         $this->mergeDefunctChapterLeaders();
