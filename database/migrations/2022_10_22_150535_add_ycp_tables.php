@@ -126,7 +126,8 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table->date( 'date' )->nullable();
-            $table->enum( 'type', [ 'ESS', 'Panel', 'Conference', 'NHH', 'SJS', 'Launch', 'Other' ] );
+            $table->enum( 'type', [ 'ESS', 'Panel', 'Conference', 'NHH', 'SJS', 'Launch', 'Other' ] )
+                  ->default( 'Other' );
             $table->string( 'name' );
         } );
 

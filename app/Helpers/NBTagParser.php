@@ -37,7 +37,8 @@ class NBTagParser {
             str_contains( $tag, "sjr" ) ||
             str_contains( $tag, "panel" ) ||
             str_contains( $tag, "attendee" ) ||
-            str_contains( $tag, "kickoff" )
+            str_contains( $tag, "kickoff" ) ||
+            str_contains( $tag, 'event' )
         ) {
             return true;
         }
@@ -46,18 +47,21 @@ class NBTagParser {
     }
 
     private function getTagDate( string $tag ): string {
-        $separator = $this->findSeparator( $tag );
-        $parts     = $separator ? explode( $separator, $tag ) : [ $tag ];
-        $builder   = '';
-        foreach ( $parts as $part ) {
-            if ( $this->isDate( $part ) ) {
-                $builder = '';
-
+        $parts   = $this->explodeString( $tag );
+        $builder = '';
+        $size    = sizeof( $parts );
+        for ( $i = 0; $i < $size; $i ++ ) {
+            $part = $parts[ $i ];
+            // $part          = $this->mapMonth( $part );
+            $next          = $parts[ $i + 1 ] ?? '';
+            $nextIsNumeric = is_numeric( $next );
+            if ( $this->isDate( $part ) && $builder === '' && ! $nextIsNumeric ) {
                 return $this->getDate( $part );
             }
             if ( is_numeric( $part ) ) {
                 $builder .= $part . '-';
-                if ( $this->isDate( str( $builder )->trim( '-' )->value() ) ) {
+                if ( $this->isDate( str( $builder )->trim( '-' )->value() )
+                     && ! $nextIsNumeric ) {
                     return $this->getDate( str( $builder )->trim( '-' )->value() );
                 }
             }
@@ -70,17 +74,18 @@ class NBTagParser {
         $part      = str( $part )->trim()->value();
         $len       = strlen( $part );
         $isNumeric = is_numeric( $part );
+        $dashCount = substr_count( $part, '-' );
         // e.g. 2018, 030119
         if ( ( $len === 6 || $len === 4 ) && $isNumeric ) {
             return true;
         }
-        if ( $len === 2 ) {
+        if ( $len < 3 ) {
             return false;
         }
         if ( str_contains( $part, '/' ) ) {
             return true;
         }
-        if ( substr_count( $part, '-' ) === 2 && ! str_ends_with( $part, '-' ) ) {
+        if ( $dashCount === 2 ) {
             return true;
         }
 
@@ -91,39 +96,78 @@ class NBTagParser {
         $part      = str( $part )->trim()->value();
         $len       = strlen( $part );
         $isNumeric = is_numeric( $part );
+        $dashCount = substr_count( $part, '-' );
         if ( $isNumeric && $len === 4 ) {
             return Carbon::create( $part )->toDateString();
         }
 
         if ( $len === 6 && $isNumeric ) {
-            $a = Carbon::create( '20' . substr( $part, 0, 2 ), substr( $part, 2, 2 ),
-                substr( $part, 4, 2 ) )->toDateString();
-
             return Carbon::create( '20' . substr( $part, 0, 2 ), substr( $part, 2, 2 ),
                 substr( $part, 4, 2 ) );
         }
 
-        $a = Carbon::parse( $part )->toDateString();
+        if ( $dashCount === 2 ) {
+            return $this->getYearFromTwoDashes( $part );
+        }
 
         return Carbon::parse( $part )->toDateString();
     }
 
-    private function findSeparator( string $tag ): string {
+    private function explodeString( string $tag ): array {
+        $tag = str( $tag )->trim()->value();
         if ( empty( $tag ) ) {
-            return $tag;
+            return [ $tag ];
         }
+        $tag = str_replace( ' ', '-', $tag );
+        $tag = str_replace( '_', '-', $tag );
         $tag = str( $tag )->trim( ' ' )->value();
-        if ( sizeof( explode( ' ', $tag ) ) > 1 ) {
-            return ' ';
-        }
-        if ( sizeof( explode( '-', $tag ) ) > 1 ) {
-            return '-';
-        }
-        if ( sizeof( explode( '_', $tag ) ) > 1 ) {
-            return '_';
-        }
 
-        return '';
+        return explode( '-', $tag );
     }
+
+    // 1-7-20 -> 2020-01-07
+    // 01-07-20 -> 2020-01-07
+    // 01-07-2020 -> 2020-01-07
+    // 2020-01-07 -> 2020-01-07
+    private function getYearFromTwoDashes( string $date ) {
+        $parts = explode( '-', $date );
+        if ( strlen( $parts[0] ) === 4 ) {
+            $year  = intval( $parts[0] );
+            $month = intval( $parts[1] );
+            $day   = intval( $parts[2] );
+
+            return Carbon::create( $year, $month, $day );
+        }
+        if ( strlen( $parts[2] ) === 4 ) {
+            $year  = intval( $parts[2] );
+            $month = intval( $parts[0] );
+            $day   = intval( $parts[1] );
+
+            return Carbon::create( $year, $month, $day );
+        }
+        $year  = intval( '20' . $parts[2] );
+        $month = intval( $parts[0] );
+        $day   = intval( $parts[1] );
+
+        return Carbon::create( $year, $month, $day );
+    }
+
+//    private function mapMonth( string $part ): string {
+//        return match ( $part ) {
+//            'Jan' => '1',
+//            'Feb' => '2',
+//            'Mar' => '3',
+//            'Apr' => '4',
+//            'Myr' => '5',
+//            'Jun' => '6',
+//            'Jul' => '7',
+//            'Aug' => '8',
+//            'Sep' => '9',
+//            'Oct' => '10',
+//            'Nov' => '11',
+//            'Dec' => '12',
+//            default => $part
+//        };
+//    }
 
 }
