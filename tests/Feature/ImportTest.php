@@ -208,7 +208,7 @@ class ImportTest extends TestCase {
             'spiritual_assessment'    => '2 - Catholic, but not attending Mass regularly',
             'professional_assessment' => '4 - Right profession, integrating faith into the workplace, but could use additional resources',
             't_shirt_size'            => 'L',
-            //   'virtual_mentoring'       => 'Yes',
+            'virtual_mentoring'       => 'Yes',
             'years_at_workplace'      => '0-3 years',
             'chapter_interest_list'   => 'boston',
             'linkedin'                => 'https://www.linkedin.com/in/beatrice-torralba-shakal-0152734a/',

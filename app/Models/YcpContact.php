@@ -79,7 +79,11 @@ class YcpContact extends Model {
         $this->spiritual_assessment    = $row['spiritual_assessment'] ?? '';
         $this->professional_assessment = $row['professional_assessment'] ?? '';
         $this->t_shirt_size            = $row['t_shirt_size'] ?? null;
-        $this->virtual_mentoring       = $row['would_you_be_open_to_participating_in_virtual_mentoring'] ?? null;
+        $this->virtual_mentoring       = ! empty( $row['would_you_be_open_to_participating_in_virtual_mentoring'] ) ?
+            str_contains( $row['would_you_be_open_to_participating_in_virtual_mentoring'], '1' ) ||
+            str_contains( $row['would_you_be_open_to_participating_in_virtual_mentoring'], 'TRUE' )
+                ? "Yes" : "No"
+            : null;
         $this->years_at_workplace      = $row['years_at_current_workplace'] ?? '';
         $this->chapter_interest_list   = $this->formChapterInterestList(
             $row['potential_ycp_city'] ?? '',
