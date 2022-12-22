@@ -13,7 +13,7 @@ class YcpCompany extends Model {
         return $this->belongsToMany( YcpContact::class )->withPivot( [ 'billing', 'contact' ] );
     }
 
-    public function address() {
+    public function address(): \Illuminate\Database\Eloquent\Relations\MorphOne {
         return $this->morphOne( \App\Models\Address::class, 'addressable' );
     }
 

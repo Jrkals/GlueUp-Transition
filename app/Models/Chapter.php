@@ -14,10 +14,6 @@ class Chapter extends Model {
         return $this->belongsToMany( YcpContact::class )->withPivot( 'home' );
     }
 
-    public function events(): \Illuminate\Database\Eloquent\Relations\HasMany {
-        return $this->hasMany( YcpEvent::class );
-    }
-
     public static function getOrCreateFromName( string $name ) {
         $mapped_name = str_replace( '.', '', $name ) ?: 'Young Catholic Professionals';
         $existing    = Chapter::query()->where( 'name', '=', $mapped_name )->get();

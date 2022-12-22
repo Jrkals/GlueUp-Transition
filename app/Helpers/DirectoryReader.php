@@ -22,7 +22,6 @@ class DirectoryReader {
             if ( $file === '.' || $file === '..' ) {
                 continue;
             }
-            //   echo $file . "\n";
             $reader = new CSVReader( $this->path . '/' . $file );
             $data   = array_merge( $data, $reader->extract_data() );
         }

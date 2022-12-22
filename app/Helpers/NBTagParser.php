@@ -158,22 +158,4 @@ class NBTagParser {
         return Carbon::create( $year, $month, $day );
     }
 
-//    private function mapMonth( string $part ): string {
-//        return match ( $part ) {
-//            'Jan' => '1',
-//            'Feb' => '2',
-//            'Mar' => '3',
-//            'Apr' => '4',
-//            'Myr' => '5',
-//            'Jun' => '6',
-//            'Jul' => '7',
-//            'Aug' => '8',
-//            'Sep' => '9',
-//            'Oct' => '10',
-//            'Nov' => '11',
-//            'Dec' => '12',
-//            default => $part
-//        };
-//    }
-
 }

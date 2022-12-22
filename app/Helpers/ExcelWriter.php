@@ -28,7 +28,7 @@ class ExcelWriter {
             return;
         }
         foreach ( array_keys( $data[0] ) as $key ) {
-            $header[ $key ] = '@';
+            $header[ $key ] = '@'; // Type String
         }
         $this->excel->writeSheetHeader( $sheetName, $header );
         foreach ( $data as $row ) {
