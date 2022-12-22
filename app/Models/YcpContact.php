@@ -97,18 +97,34 @@ class YcpContact extends Model {
             $this->bio = $row['bio'] ?? '';
         }
 
-        $currentPlan = Plan::getOrCreatePlan( [
-            'name' => $row['plan']
-        ] );
-        if ( ! empty( $row ['last_renewed_plan'] ) ) {
-            $previousPlan = Plan::getOrCreatePlan( [
-                'name' => $row['last_renewed_plan']
+        if ( ! empty( $row ['plan'] ) ) {
+            $currentPlan = Plan::getOrCreatePlan( [
+                'name' => $row['plan']
             ] );
         }
 
+        if ( ! empty( $row ['latest_plan'] ) ) {
+            $previousPlan = Plan::getOrCreatePlan( [
+                'name' => $row['latest_plan']
+            ] );
+        }
+
+        $home_chapter = Chapter::getOrCreateFromName( $row['home_chapter'] );
+
         $chapters       = $this->parseChapters( $row['active_chapters'] ?? $row['chapter'] );
-        $home_chapter   = Chapter::getOrCreateFromName( $row['home_chapter'] );
         $other_chapters = $this->parseChapters( $row['other_chapters'] );
+        $chapters       = $chapters->merge( $other_chapters );
+
+        //Dedup chapters
+        $uniqueChapters = [ $home_chapter->name => $home_chapter ];
+        foreach ( $chapters as $chapter ) {
+            if ( ! isset( $uniqueChapters[ $chapter->name ] ) ) {
+                $uniqueChapters[ $chapter->name ] = $chapter;
+            }
+        }
+        unset( $uniqueChapters[ $home_chapter->name ] );
+        $uniqueChapters = collect( array_values( $uniqueChapters ) );
+
         $this->save();
 
         if ( ! empty( $row['mobile_phone'] ) ) {
@@ -120,7 +136,7 @@ class YcpContact extends Model {
         if ( ! empty( $row['home_phone'] ) ) {
             Phone::create( $row['home_phone'], $this->id, 'home' );
         }
-        if ( $row['status'] !== 'Contact' ) {
+        if ( isset( $currentPlan ) ) {
             $this->plans()->save( $currentPlan, [
                 'active'      => true,
                 'expiry_date' => Carbon::parse( $row['expiry_date'] ),
@@ -128,19 +144,19 @@ class YcpContact extends Model {
                 'start_date'  => $row['last_renewal_date'] ? Carbon::parse( $row['last_renewal_date'] )
                     : Carbon::parse( $row['date_joined'] )
             ] );
-            if ( isset( $previousPlan ) && $previousPlan->differentPlan( $currentPlan ) ) {
-                $this->plans()->save( $previousPlan, [
-                    'active'      => false,
-                    'expiry_date' => Carbon::parse( $row['expiry_date'] ),
-                    'expiry_type' => $row['expiry_type'] ?: 'Unknown',
-                    'start_date'  => Carbon::parse( $row['date_joined'] )
-                ] );
-            }
+        }
+        if ( isset( $previousPlan ) && $previousPlan->differentPlan( $currentPlan ?? null ) ) {
+            $this->plans()->save( $previousPlan, [
+                'active'      => false,
+                'expiry_date' => Carbon::parse( $row['expiry_date'] ),
+                'expiry_type' => $row['expiry_type'] ?: 'Unknown',
+                'start_date'  => Carbon::parse( $row['date_joined'] )
+            ] );
         }
 
+
         $this->chapters()->save( $home_chapter, [ 'home' => true ] );
-        $this->chapters()->saveMany( $chapters, [] );
-        $this->chapters()->saveMany( $other_chapters, [] );
+        $this->chapters()->saveMany( $uniqueChapters, [] );
 
         if ( $row['nationbuilder_tags'] ) {
             $nbTagParser = new NBTagParser( $row['nationbuilder_tags'], $this );

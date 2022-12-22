@@ -70,9 +70,6 @@ class YcpEvent extends Model {
         $event->date = $date ?: null;
         //   $event->type = self::getEventType( $tag );
         $event->save();
-        if ( $contact ) {
-            $event->contacts()->save( $contact );
-        }
 
         return $event;
     }

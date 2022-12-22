@@ -26,8 +26,12 @@ class Plan extends Model {
         return $plan;
     }
 
-    public function differentPlan( Plan $p ): bool {
-        return $p->name === $this->name;
+    public function differentPlan( ?Plan $p ): bool {
+        if ( ! $p ) {
+            return true;
+        }
+
+        return $p->name !== $this->name;
     }
 
     private static function mapPlanNames( string $name ): string {
