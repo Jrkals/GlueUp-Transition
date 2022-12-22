@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\EmailValidation;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -78,7 +79,83 @@ class ImportTest extends TestCase {
             'Active Chapters'                                          => 'YCP - Austin',
             'Other Chapters'                                           => 'YCP - Houston, YCP - Austin',
         ];
+        $contact2            = [
+            'Name'                                                     => 'Constance de Monts',
+            'T-shirt size'                                             => '',
+            'Bio'                                                      => '',
+            'Notes'                                                    => '',
+            'Would you be open to participating in virtual mentoring?' => "TRUE",
+            'Spiritual Assessment'                                     => '',
+            'Professional Assessment'                                  => '',
+            'Years at current workplace'                               => '',
+            'Chapter Interest List'                                    => '',
+            'Current chapter role category'                            => '',
+            'Potential YCP City'                                       => '',
+            'First Name'                                               => 'Constance',
+            'Last Name'                                                => 'de Monts',
+            'Subscribed'                                               => 'Not Subscribed',
+            'Email'                                                    => EmailValidation::query()->where( 'valid', '=', false )->first()->email,
+            'Mobile Phone'                                             => '',
+            'Home Phone'                                               => '',
+            'Business Phone'                                           => '',
+            'Linkedin Profile'                                         => 'invalid url',
+            'Companies'                                                => "",
+            'NationBuilder Tags'                                       => 'shared, 2/6/16-import',
+            'Date of Birth'                                            => '',
+            'Last Renewal Date'                                        => '',
+            'Last Renewed Plan'                                        => '',
+            'Latest Plan'                                              => 'Annual Membership',
+            'Chapter Admin?'                                           => '',
+            'Status'                                                   => 'Expired',
+            'Plan'                                                     => '',
+            'Expiry Date'                                              => '09 Jan 2022',
+            'Expiry Type'                                              => 'Manual Renewal',
+            'Date Joined'                                              => '09 Jan 2021',
+            'Last Login'                                               => '',
+            'Home Chapter'                                             => 'YCP - Austin',
+            'Active Chapters'                                          => '',
+            'Other Chapters'                                           => 'YCP - Houston, YCP - Austin',
+        ];
+        $contact3            = [
+            'Name'                                                     => 'Constance de Monts',
+            'T-shirt size'                                             => '',
+            'Bio'                                                      => '',
+            'Notes'                                                    => '',
+            'Would you be open to participating in virtual mentoring?' => "TRUE",
+            'Spiritual Assessment'                                     => '',
+            'Professional Assessment'                                  => '',
+            'Years at current workplace'                               => '',
+            'Chapter Interest List'                                    => '',
+            'Current chapter role category'                            => '',
+            'Potential YCP City'                                       => '',
+            'First Name'                                               => 'Constance',
+            'Last Name'                                                => 'de Monts',
+            'Subscribed'                                               => 'Not Subscribed',
+            'Email'                                                    => EmailValidation::query()->where( 'valid', '=', true )->first()->email,
+            'Mobile Phone'                                             => '',
+            'Home Phone'                                               => '',
+            'Business Phone'                                           => '',
+            'Linkedin Profile'                                         => 'invalid url',
+            'Companies'                                                => "",
+            'NationBuilder Tags'                                       => 'shared, 2/6/16-import',
+            'Date of Birth'                                            => '',
+            'Last Renewal Date'                                        => '',
+            'Last Renewed Plan'                                        => '',
+            'Latest Plan'                                              => 'Annual Membership',
+            'Chapter Admin?'                                           => '',
+            'Status'                                                   => 'Expired',
+            'Plan'                                                     => '',
+            'Expiry Date'                                              => '09 Jan 2022',
+            'Expiry Type'                                              => 'Manual Renewal',
+            'Date Joined'                                              => '09 Jan 2021',
+            'Last Login'                                               => '',
+            'Home Chapter'                                             => 'YCP - Austin',
+            'Active Chapters'                                          => '',
+            'Other Chapters'                                           => 'YCP - Houston, YCP - Austin',
+        ];
         $contacts[]          = $contact1;
+        $contacts[]          = $contact2;
+        $contacts[]          = $contact3;
         $contactsFileContent = $this->turnArraysToFileContent( $contacts );
         Storage::disk( 'local' )->put( $this->testContactDir . '/contacts.csv',
             $contactsFileContent );
@@ -111,7 +188,36 @@ class ImportTest extends TestCase {
     public function testImportContacts() {
         $this->assertDatabaseCount( 'ycp_contacts', 0 );
         $this->artisan( 'silkstart:importContacts', [ 'file' => './storage/app/' . $this->testContactDir ] );
-        $this->assertDatabaseCount( 'ycp_contacts', 1 );
+        $this->assertDatabaseCount( 'ycp_contacts', 2 );
+        $this->assertDatabaseCount( 'ycp_events', 4 );
+        $this->assertDatabaseCount( 'phones', 3 );
+        $this->assertDatabaseCount( 'chapters', 2 );
+        $this->assertDatabaseCount( 'plans', 2 );
+
+        $this->assertDatabaseHas( 'ycp_contacts', [
+            'first_name'              => 'Justin',
+            'last_name'               => 'Kalan',
+            'full_name'               => 'Justin Kalan',
+            'email'                   => 'jkalan@wordonfire.org',
+            'nb_tags'                 => 'attendee-ess-2020-1, attendee-ess-baugh-1-20, shared, attendee-ess-Joseph-Galati, attendee-ess-2018-05',
+            'admin'                   => true,
+            'date_joined'             => '2020-08-22',
+            'birthday'                => '1985-03-27',
+            'title'                   => null,
+            'subscribed'              => 'Unsubscribed',
+            'spiritual_assessment'    => '2 - Catholic, but not attending Mass regularly',
+            'professional_assessment' => '4 - Right profession, integrating faith into the workplace, but could use additional resources',
+            't_shirt_size'            => 'L',
+            //   'virtual_mentoring'       => 'Yes',
+            'years_at_workplace'      => '0-3 years',
+            'chapter_interest_list'   => 'boston',
+            'linkedin'                => 'https://www.linkedin.com/in/beatrice-torralba-shakal-0152734a/',
+            'chapter_leader_role'     => 'Operations',
+            'notes'                   => '',
+            'bio'                     => 'Development Director',
+            'industry'                => null
+        ] );
+
 
     }
 }

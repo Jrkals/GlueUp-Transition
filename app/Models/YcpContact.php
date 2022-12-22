@@ -70,11 +70,10 @@ class YcpContact extends Model {
         if ( ! empty( $row['date_of_birth'] ) ) {
             $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
         }
-        if ( isset( $row['subscribed'] ) ||
-             ( isset( $row['nationbuilder_tags'] )
-               && str_contains( strtolower( $row['nationbuilder_tags'] ), 'unsubscribed' )
-               || ( isset( $row['notes'] ) && str_contains( $row['notes'], 'Unsubscribed' ) ) ) ) {
-            $this->subscribed = $row['subscribed'];
+        $this->subscribed = $row['subscribed'];
+        if ( isset( $row['nationbuilder_tags'] ) && str_contains( strtolower( $row['nationbuilder_tags'] ), 'unsubscribed' )
+             || ( isset( $row['notes'] ) && str_contains( $row['notes'], 'Unsubscribed' ) ) ) {
+            $this->subscribed = 'Unsubscribed';
         }
 
         $this->spiritual_assessment    = $row['spiritual_assessment'] ?? '';

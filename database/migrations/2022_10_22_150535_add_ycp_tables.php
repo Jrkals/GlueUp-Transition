@@ -38,7 +38,6 @@ return new class extends Migration {
             $table->string( 'chapter_interest_list' )->nullable();
             $table->string( 'linkedin' )->nullable();
             $table->string( 'chapter_leader_role' )->nullable();
-            $table->longText( 'event_attendance' )->nullable();
             $table->longText( 'notes' )->nullable();
             $table->longText( 'bio' )->nullable();
             $table->string( 'industry' )->nullable();
