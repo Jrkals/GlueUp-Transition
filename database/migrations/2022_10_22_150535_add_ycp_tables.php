@@ -47,8 +47,8 @@ return new class extends Migration {
             $table->timestamps();
             $table->string( 'name' )->unique();
             $table->string( 'short_description' );
-            $table->date( 'date_joined' );
-            $table->date( 'expiry_date' );
+            $table->date( 'date_joined' )->nullable();
+            $table->date( 'expiry_date' )->nullable();
             $table->string( 'plan' )->nullable();
             $table->string( 'status' );
             $table->string( 'email' );
@@ -110,6 +110,7 @@ return new class extends Migration {
             $table->string( 'country' );
             $table->integer( 'addressable_id' ); //one to one polymorphic companies and contacts
             $table->string( 'addressable_type' ); //one to one polymorphic companies and contacts
+            $table->enum( 'address_type', [ 'home', 'business' ] );
             $table->timestamps();
         } );
 

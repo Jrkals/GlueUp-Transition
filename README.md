@@ -45,6 +45,5 @@ Exports a list of contacts with all custom fields and information. These are exc
 #### TODOS
 
 * Test to make sure chapter leader merging is working
-* what to do about event attendance column?
 * Hide some custom fields at chapter level?
 * Mark Sekaz phone: 571-289-5701

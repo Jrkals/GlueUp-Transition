@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Chapter;
 use App\Models\EmailValidation;
+use App\Models\YcpCompany;
 use App\Models\YcpContact;
 use App\Models\YcpEvent;
 use Database\Seeders\DatabaseSeeder;
@@ -165,70 +166,136 @@ class ImportTest extends TestCase {
     }
 
     private function setupAddressFiles() {
-        $addresses                  = [];
+        $addressJustin              = [
+            'Name'                => 'Justin Kalan',
+            'First Name'          => 'Justin',
+            'Last Name'           => 'Kalan',
+            'Business Phone'      => '',
+            'Mobile Phone'        => '',
+            'Notes'               => 'Unsubscribed in NationBuilder',
+            'Last Renewal Date'   => '28 Nov 2022',
+            'Last Renewed Plan'   => 'Belong Plus',
+            'NationBuilder Tags'  => 'attendee-ess-2020-1, attendee-ess-baugh-1-20, shared, attendee-ess-Joseph-Galati, attendee-ess-2018-05',
+            'Home Phone'          => '7708837611',
+            'Date Joined'         => '27 Mar 1985',
+            'Expiry Date'         => 'Manual Renewal',
+            'Plan'                => 'Belong Plus',
+            'Status'              => 'Active',
+            'Expiry Type'         => 'Manual Renewal',
+            'Email'               => 'jkalan@wordonfire.org',
+            'Work City'           => 'Irving',
+            'Work Country'        => 'US',
+            'Work Postal'         => '75123',
+            'Work Province'       => 'TX',
+            'Home Street Address' => '2041 Texas Plaza Dr',
+            'Work Address 2'      => 'Ste 360',
+            'Home Address 2'      => 'Apt 4210',
+            'Home City'           => 'Irving',
+            'Home Postal'         => '75062',
+            'Home Province'       => 'TX',
+            'Home Country'        => 'US',
+            'Work Street Address' => '8445 Freeport Parkway',
+            'Home Chapter'        => 'YCP - Austin',
+            'Active Chapters'     => 'YCP - Austin',
+            'Other Chapters'      => 'YCP - Austin, YCP - Houston',
+        ];
+        $newPersonAddress           = [
+            'Name'                => 'New Contact',
+            'First Name'          => 'New',
+            'Last Name'           => 'Contact',
+            'Business Phone'      => '',
+            'Mobile Phone'        => '15052595600',
+            'Notes'               => 'Unsubscribed in NationBuilder',
+            'Last Renewal Date'   => '',
+            'Last Renewed Plan'   => '',
+            'NationBuilder Tags'  => '',
+            'Home Phone'          => '',
+            'Date Joined'         => '',
+            'Expiry Date'         => '',
+            'Plan'                => '',
+            'Status'              => 'Contact',
+            'Expiry Type'         => '',
+            'Email'               => 'new@wordonfire.org',
+            'Work City'           => 'Irving',
+            'Work Country'        => 'US',
+            'Work Postal'         => '75123',
+            'Work Province'       => 'TX',
+            'Home Street Address' => '11020 Huebner Oaks Apt 2318',
+            'Work Address 2'      => 'Ste 360',
+            'Home Address 2'      => '',
+            'Home City'           => 'San Antonio',
+            'Home Postal'         => '75062',
+            'Home Province'       => 'TX',
+            'Home Country'        => 'US',
+            'Work Street Address' => '8446 Freeport Parkway',
+            'Home Chapter'        => 'YCP - Chicago',
+            'Active Chapters'     => '',
+            'Other Chapters'      => 'YCP - St Louis',
+        ];
+        $addresses                  = [ $addressJustin, $newPersonAddress ];
         $addressContactsFileContent = $this->turnArraysToFileContent( $addresses );
         Storage::disk( 'local' )->put( $this->testAddressDir . '/addresses.csv',
             $addressContactsFileContent );
     }
 
     private function setupEventFiles() {
-        $nhh                        = [
+        $nhh              = [
             'Event'         => 'Networking Happy Hour',
             'Event Date'    => '20 Oct 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => '',
             'Email'         => 'jkalan@wordonfire.org',
         ];
-        $nhh_new_person             = [
+        $nhh_new_person   = [
             'Event'         => 'Networking Happy Hour',
             'Event Date'    => '20 Oct 2022',
             'Attendee Name' => 'New Smith',
             'Attended'      => '',
             'Email'         => 'csmith@test.org',
         ];
-        $nhh_constance              = [
+        $nhh_constance    = [
             'Event'         => 'Networking Happy Hour',
             'Event Date'    => '20 Oct 2022',
             'Attendee Name' => 'Constance de Monts',
             'Attended'      => '',
             'Email'         => EmailValidation::query()->where( 'valid', '=', true )->first()->email,
         ];
-        $sjs                        = [
+        $sjs              = [
             'Event'         => 'Saint Joseph Saturday',
             'Event Date'    => '10 Dec 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => 'TRUE',
             'Email'         => 'jkalan@wordonfire.org',
         ];
-        $ess                        = [
+        $ess              = [
             'Event'         => "October 2022 YCP OC ESS Featuring Amy D'Ambra",
             'Event Date'    => '19 Oct 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => '',
             'Email'         => 'jkalan@wordonfire.org',
         ];
-        $panel                      = [
+        $panel            = [
             'Event'         => 'Virtue Panel Discussion: Charity',
             'Event Date'    => '11 Oct 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => 'TRUE',
             'Email'         => 'jkalan@wordonfire.org',
         ];
-        $panel_diff_date            = [
+        $panel_diff_date  = [
             'Event'         => 'Virtue Panel Discussion: Charity',
             'Event Date'    => '12 Oct 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => '',
             'Email'         => 'jkalan@wordonfire.org',
         ];
-        $other                      = [
+        $other            = [
             'Event'         => 'YCP Boston Turns One! ',
             'Event Date'    => '29 Sep 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => '',
             'Email'         => 'jkalan@wordonfire.org',
         ];
-        $events                     = [
+        $events           = [
             $nhh,
             $ess,
             $other,
@@ -238,16 +305,70 @@ class ImportTest extends TestCase {
             $nhh_new_person,
             $nhh_constance
         ];
-        $addressContactsFileContent = $this->turnArraysToFileContent( $events );
-        Storage::disk( 'local' )->put( $this->testAddressDir . '/events.csv',
-            $addressContactsFileContent );
+        $eventFileContent = $this->turnArraysToFileContent( $events );
+        Storage::disk( 'local' )->put( $this->testEventDir . '/events.csv',
+            $eventFileContent );
     }
 
     private function setupCompanyFiles() {
-        $companies                  = [];
-        $addressContactsFileContent = $this->turnArraysToFileContent( $companies );
-        Storage::disk( 'local' )->put( $this->testAddressDir . '/companies.csv',
-            $addressContactsFileContent );
+        $inactive            = [
+            'Name'                 => 'Diocese of Dallas',
+            'Company Phone'        => '414-483-6712',
+            'Short Description'    => 'By tapping into the physical & spiritual nature of water, we empower people in developing countries to generate clean water solutions!',
+            'Overview'             => '<p data-mce-style="font-family: helvetica; font-size: 300%; color: #0e3659; line-height: 1.2; font-weight: normal; text-align: left;">FINANCIAL LEADERSHIP</p>  <p data-mce-style="font-size: 110%;">Success is seldom a solo act. Nowhere is this more true than in personal, family, and enterprise financial strategies. Given the complex, high-stakes nature of what we do, we have assembled a team of more than 150 advisors and specialists, over 2,000 active brokers, dozens of staff, and an international network of resources and support.</p>  <p data-mce-style="font-family: helvetica; font-size: 300%; color: #0e3659; line-height: 1.2; font-weight: normal; text-align: right; padding-top: 30px;">LEADING THE WAY FORWARD</p>  <p data-mce-style="font-size: 110%; text-align: right;">You&rsquo;ll be working with a diverse team with uniquely competitive capabilities. Pacific Advisors has earned EDGE certification for gender equality in professional development, mentoring, recruitment, promotion efforts, and community culture. Our commitment to equal value, respect, and access to opportunities for all members of our team lets you succeed in your objectives.</p>  <p><span class="richtext"></span></p>',
+            'Number of Members'    => '',
+            'Date Joined'          => '',
+            'Number of Employees'  => '48,700',
+            'Fax'                  => '555-555-5555',
+            'Expiry Date'          => '',
+            'Plan'                 => '',
+            'Status'               => 'Inactive',
+            'Email'                => 'jorge.perez@cbrealty.com',
+            'Billing Person'       => 'Jorge Perez',
+            'Billing Person Email' => 'jorgeoforlando@gmail.com',
+            'Billing Person Title' => 'REALTOR',
+            'Contact Person'       => 'Jorge Perez',
+            'Contact Person Email' => 'jorgeoforlando@gmail.com',
+            'Website'              => 'https://www.coldwellbanker.com/coldwell-banker-residential-real-estate_-florida-12629c/winter-park-office-363347d',
+            'City'                 => 'Winter Park',
+            'Province'             => 'TX',
+            'Street Address'       => '400 S Park Ave Ste 210',
+            'Street Address 2'     => '',
+            'Postal/Zip Code'      => '30080',
+            'Country'              => 'US',
+            'Date Added'           => '20 Aug 2020',
+        ];
+        $active              = [
+            'Name'                 => 'Advocates for Community Transformation',
+            'Company Phone'        => '13213275360',
+            'Short Description'    => '',
+            'Overview'             => '',
+            'Number of Members'    => '',
+            'Date Joined'          => '26 Oct 2022',
+            'Number of Employees'  => '',
+            'Fax'                  => '',
+            'Expiry Date'          => '26 Oct 2023',
+            'Plan'                 => 'Company Recruiter Membership',
+            'Status'               => 'Active',
+            'Email'                => 'companyEmail@wordonfire.org',
+            'Billing Person'       => 'Justin Kalan',
+            'Billing Person Email' => 'jkalan@wordonfire.org',
+            'Billing Person Title' => 'Billing Person Title',
+            'Contact Person'       => 'Samantha Smith',
+            'Contact Person Email' => 'smcdonald@catholiccastmedia.com',
+            'Website'              => '',
+            'City'                 => '',
+            'Province'             => '',
+            'Street Address'       => '',
+            'Street Address 2'     => '',
+            'Postal/Zip Code'      => '',
+            'Country'              => '',
+            'Date Added'           => '20 Aug 2020',
+        ];
+        $companies           = [ $inactive, $active ];
+        $companyFileContents = $this->turnArraysToFileContent( $companies );
+        Storage::disk( 'local' )->put( $this->testCompanyDir . '/companies.csv',
+            $companyFileContents );
     }
 
     private function turnArraysToFileContent( array $data ): string {
@@ -258,15 +379,13 @@ class ImportTest extends TestCase {
                 $rv .= implode( ',', array_keys( $datum ) );
                 $rv .= "\n";
             }
-            //Wrap rows with commas with quotations to mimic a CSV
-            $rv .= implode( ',', array_map( function ( $element ) {
-                if ( str_contains( $element, "," ) ) {
-                    return '"' . $element . '"';
-                }
-
-                return $element;
-            }, array_values( $datum ) ) );
-            $rv .= "\n";
+            // Courtesy of https://www.php.net/manual/en/function.fputcsv.php notes
+            // output up to 5MB is kept in memory, if it becomes bigger it will automatically be written to a temporary file
+            $csv = fopen( 'php://temp/maxmemory:' . ( 5 * 1024 * 1024 ), 'r+' );
+            fputcsv( $csv, $datum );
+            rewind( $csv );
+            // put it all in a variable
+            $rv .= stream_get_contents( $csv );
 
             $count ++;
         }
@@ -385,17 +504,191 @@ class ImportTest extends TestCase {
     public function testImportContactsAndCompanies() {
         $this->artisan( 'silkstart:importContacts', [ 'file' => './storage/app/' . $this->testContactDir ] );
         $this->artisan( 'silkstart:importCompanies', [ 'file' => './storage/app/' . $this->testCompanyDir ] );
+        $this->assertDatabaseCount( 'chapters', 2 );
+        $this->assertDatabaseCount( 'phones', 3 );
+        $this->assertDatabaseCount( 'plan_ycp_contact', 2 );
+        $this->assertDatabaseCount( 'plans', 2 );
+        $this->assertDatabaseCount( 'chapter_ycp_contact', 4 );
+        $this->assertDatabaseCount( 'ycp_contacts', 3 );
+        $this->assertDatabaseCount( 'addresses', 1 );
+        $this->assertDatabaseCount( 'ycp_company_ycp_contact', 2 );
+
+        $this->assertDatabaseHas( 'ycp_companies', [
+            'name'                => 'Diocese of Dallas',
+            'short_description'   => 'By tapping into the physical & spiritual nature of water, we empower people in developing countries to generate clean water solutions!',
+            'date_joined'         => null,
+            'expiry_date'         => null,
+            'plan'                => '',
+            'status'              => 'Inactive',
+            'email'               => 'jorge.perez@cbrealty.com',
+            'website'             => 'https://www.coldwellbanker.com/coldwell-banker-residential-real-estate_-florida-12629c/winter-park-office-363347d',
+            'phone'               => '1 (414) 483-6712',
+            'overview'            => 'FINANCIAL LEADERSHIP  Success is seldom a solo act. Nowhere is this more true than in personal, family, and enterprise financial strategies. Given the complex, high-stakes nature of what we do, we have assembled a team of more than 150 advisors and specialists, over 2,000 active brokers, dozens of staff, and an international network of resources and support.  LEADING THE WAY FORWARD  You’ll be working with a diverse team with uniquely competitive capabilities. Pacific Advisors has earned EDGE certification for gender equality in professional development, mentoring, recruitment, promotion efforts, and community culture. Our commitment to equal value, respect, and access to opportunities for all members of our team lets you succeed in your objectives.  ',
+            'fax'                 => '',
+            'number_of_employees' => '48,700',
+        ] );
+        $this->assertDatabaseHas( 'ycp_companies', [
+            'name'        => 'Advocates for Community Transformation',
+            'date_joined' => '2022-10-26',
+            'expiry_date' => '2023-10-26',
+            'plan'        => 'Company Recruiter Membership',
+            'status'      => 'Active',
+            'email'       => 'companyEmail@wordonfire.org',
+            'phone'       => '1 (321) 327-5360',
+        ] );
+        $justin    = YcpContact::query()->with( 'companies' )->where( 'email', '=', 'jkalan@wordonfire.org' )->first();
+        $jorge     = YcpContact::query()->with( 'companies' )->where( 'full_name', '=', 'Jorge Perez' )->first();
+        $cathDal   = YcpCompany::query()->with( 'contacts' )->where( 'name', '=', 'Diocese of Dallas' )->first();
+        $advocates = YcpCompany::query()->with( 'contacts' )->where( 'name', '=', 'Advocates for Community Transformation' )->first();
+
+        $this->assertEquals( 'Billing Person Title', $justin->title );
+        $this->assertDatabaseHas( 'ycp_company_ycp_contact', [
+            'ycp_contact_id' => $justin->id,
+            'ycp_company_id' => $advocates->id,
+            'billing'        => true,
+            'contact'        => false,
+        ] );
+        $this->assertDatabaseMissing( 'ycp_company_ycp_contact', [
+            'ycp_company_id' => $advocates->id,
+            'billing'        => false,
+            'contact'        => true,
+        ] );
+        $this->assertDatabaseHas( 'ycp_company_ycp_contact', [
+            'ycp_contact_id' => $jorge->id,
+            'ycp_company_id' => $cathDal->id,
+            'billing'        => true,
+            'contact'        => false,
+        ] );
+
+        $this->assertDatabaseHas( 'addresses', [
+            'street1'          => '400 S Park Ave Ste 210',
+            'street2'          => '',
+            'city'             => 'Winter Park',
+            'state'            => 'TX',
+            'postal_code'      => '30080',
+            'country'          => 'US',
+            'addressable_id'   => $cathDal->id,
+            'addressable_type' => YcpCompany::class,
+        ] );
     }
 
     public function testImportContactsAndAddresses() {
         $this->artisan( 'silkstart:importContacts', [ 'file' => './storage/app/' . $this->testContactDir ] );
         $this->artisan( 'silkstart:importContacts', [ 'file' => './storage/app/' . $this->testAddressDir ] );
+        $this->assertDatabaseCount( 'chapters', 4 );
+        $this->assertDatabaseCount( 'phones', 4 );
+        $this->assertDatabaseCount( 'chapter_ycp_contact', 6 );
+        $this->assertDatabaseCount( 'ycp_contacts', 3 );
+        $this->assertDatabaseCount( 'addresses', 4 );
+        $justin     = YcpContact::query()->with( 'companies' )->where( 'email', '=', 'jkalan@wordonfire.org' )->first();
+        $newContact = YcpContact::query()->with( 'companies' )->where( 'email', '=', 'new@wordonfire.org' )->first();
+
+        $this->assertDatabaseHas( 'addresses', [
+            'street1'          => '2041 Texas Plaza Dr',
+            'street2'          => 'Apt 4210',
+            'city'             => 'Irving',
+            'state'            => 'TX',
+            'postal_code'      => '75062',
+            'country'          => 'US',
+            'addressable_id'   => $justin->id,
+            'addressable_type' => YcpContact::class,
+            'address_type'     => 'home',
+        ] );
+        $this->assertDatabaseHas( 'addresses', [
+            'street1'          => '8445 Freeport Parkway',
+            'street2'          => 'Ste 360',
+            'city'             => 'Irving',
+            'state'            => 'TX',
+            'postal_code'      => '75123',
+            'country'          => 'US',
+            'addressable_id'   => $justin->id,
+            'addressable_type' => YcpContact::class,
+            'address_type'     => 'business',
+
+        ] );
+        $this->assertDatabaseHas( 'addresses', [
+            'street1'          => '11020 Huebner Oaks Apt 2318',
+            'street2'          => '',
+            'city'             => 'San Antonio',
+            'state'            => 'TX',
+            'postal_code'      => '75062',
+            'country'          => 'US',
+            'addressable_id'   => $newContact->id,
+            'addressable_type' => YcpContact::class,
+            'address_type'     => 'home',
+        ] );
+        $this->assertDatabaseHas( 'addresses', [
+            'street1'          => '8446 Freeport Parkway',
+            'street2'          => 'Ste 360',
+            'city'             => 'Irving',
+            'state'            => 'TX',
+            'postal_code'      => '75123',
+            'country'          => 'US',
+            'addressable_id'   => $newContact->id,
+            'addressable_type' => YcpContact::class,
+            'address_type'     => 'business',
+        ] );
     }
 
-    public function testImportAll() {
+    public function testImportContactsAndEvents() {
         $this->artisan( 'silkstart:importContacts', [ 'file' => './storage/app/' . $this->testContactDir ] );
-        $this->artisan( 'silkstart:importCompanies', [ 'file' => './storage/app/' . $this->testCompanyDir ] );
-        $this->artisan( 'silkstart:importContacts', [ 'file' => './storage/app/' . $this->testAddressDir ] );
         $this->artisan( 'silkstart:importEvents', [ 'file' => './storage/app/' . $this->testEventDir ] );
+
+        $justin    = YcpContact::query()->where( 'email', '=', 'jkalan@wordonfire.org' )->first();
+        $newSmith  = YcpContact::query()->where( 'email', '=', 'csmith@test.org' )->first();
+        $constance = YcpContact::query()->where( 'full_name', '=', 'Constance de Monts' )->first();
+
+        $charity1 = YcpEvent::query()->where( [
+            'date' => '2022-10-11',
+            'name' => 'Virtual Panel Discussion: Charity'
+        ] )->first();
+        $charity2 = YcpEvent::query()->where( [
+            'date' => '2022-10-12',
+            'name' => 'Virtual Panel Discussion: Charity'
+        ] )->first();
+
+        $this->assertDatabaseCount( 'ycp_contacts', 3 );
+        $this->assertDatabaseCount( 'ycp_events', 11 );
+        $this->assertDatabaseCount( 'ycp_events_contacts', 13 );
+
+        $this->assertDatabaseHas( 'ycp_events', [
+            'date' => '2022-10-19',
+            'type' => 'ESS',
+            'name' => "October 2022 YCP OC ESS Featuring Amy D'Ambra",
+        ] );
+        $this->assertDatabaseHas( 'ycp_events', [
+            'date' => '2022-10-20',
+            'type' => 'NHH',
+            'name' => "Networking Happy Hour",
+        ] );
+        $this->assertDatabaseHas( 'ycp_events', [
+            'date' => '2022-12-10',
+            'type' => 'SJS',
+            'name' => "Saint Joseph Saturday",
+        ] );
+        $this->assertDatabaseHas( 'ycp_events', [
+            'date' => '2022-10-11',
+            'type' => 'Panel',
+            'name' => "Virtue Panel Discussion: Charity",
+        ] );
+        $this->assertDatabaseHas( 'ycp_events', [
+            'date' => '2022-10-12',
+            'type' => 'Panel',
+            'name' => "Virtue Panel Discussion: Charity",
+        ] );
+        $this->assertDatabaseHas( 'ycp_events', [
+            'date' => '2022-09-29',
+            'type' => 'Other',
+            'name' => "YCP Boston Turns One! ",
+        ] );
+
+        $this->assertDatabaseHas( 'ycp_events_contacts', [
+            'ycp_contact_id' => $justin,
+            'ycp_event_id'   => $charity1
+        ] );
+        $this->assertDatabaseHas( 'ycp_events_contacts', [
+            'ycp_contact_id' => $justin,
+            'ycp_event_id'   => $charity2
+        ] );
     }
 }

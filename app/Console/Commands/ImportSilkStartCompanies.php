@@ -16,7 +16,7 @@ class ImportSilkStartCompanies extends Command {
      *
      * @var string
      */
-    protected $signature = 'silkstart:importCompanies {file} {--dry}';
+    protected $signature = 'silkstart:importCompanies {file}';
 
     /**
      * The console command description.
@@ -31,7 +31,6 @@ class ImportSilkStartCompanies extends Command {
      * @return int
      */
     public function handle() {
-        $dry    = $this->option( 'dry' );
         $file   = $this->argument( 'file' );
         $reader = new DirectoryReader( $file );
         $data   = $reader->readDataFromDirectory();
@@ -62,10 +61,9 @@ class ImportSilkStartCompanies extends Command {
                 }
                 continue;
             }
-            if ( ! $dry ) {
-                $ycpCompany = new YcpCompany();
-                $ycpCompany->fromCSV( $row );
-            }
+            $ycpCompany = new YcpCompany();
+            $ycpCompany->fromCSV( $row );
+
             $new[] = $row;
             $count ++;
             if ( $count % 500 === 0 ) {

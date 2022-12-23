@@ -43,7 +43,7 @@ class Address extends Model {
         return $this->morphTo();
     }
 
-    private static function createFromAddress( $street1, $street2, $city, $state, $zip, $country, $addressable_type, $id ): Address {
+    private static function createFromAddress( $street1, $street2, $city, $state, $zip, $country, $addressable_type, $id, $type ): Address {
         $address                   = new Address();
         $address->street1          = $street1;
         $address->street2          = $street2;
@@ -53,6 +53,7 @@ class Address extends Model {
         $address->country          = $country;
         $address->addressable_type = $addressable_type === 'contact' ? YcpContact::class : YcpCompany::class;
         $address->addressable_id   = $id;
+        $address->address_type     = $type;
         $address->save();
 
         return $address;
@@ -60,17 +61,17 @@ class Address extends Model {
 
     public static function fromCSV( array $address, string $addressable_type, int $id ): Address {
         return self::createFromAddress( $address['street_address'], $address['street_address_2'], $address['city'],
-            $address['province'], $address['postalzip_code'], $address['country'], $addressable_type, $id );
+            $address['province'], $address['postalzip_code'], $address['country'], $addressable_type, $id, 'business' );
     }
 
     public static function fromCSVHome( array $address, string $addressable_type, int $id ): Address {
         return self::createFromAddress( $address['home_street_address'], $address['home_address_2'], $address['home_city'],
-            $address['home_province'], $address['home_postal'], $address['home_country'], $addressable_type, $id );
+            $address['home_province'], $address['home_postal'], $address['home_country'], $addressable_type, $id, 'home' );
     }
 
     public static function fromCSVWork( array $address, string $addressable_type, int $id ): Address {
         return self::createFromAddress( $address['work_street_address'], $address['work_address_2'], $address['work_city'],
-            $address['work_province'], $address['work_postal'], $address['work_country'], $addressable_type, $id );
+            $address['work_province'], $address['work_postal'], $address['work_country'], $addressable_type, $id, 'business' );
     }
 
     public function street1(): string {

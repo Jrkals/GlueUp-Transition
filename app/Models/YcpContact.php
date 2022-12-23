@@ -70,7 +70,7 @@ class YcpContact extends Model {
         if ( ! empty( $row['date_of_birth'] ) ) {
             $this->birthday = Carbon::parse( $row['date_of_birth'] )->toDateString();
         }
-        $this->subscribed = $row['subscribed'];
+        $this->subscribed = $row['subscribed'] ?? 'Not Subscribed';
         if ( isset( $row['nationbuilder_tags'] ) && str_contains( strtolower( $row['nationbuilder_tags'] ), 'unsubscribed' )
              || ( isset( $row['notes'] ) && str_contains( $row['notes'], 'Unsubscribed' ) ) ) {
             $this->subscribed = 'Unsubscribed';
@@ -260,8 +260,11 @@ class YcpContact extends Model {
     }
 
     public static function getOrCreateContact( string $name, string $email, string $title = '' ): YcpContact {
-        $contact = self::getContact( [ 'name' => $name, 'email' => $email ] );
+        $contact = self::getContact( [ 'full_name' => $name, 'email' => $email ] );
         if ( $contact ) {
+            $contact->title = $title;
+            $contact->save();
+
             return $contact;
         }
         $name                = Name::fromFullName( $name );
@@ -494,7 +497,8 @@ class YcpContact extends Model {
     public function billingAddress(): ?Address {
         return Address::query()->where( [
             'addressable_type' => YcpContact::class,
-            'addressable_id'   => $this->id
+            'addressable_id'   => $this->id,
+            'address_type'     => 'home'
         ] )->first();
     }
 

@@ -32,11 +32,16 @@ class YcpCompany extends Model {
             return;
         }
         $this->short_description = $row['short_description'];
-        $this->date_joined       = Carbon::parse( $row['date_joined'] )->toDateString();
-        $this->expiry_date       = $row['expiry_date'] === 'Lifetime' ? Carbon::now()->addYears( 99 )->toDateString()
-            : Carbon::parse( $row['expiry_date'] )->toDateString();
-        $this->plan              = $row['plan'];
-        $this->status            = $row['status'];
+        if ( ! empty( $row['date_joined'] ) ) {
+            $this->date_joined = Carbon::parse( $row['date_joined'] )->toDateString();
+        }
+        if ( ! empty( $row['expiry_date'] ) ) {
+            $this->expiry_date = $row['expiry_date'] === 'Lifetime' ? Carbon::now()->addYears( 99 )->toDateString()
+                : Carbon::parse( $row['expiry_date'] )->toDateString();
+        }
+
+        $this->plan   = $row['plan'];
+        $this->status = $row['status'];
         if ( $this->status !== 'Inactive' ) {
             $this->plan = 'Company Recruiter Membership';
         }
@@ -49,8 +54,11 @@ class YcpCompany extends Model {
         $this->number_of_employees = $row['number_of_employees'];
 
         $this->save();
-        $this->address_id = Address::fromCSV( $row, 'company', $this->id )->id;
-        $this->save();
+
+        if ( ! empty( $row ['city'] ) ) {
+            $this->address_id = Address::fromCSV( $row, 'company', $this->id )->id;
+            $this->save();
+        }
 
         if ( ! empty( $row['billing_person'] ) ) {
             $billing_person = YcpContact::getOrCreateContact( $row['billing_person'], $row['billing_person_email'],
@@ -62,7 +70,7 @@ class YcpCompany extends Model {
         }
         if ( ! empty( $row['contact_person'] ) ) {
             $contact_person = YcpContact::getOrCreateContact( $row['contact_person'], $row['contact_person_email'] );
-            $this->contacts()->save( $contact_person, [ 'billing' => false, 'contact' => true ] );
+            $this->contacts()->save( $contact_person, [ 'contact' => true, 'billing' => false ] );
         }
     }
 
