@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Helpers\ExcelWriter;
 use App\Helpers\DirectoryReader;
 use App\Helpers\Timer;
+use App\Models\YcpContact;
 use App\Models\YcpEvent;
 use Illuminate\Console\Command;
 
@@ -43,6 +44,8 @@ class ImportSilkStartEvents extends Command {
                 if ( $count % 1000 === 0 ) {
                     $this->line( $timer->progress( $count, $total ) );
                 }
+                $found->contacts()->save( YcpContact::getOrCreateContact( $row['attendee_name'], $row['email'] ),
+                    [ 'attended' => $row['attended'] === 'True' ] );
                 continue;
             }
             YcpEvent::fromCSV( $row );

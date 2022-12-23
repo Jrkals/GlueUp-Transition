@@ -640,15 +640,19 @@ class ImportTest extends TestCase {
 
         $charity1 = YcpEvent::query()->where( [
             'date' => '2022-10-11',
-            'name' => 'Virtual Panel Discussion: Charity'
+            'name' => 'Virtue Panel Discussion: Charity'
         ] )->first();
         $charity2 = YcpEvent::query()->where( [
             'date' => '2022-10-12',
-            'name' => 'Virtual Panel Discussion: Charity'
+            'name' => 'Virtue Panel Discussion: Charity'
+        ] )->first();
+
+        $nhh = YcpEvent::query()->where( [
+            'type' => 'NHH'
         ] )->first();
 
         $this->assertDatabaseCount( 'ycp_contacts', 3 );
-        $this->assertDatabaseCount( 'ycp_events', 11 );
+        $this->assertDatabaseCount( 'ycp_events', 10 );
         $this->assertDatabaseCount( 'ycp_events_contacts', 13 );
 
         $this->assertDatabaseHas( 'ycp_events', [
@@ -683,12 +687,20 @@ class ImportTest extends TestCase {
         ] );
 
         $this->assertDatabaseHas( 'ycp_events_contacts', [
-            'ycp_contact_id' => $justin,
-            'ycp_event_id'   => $charity1
+            'ycp_contact_id' => $justin->id,
+            'ycp_event_id'   => $charity1->id
         ] );
         $this->assertDatabaseHas( 'ycp_events_contacts', [
-            'ycp_contact_id' => $justin,
-            'ycp_event_id'   => $charity2
+            'ycp_contact_id' => $justin->id,
+            'ycp_event_id'   => $charity2->id
+        ] );
+        $this->assertDatabaseHas( 'ycp_events_contacts', [
+            'ycp_contact_id' => $newSmith->id,
+            'ycp_event_id'   => $nhh->id
+        ] );
+        $this->assertDatabaseHas( 'ycp_events_contacts', [
+            'ycp_contact_id' => $constance->id,
+            'ycp_event_id'   => $nhh->id
         ] );
     }
 }

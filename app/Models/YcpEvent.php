@@ -15,9 +15,10 @@ class YcpEvent extends Model {
     }
 
     public static function getEvent( array $row ): ?YcpEvent {
+        $date  = $row['event_date'] ? Carbon::parse( $row['event_date'] )->toDateString() : null;
         $event = YcpEvent::query()->where( [
             'name' => $row['event'],
-            //   'date' => Carbon::parse( $row['event_date'] )->toDateString()
+            'date' => $date
         ] )->first();
 
         if ( ! $event ) {
@@ -31,7 +32,7 @@ class YcpEvent extends Model {
         $event       = new YcpEvent();
         $event->name = $row['event'];
         $event->date = Carbon::parse( $row['event_date'] )->toDateString();
-        //   $event->type = self::getEventType( $row['event'] );
+        $event->type = self::getEventType( $row['event'] );
         $event->save();
         $event->contacts()->save( YcpContact::getOrCreateContact( $row['attendee_name'], $row['email'] ),
             [ 'attended' => $row['attended'] === 'True' ] );
@@ -68,7 +69,7 @@ class YcpEvent extends Model {
         $event       = new YcpEvent();
         $event->name = str( $tag )->trim()->value();
         $event->date = $date ?: null;
-        //   $event->type = self::getEventType( $tag );
+        $event->type = self::getEventType( $tag );
         $event->save();
 
         return $event;

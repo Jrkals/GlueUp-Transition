@@ -262,11 +262,19 @@ class YcpContact extends Model {
     public static function getOrCreateContact( string $name, string $email, string $title = '' ): YcpContact {
         $contact = self::getContact( [ 'full_name' => $name, 'email' => $email ] );
         if ( $contact ) {
-            $contact->title = $title;
-            $contact->save();
+            if ( $title ) {
+                $contact->title = $title;
+                $contact->save();
+            }
 
             return $contact;
         }
+
+        //Create a contact with an empty email who will be omitted at export
+        if ( ! EmailValidation::emailIsValid( $email ) ) {
+            $email = '';
+        }
+
         $name                = Name::fromFullName( $name );
         $contact             = new YcpContact();
         $contact->first_name = $name->firstName();
