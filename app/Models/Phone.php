@@ -34,12 +34,12 @@ class Phone extends Model {
      * @throws \Propaganistas\LaravelPhone\Exceptions\CountryCodeException
      */
     public function sameAs( string $phone ): bool {
-        return self::stripSpecialCharacters( $this->number ) ===
+        return PhoneNumber::make( self::stripSpecialCharacters( $this->number ), [ 'US' ] )->formatForCountry( 'US' ) ===
                PhoneNumber::make( self::stripSpecialCharacters( $phone ), [ 'US' ] )->formatForCountry( 'US' );
     }
 
     public static function stripSpecialCharacters( string $phoneNumber ) {
-        return str_replace( [ '(', ')', '-', ' ', '+', "'", '.' ], '', $phoneNumber );
+        return str_replace( [ '(', ')', '-', ' ', '+', "'", '.', ' ' ], '', $phoneNumber );
     }
 
 

@@ -100,8 +100,9 @@ class ImportSilkStartContacts extends Command {
                 continue;
             }
             $nonActiveLeaders ++;
+            $contacts     = YcpContact::all();
             $matchingName = YcpContact::getContact( [
-                'email'        => '',
+                //  'email'        => ,
                 'name'         => $leader->full_name,
                 'home_chapter' => $leader->homeChapter()
             ] );

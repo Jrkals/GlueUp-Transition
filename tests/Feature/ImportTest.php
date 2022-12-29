@@ -165,6 +165,127 @@ class ImportTest extends TestCase {
             $contactsFileContent );
     }
 
+    private function setupChapterLeaderFiles() {
+        $activeLeader        = [
+            'Name'                                                     => 'Active Chapter Leader',
+            'T-shirt size'                                             => '',
+            'Bio'                                                      => '',
+            'Notes'                                                    => '',
+            'Would you be open to participating in virtual mentoring?' => "",
+            'Spiritual Assessment'                                     => '',
+            'Professional Assessment'                                  => '',
+            'Years at current workplace'                               => '',
+            'Chapter Interest List'                                    => '',
+            'Current chapter role category'                            => '',
+            'Potential YCP City'                                       => '',
+            'First Name'                                               => 'Active',
+            'Last Name'                                                => 'Chapter Leader',
+            'Subscribed'                                               => 'Not Subscribed',
+            'Email'                                                    => 'active@ycpaustin.org',
+            'Mobile Phone'                                             => '',
+            'Home Phone'                                               => '',
+            'Business Phone'                                           => '',
+            'Linkedin Profile'                                         => '',
+            'Companies'                                                => "",
+            'NationBuilder Tags'                                       => 'shared, 2/6/16-import, attendee-ess-2020-1',
+            'Date of Birth'                                            => '',
+            'Last Renewal Date'                                        => '',
+            'Last Renewed Plan'                                        => '',
+            'Latest Plan'                                              => 'Chapter Leader',
+            'Chapter Admin?'                                           => '',
+            'Status'                                                   => 'Active',
+            'Plan'                                                     => 'Chapter Leader',
+            'Expiry Date'                                              => '09 Jan 2023',
+            'Expiry Type'                                              => 'Manual Renewal',
+            'Date Joined'                                              => '09 Jan 2021',
+            'Last Login'                                               => '',
+            'Home Chapter'                                             => 'YCP - Austin',
+            'Active Chapters'                                          => '',
+            'Other Chapters'                                           => 'YCP - Houston, YCP - Austin',
+        ];
+        $inactiveLeader      = [
+            'Name'                                                     => 'Expired Chapter Leader',
+            'T-shirt size'                                             => '',
+            'Bio'                                                      => '',
+            'Notes'                                                    => '',
+            'Would you be open to participating in virtual mentoring?' => "",
+            'Spiritual Assessment'                                     => '',
+            'Professional Assessment'                                  => '',
+            'Years at current workplace'                               => '',
+            'Chapter Interest List'                                    => '',
+            'Current chapter role category'                            => '',
+            'Potential YCP City'                                       => '',
+            'First Name'                                               => 'Expired',
+            'Last Name'                                                => 'Chapter Leader',
+            'Subscribed'                                               => 'Not Subscribed',
+            'Email'                                                    => 'expired@ycpaustin.org',
+            'Mobile Phone'                                             => '',
+            'Home Phone'                                               => '',
+            'Business Phone'                                           => '',
+            'Linkedin Profile'                                         => '',
+            'Companies'                                                => "",
+            'NationBuilder Tags'                                       => 'shared, 2/6/16-import, attendee-ess-2020-1',
+            'Date of Birth'                                            => '',
+            'Last Renewal Date'                                        => '',
+            'Last Renewed Plan'                                        => '',
+            'Latest Plan'                                              => 'Chapter Leader',
+            'Chapter Admin?'                                           => '',
+            'Status'                                                   => 'Expired',
+            'Plan'                                                     => '',
+            'Expiry Date'                                              => '09 Jan 2022',
+            'Expiry Type'                                              => 'Manual Renewal',
+            'Date Joined'                                              => '09 Jan 2021',
+            'Last Login'                                               => '',
+            'Home Chapter'                                             => 'YCP - Austin',
+            'Active Chapters'                                          => '',
+            'Other Chapters'                                           => 'YCP - Houston, YCP - Austin',
+        ];
+        $inactiveLeaderOther = [
+            'Name'                                                     => 'Expired Chapter Leader',
+            'T-shirt size'                                             => 'L',
+            'Bio'                                                      => 'Executive Mentor',
+            'Notes'                                                    => 'Test Notes',
+            'Would you be open to participating in virtual mentoring?' => "",
+            'Spiritual Assessment'                                     => 'Weak',
+            'Professional Assessment'                                  => 'Strong',
+            'Years at current workplace'                               => '15+',
+            'Chapter Interest List'                                    => '',
+            'Current chapter role category'                            => '',
+            'Potential YCP City'                                       => '',
+            'First Name'                                               => 'Expired',
+            'Last Name'                                                => 'Chapter Leader',
+            'Subscribed'                                               => 'Not Subscribed',
+            'Email'                                                    => '',
+            'Mobile Phone'                                             => '214-797-5267',
+            'Home Phone'                                               => '',
+            'Business Phone'                                           => '',
+            'Linkedin Profile'                                         => '',
+            'Companies'                                                => "",
+            'NationBuilder Tags'                                       => 'attendee-ess-baugh-1-20, shared, attendee-ess-Joseph-Galati',
+            'Date of Birth'                                            => '',
+            'Last Renewal Date'                                        => '',
+            'Last Renewed Plan'                                        => '',
+            'Latest Plan'                                              => 'Annual Member',
+            'Chapter Admin?'                                           => '',
+            'Status'                                                   => 'Active',
+            'Plan'                                                     => '',
+            'Expiry Date'                                              => '10 Nov 2023',
+            'Expiry Type'                                              => 'Manual Renewal',
+            'Date Joined'                                              => '10 Nov 2022',
+            'Last Login'                                               => '',
+            'Home Chapter'                                             => 'YCP - Austin',
+            'Active Chapters'                                          => 'YCP - Austin',
+            'Other Chapters'                                           => '',
+        ];
+
+        $contacts[]          = $activeLeader;
+        $contacts[]          = $inactiveLeader;
+        $contacts[]          = $inactiveLeaderOther;
+        $contactsFileContent = $this->turnArraysToFileContent( $contacts );
+        Storage::disk( 'local' )->put( $this->testContactDir . '/leaders.csv',
+            $contactsFileContent );
+    }
+
     private function setupAddressFiles() {
         $addressJustin              = [
             'Name'                => 'Justin Kalan',
@@ -702,5 +823,24 @@ class ImportTest extends TestCase {
             'ycp_contact_id' => $constance->id,
             'ycp_event_id'   => $nhh->id
         ] );
+    }
+
+    public function testMergeChapterLeaders() {
+        $this->setupChapterLeaderFiles();
+        $this->artisan( 'silkstart:importContacts', [ 'file' => './storage/app/' . $this->testContactDir ] );
+        $this->assertDatabaseHas( 'ycp_contacts', [
+            'email'                   => 'expired@ycpaustin.org',
+            'spiritual_assessment'    => 'Weak',
+            'professional_assessment' => 'Strong',
+            'years_at_workplace'      => '15+',
+            'nb_tags'                 => 'attendee-ess-baugh-1-20, shared, attendee-ess-Joseph-Galati',
+        ] );
+        $this->assertDatabaseHas( 'phones', [
+            'number' => '1 (214) 797-5267',
+        ] );
+        $this->assertDatabaseMissing( 'ycp_contacts', [
+            'email' => ''
+        ] );
+
     }
 }

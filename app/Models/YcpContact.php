@@ -293,18 +293,28 @@ class YcpContact extends Model {
 
     public static function contactsMatch( array $contact1, YcpContact $contact2 ): array {
         $differences = [
-            'any'            => false,
-            'dob'            => false,
-            'mobile_phone'   => false,
-            'business_phone' => false,
-            'home_phone'     => false,
-            'home_address'   => false,
-            'work_address'   => false,
-            'nationbuilder'  => false,
-            'first_name'     => false,
-            'last_name'      => false,
-            'subscribed'     => false,
-            'id'             => $contact2->id
+            'any'                     => false,
+            'dob'                     => false,
+            'mobile_phone'            => false,
+            'business_phone'          => false,
+            'home_phone'              => false,
+            'home_address'            => false,
+            'work_address'            => false,
+            'nationbuilder'           => false,
+            'first_name'              => false,
+            'last_name'               => false,
+            'subscribed'              => false,
+            'spiritual_assessment'    => false,
+            'professional_assessment' => false,
+            't_shirt_size'            => false,
+            'virtual_mentoring'       => false,
+            'years_at_workplace'      => false,
+            'chapter_interest_list'   => false,
+            'linkedin'                => false,
+            'chapter_leader_role'     => false,
+            'notes'                   => false,
+            'bio'                     => false,
+            'id'                      => $contact2->id
         ];
 
         if ( ! empty( $contact1['date_of_birth'] ) && ! Carbon::parse( $contact1['date_of_birth'] )->isSameDay( Carbon::parse( $contact2->birthday ) ) ) {
@@ -319,20 +329,22 @@ class YcpContact extends Model {
             $differences['nationbuilder_reason'] = $contact1['nationbuilder_tags'] . ' is not ' . $contact2->nb_tags;
         }
         //Phones
-        if ( ! empty( $contact1['mobile_number'] ) && ! $contact2->hasPhone( $contact1 ) ) {
+        $a = empty( $contact1['mobile_phone'] );
+        $b = $contact2->hasPhone( $contact1 );
+        if ( ! empty( $contact1['mobile_phone'] ) && ! $contact2->hasPhone( $contact1 ) ) {
             $differences['any']                 = true;
             $differences['mobile_phone']        = true;
-            $differences['mobile_phone_reason'] = 'missing mobile phone number ' . $contact1['mobile_number'];
+            $differences['mobile_phone_reason'] = 'missing mobile phone number ' . $contact1['mobile_phone'];
         }
-        if ( ! empty( $contact1['business_number'] ) && ! $contact2->hasPhone( $contact1 ) ) {
+        if ( ! empty( $contact1['business_phone'] ) && ! $contact2->hasPhone( $contact1 ) ) {
             $differences['any']                   = true;
             $differences['business_phone']        = true;
-            $differences['business_phone_reason'] = 'missing business phone number ' . $contact1['mobile_number'];
+            $differences['business_phone_reason'] = 'missing business phone number ' . $contact1['business_phone'];
         }
-        if ( ! empty( $contact1['home_number'] ) && ! $contact2->hasPhone( $contact1 ) ) {
+        if ( ! empty( $contact1['home_phone'] ) && ! $contact2->hasPhone( $contact1 ) ) {
             $differences['any']               = true;
             $differences['home_phone']        = true;
-            $differences['home_phone_reason'] = 'missing home phone number ' . $contact1['mobile_number'];
+            $differences['home_phone_reason'] = 'missing home phone number ' . $contact1['home_phone'];
         }
 
         //Addresses
@@ -367,6 +379,60 @@ class YcpContact extends Model {
             $differences['subscribed_reason'] = $contact1['subscribed'] . ' is not ' . $contact2->subscribed;
         }
 
+        if ( ! empty( $contact1['spiritual_assessment'] ) && $contact1['spiritual_assessment'] !== $contact2->spiritual_assessment ) {
+            $differences['any']                         = true;
+            $differences['spiritual_assessment']        = true;
+            $differences['spiritual_assessment_reason'] = $contact1['spiritual_assessment'] . ' is not ' . $contact2->spiritual_assessment;
+        }
+
+        if ( ! empty( $contact1['professional_assessment'] ) && $contact1['professional_assessment'] !== $contact2->professional_assessment ) {
+            $differences['any']                            = true;
+            $differences['professional_assessment']        = true;
+            $differences['professional_assessment_reason'] = $contact1['professional_assessment'] . ' is not ' . $contact2->professional_assessment;
+        }
+
+        if ( ! empty( $contact1['t_shirt_size'] ) && $contact1['t_shirt_size'] !== $contact2->t_shirt_size ) {
+            $differences['any']                 = true;
+            $differences['t_shirt_size']        = true;
+            $differences['t_shirt_size_reason'] = $contact1['t_shirt_size'] . ' is not ' . $contact2->t_shirt_size;
+        }
+
+        if ( ! empty( $contact1['virtual_mentoring'] ) && $contact1['virtual_mentoring'] !== $contact2->virtual_mentoring ) {
+            $differences['any']                      = true;
+            $differences['virtual_mentoring']        = true;
+            $differences['virtual_mentoring_reason'] = $contact1['virtual_mentoring'] . ' is not ' . $contact2->virtual_mentoring;
+        }
+
+        if ( ! empty( $contact1['years_at_current_workplace'] ) && $contact1['years_at_current_workplace'] !== $contact2->years_at_workplace ) {
+            $differences['any']                       = true;
+            $differences['years_at_workplace']        = true;
+            $differences['years_at_workplace_reason'] = $contact1['years_at_current_workplace'] . ' is not ' . $contact2->years_at_workplace;
+        }
+
+        if ( ! empty( $contact1['chapter_interest_list'] ) && $contact1['chapter_interest_list'] !== $contact2->chapter_interest_list ) {
+            $differences['any']                          = true;
+            $differences['chapter_interest_list']        = true;
+            $differences['chapter_interest_list_reason'] = $contact1['chapter_interest_list'] . ' is not ' . $contact2->chapter_interest_list;
+        }
+
+        if ( ! empty( $contact1['linkedin'] ) && $contact1['linkedin'] !== $contact2->linkedin ) {
+            $differences['any']             = true;
+            $differences['linkedin']        = true;
+            $differences['linkedin_reason'] = $contact1['linkedin'] . ' is not ' . $contact2->linkedin;
+        }
+
+        if ( ! empty( $contact1['notes'] ) && $contact1['notes'] !== $contact2->notes ) {
+            $differences['any']          = true;
+            $differences['notes']        = true;
+            $differences['notes_reason'] = $contact1['notes'] . ' is not ' . $contact2->notes;
+        }
+
+        if ( ! empty( $contact1['bio'] ) && $contact1['bio'] !== $contact2->bio ) {
+            $differences['any']        = true;
+            $differences['bio']        = true;
+            $differences['bio_reason'] = $contact1['bio'] . ' is not ' . $contact2->bio;
+        }
+
         return $differences;
     }
 
@@ -398,19 +464,49 @@ class YcpContact extends Model {
         if ( $differences['last_name'] ) {
             $contact2->last_name = $contact1['last_name'];
         }
+        if ( $differences['spiritual_assessment'] ) {
+            $contact2->spiritual_assessment = $contact1['spiritual_assessment'];
+        }
+        if ( $differences['professional_assessment'] ) {
+            $contact2->professional_assessment = $contact1['professional_assessment'];
+        }
+        if ( $differences['t_shirt_size'] ) {
+            $contact2->t_shirt_size = $contact1['t_shirt_size'];
+        }
+        if ( $differences['virtual_mentoring'] ) {
+            $contact2->virtual_mentoring = $contact1['virtual_mentoring'];
+        }
+        if ( $differences['years_at_workplace'] ) {
+            $contact2->years_at_workplace = $contact1['years_at_current_workplace'];
+        }
+        if ( $differences['chapter_interest_list'] ) {
+            $contact2->chapter_interest_list = $contact1['chapter_interest_list'];
+        }
+        if ( $differences['linkedin'] ) {
+            $contact2->linkedin = $contact1['linkedin'];
+        }
+        if ( $differences['chapter_leader_role'] ) {
+            $contact2->chapter_leader_role = $contact1['chapter_leader_role'];
+        }
+        if ( $differences['notes'] ) {
+            $contact2->notes = $contact1['notes'];
+        }
+        if ( $differences['bio'] ) {
+            $contact2->bio = $contact1['bio'];
+        }
         $contact2->save();
 
         return $contact2;
     }
 
     public function hasPhone( array $csvRow ): bool {
-        if ( empty( $csvRow['mobile_number'] ) && empty( $csvRow['business_number'] ) && empty( $csvRow['home_number'] ) ) {
+        if ( empty( $csvRow['mobile_phone'] ) && empty( $csvRow['business_phone'] ) && empty( $csvRow['home_phone'] ) ) {
             return true;
         }
         $csvPhones   = [];
-        $csvPhones[] = $csvRow['mobile_number'] ?? null;
-        $csvPhones[] = $csvRow['business_number'] ?? null;
-        $csvPhones[] = $csvRow['home_number'] ?? null;
+        $csvPhones[] = $csvRow['mobile_phone'] ?? null;
+        $csvPhones[] = $csvRow['business_phone'] ?? null;
+        $csvPhones[] = $csvRow['home_phone'] ?? null;
 
         if ( empty( $this->phones ) ) {
             return false;
@@ -418,8 +514,11 @@ class YcpContact extends Model {
 
         foreach ( $csvPhones as $cphone ) {
             $found = false;
+            if ( ! $cphone ) {
+                continue;
+            }
             foreach ( $this->phones as $phone ) {
-                if ( $cphone->sameAs( $phone ) ) {
+                if ( $phone->sameAs( $cphone ) ) {
                     $found = true;
                 }
             }
