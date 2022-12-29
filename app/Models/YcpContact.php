@@ -213,6 +213,22 @@ class YcpContact extends Model {
         return null;
     }
 
+    public static function getDifferentEmailContact( array $contact ) {
+        if ( ! isset( $contact['home_chapter'] ) ) {
+            return null;
+        }
+        $nameMatch = YcpContact::query()->where( 'email', '!=', $contact['email'] )
+                               ->where( 'full_name', '=', $contact['name'] )->get();
+
+        foreach ( $nameMatch as $match ) {
+            if ( $match->homeChapter()?->name === $contact['home_chapter'] ) {
+                return $match;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @throws ChapterException
      */
@@ -732,8 +748,8 @@ class YcpContact extends Model {
         }
 
         //events
-        if ( ! isset( $this->eventAttendance ) && $contact->eventAttendance ) {
-            $this->eventAttendance = $contact->eventAttendance;
+        if ( $this->events->isEmpty() && $contact->events->isNotEmpty() ) {
+            $this->events->saveMany( $contact->events ); //does this work?
         }
         //addresses
         if ( $contact->address_id && ! isset( $this->address_id ) ) {

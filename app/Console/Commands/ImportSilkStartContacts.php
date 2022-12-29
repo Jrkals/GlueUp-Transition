@@ -99,12 +99,15 @@ class ImportSilkStartContacts extends Command {
                 }
                 continue;
             }
+            //ignore non ycp emails for non-active leaders
+            if ( ! str_contains( $leader->email, '@ycp' ) ) {
+                continue;
+            }
             $nonActiveLeaders ++;
-            $contacts     = YcpContact::all();
-            $matchingName = YcpContact::getContact( [
-                //  'email'        => ,
+            $matchingName = YcpContact::getDifferentEmailContact( [
+                'email'        => $leader->email,
                 'name'         => $leader->full_name,
-                'home_chapter' => $leader->homeChapter()
+                'home_chapter' => $leader->homeChapter()->name
             ] );
             $matchingName?->mergeIn( $leader );
             $count ++;

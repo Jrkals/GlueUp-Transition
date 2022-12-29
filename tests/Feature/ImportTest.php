@@ -277,10 +277,48 @@ class ImportTest extends TestCase {
             'Active Chapters'                                          => 'YCP - Austin',
             'Other Chapters'                                           => '',
         ];
+        $inactiveLeaderEmail = [
+            'Name'                                                     => 'Expired Chapter Leader',
+            'T-shirt size'                                             => '',
+            'Bio'                                                      => '',
+            'Notes'                                                    => '',
+            'Would you be open to participating in virtual mentoring?' => "Yes",
+            'Spiritual Assessment'                                     => '',
+            'Professional Assessment'                                  => '',
+            'Years at current workplace'                               => '',
+            'Chapter Interest List'                                    => '',
+            'Current chapter role category'                            => '',
+            'Potential YCP City'                                       => '',
+            'First Name'                                               => 'Expired',
+            'Last Name'                                                => 'Chapter Leader',
+            'Subscribed'                                               => 'Not Subscribed',
+            'Email'                                                    => 'other@ycp.com',
+            'Mobile Phone'                                             => '214-797-5268',
+            'Home Phone'                                               => '',
+            'Business Phone'                                           => '',
+            'Linkedin Profile'                                         => '',
+            'Companies'                                                => "",
+            'NationBuilder Tags'                                       => '',
+            'Date of Birth'                                            => '',
+            'Last Renewal Date'                                        => '',
+            'Last Renewed Plan'                                        => '',
+            'Latest Plan'                                              => '',
+            'Chapter Admin?'                                           => '',
+            'Status'                                                   => 'Contact',
+            'Plan'                                                     => '',
+            'Expiry Date'                                              => '',
+            'Expiry Type'                                              => '',
+            'Date Joined'                                              => '',
+            'Last Login'                                               => '',
+            'Home Chapter'                                             => 'YCP - Austin',
+            'Active Chapters'                                          => 'YCP - Austin',
+            'Other Chapters'                                           => '',
+        ];
 
         $contacts[]          = $activeLeader;
         $contacts[]          = $inactiveLeader;
         $contacts[]          = $inactiveLeaderOther;
+        $contacts[]          = $inactiveLeaderEmail;
         $contactsFileContent = $this->turnArraysToFileContent( $contacts );
         Storage::disk( 'local' )->put( $this->testContactDir . '/leaders.csv',
             $contactsFileContent );
@@ -838,8 +876,14 @@ class ImportTest extends TestCase {
         $this->assertDatabaseHas( 'phones', [
             'number' => '1 (214) 797-5267',
         ] );
+        $this->assertDatabaseHas( 'phones', [
+            'number' => '1 (214) 797-5268',
+        ] );
         $this->assertDatabaseMissing( 'ycp_contacts', [
             'email' => ''
+        ] );
+        $this->assertDatabaseMissing( 'ycp_contacts', [
+            'email' => 'other@ycp.com'
         ] );
 
     }
