@@ -44,6 +44,8 @@ Exports a list of contacts with all custom fields and information. These are exc
 
 #### TODOS
 
-* Test to make sure chapter leader merging is working
-* Hide some custom fields at chapter level?
+* Setup chapter custom fields
+* Run test imports
+* download latest SS files
+* Run final import
 * Mark Sekaz phone: 571-289-5701
