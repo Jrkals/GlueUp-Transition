@@ -44,7 +44,8 @@ Exports a list of contacts with all custom fields and information. These are exc
 
 #### TODOS
 
-* Setup chapter custom fields
+* Export IsDonor or IsMentor Field?
+* umbrella only export for ss notes and bio?
 * Run test imports
 * download latest SS files
 * Run final import
