@@ -744,12 +744,12 @@ class YcpContact extends Model {
         }
         //phones
         if ( $this->phones->isEmpty() && $contact->phones->isNotEmpty() ) {
-            $this->phones->saveMany( $contact->phones ); //does this work?
+            $this->phones()->saveMany( $contact->phones ); //does this work?
         }
 
         //events
         if ( $this->events->isEmpty() && $contact->events->isNotEmpty() ) {
-            $this->events->saveMany( $contact->events ); //does this work?
+            $this->events()->saveMany( $contact->events ); //does this work?
         }
         //addresses
         if ( $contact->address_id && ! isset( $this->address_id ) ) {
@@ -757,7 +757,7 @@ class YcpContact extends Model {
         }
         //companies
         if ( $this->companies->isEmpty() && $contact->companies->isNotEmpty() ) {
-            $this->companies->saveMany( $contact->companies ); //does this work?
+            $this->companies()->saveMany( $contact->companies ); //does this work?
         }
 
         //bio

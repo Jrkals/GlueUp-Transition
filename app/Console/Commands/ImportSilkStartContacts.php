@@ -109,7 +109,9 @@ class ImportSilkStartContacts extends Command {
                 'name'         => $leader->full_name,
                 'home_chapter' => $leader->homeChapter()->name
             ] );
-            $matchingName?->mergeIn( $leader );
+            if ( $matchingName ) {
+                $leader->mergeIn( $matchingName );
+            }
             $count ++;
             if ( $count % 100 === 0 ) {
                 echo $timer->progress( $count, sizeof( $leadersByEmail ) ) . "\n";

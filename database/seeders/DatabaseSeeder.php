@@ -13,6 +13,6 @@ class DatabaseSeeder extends Seeder {
      * @return void
      */
     public function run() {
-        EmailValidation::factory( 10 )->create();
+        EmailValidation::factory( 20 )->create();
     }
 }

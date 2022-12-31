@@ -292,7 +292,7 @@ class ImportTest extends TestCase {
             'First Name'                                               => 'Expired',
             'Last Name'                                                => 'Chapter Leader',
             'Subscribed'                                               => 'Not Subscribed',
-            'Email'                                                    => 'other@ycp.com',
+            'Email'                                                    => 'other@other.com',
             'Mobile Phone'                                             => '214-797-5268',
             'Home Phone'                                               => '',
             'Business Phone'                                           => '',
