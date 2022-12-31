@@ -245,7 +245,7 @@ class ImportTest extends TestCase {
             'T-shirt size'                                             => 'L',
             'Bio'                                                      => 'Executive Mentor',
             'Notes'                                                    => 'Test Notes',
-            'Would you be open to participating in virtual mentoring?' => "",
+            'Would you be open to participating in virtual mentoring?' => "TRUE",
             'Spiritual Assessment'                                     => 'Weak',
             'Professional Assessment'                                  => 'Strong',
             'Years at current workplace'                               => '15+',
@@ -279,11 +279,11 @@ class ImportTest extends TestCase {
         ];
         $inactiveLeaderEmail = [
             'Name'                                                     => 'Expired Chapter Leader',
-            'T-shirt size'                                             => '',
+            'T-shirt size'                                             => 'L',
             'Bio'                                                      => '',
-            'Notes'                                                    => '',
-            'Would you be open to participating in virtual mentoring?' => "Yes",
-            'Spiritual Assessment'                                     => '',
+            'Notes'                                                    => 'should not show up',
+            'Would you be open to participating in virtual mentoring?' => "TRUE",
+            'Spiritual Assessment'                                     => 'from merge',
             'Professional Assessment'                                  => '',
             'Years at current workplace'                               => '',
             'Chapter Interest List'                                    => '',
@@ -872,6 +872,9 @@ class ImportTest extends TestCase {
             'professional_assessment' => 'Strong',
             'years_at_workplace'      => '15+',
             'nb_tags'                 => 'attendee-ess-baugh-1-20, shared, attendee-ess-Joseph-Galati',
+            'notes'                   => "Test Notes",
+            't_shirt_size'            => 'L',
+            'virtual_mentoring'       => "Yes",
         ] );
         $this->assertDatabaseHas( 'phones', [
             'number' => '1 (214) 797-5267',
@@ -883,7 +886,7 @@ class ImportTest extends TestCase {
             'email' => ''
         ] );
         $this->assertDatabaseMissing( 'ycp_contacts', [
-            'email' => 'other@ycp.com'
+            'email' => 'other@other.com'
         ] );
 
     }

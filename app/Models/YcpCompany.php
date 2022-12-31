@@ -74,16 +74,6 @@ class YcpCompany extends Model {
         }
     }
 
-    public static function companyMatches( array $company1, YcpCompany $company2 ): array {
-        $differences = [
-            'any' => false,
-        ];
-
-        //TODO fill this out. Maybe? maybe just wipe and do fresh imports
-
-        return $differences;
-    }
-
     public static function updateCompany( array $company1, YcpCompany $company2, array $differences ): YcpCompany {
         if ( ! $differences['any'] ) {
             return $company2;

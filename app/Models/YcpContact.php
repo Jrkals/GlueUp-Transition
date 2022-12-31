@@ -79,18 +79,21 @@ class YcpContact extends Model {
         $this->spiritual_assessment    = $row['spiritual_assessment'] ?? '';
         $this->professional_assessment = $row['professional_assessment'] ?? '';
         $this->t_shirt_size            = $row['t_shirt_size'] ?? null;
-        $this->virtual_mentoring       = ! empty( $row['would_you_be_open_to_participating_in_virtual_mentoring'] ) ?
-            str_contains( $row['would_you_be_open_to_participating_in_virtual_mentoring'], '1' ) ||
-            str_contains( $row['would_you_be_open_to_participating_in_virtual_mentoring'], 'TRUE' )
-                ? "Yes" : "No"
-            : null;
-        $this->years_at_workplace      = $row['years_at_current_workplace'] ?? '';
-        $this->chapter_interest_list   = $this->formChapterInterestList(
+        if ( ! empty( $row['would_you_be_open_to_participating_in_virtual_mentoring'] ) ) {
+            if ( str_contains( $row['would_you_be_open_to_participating_in_virtual_mentoring'], '1' ) ||
+                 str_contains( $row['would_you_be_open_to_participating_in_virtual_mentoring'], 'TRUE' ) ) {
+                $this->virtual_mentoring = "Yes";
+            } else {
+                $this->virtual_mentoring = "No";
+            }
+        }
+        $this->years_at_workplace    = $row['years_at_current_workplace'] ?? '';
+        $this->chapter_interest_list = $this->formChapterInterestList(
             $row['potential_ycp_city'] ?? '',
             $row['chapter_interest_list'] ?? '' );
-        $this->linkedin                = StringHelpers::validateUrl( $row['linkedin_profile'] ?? '' );
-        $this->chapter_leader_role     = $row['current_chapter_role_category'] ?? '';
-        $this->notes                   = $this->filterNotes( $row['notes'] );
+        $this->linkedin              = StringHelpers::validateUrl( $row['linkedin_profile'] ?? '' );
+        $this->chapter_leader_role   = $row['current_chapter_role_category'] ?? '';
+        $this->notes                 = $this->filterNotes( $row['notes'] );
         if ( isset( $row['bio'] ) && StringHelpers::isIndustry( $row['bio'] ) ) {
             $this->industry = $this->mapIndustry( $row['bio'] );
         } else {
@@ -774,6 +777,42 @@ class YcpContact extends Model {
         if ( ! isset( $this->linkedin ) && $contact->linkedin ) {
             $this->linkedin = $contact->linkedin;
         }
+
+        //birthday
+        if ( ! isset( $this->birthday ) && $contact->birthday ) {
+            $this->birthday = $contact->birthday;
+        }
+
+        //spiritual
+        if ( ! isset( $this->spiritual_assessment ) && $contact->spiritual_assessment ) {
+            $this->spiritual_assessment = $contact->spiritual_assessment;
+        }
+
+        //professional
+        if ( ! isset( $this->professional_assessment ) && $contact->professional_assessment ) {
+            $this->professional_assessment = $contact->professional_assessment;
+        }
+
+        //t shirt size
+        if ( ! isset( $this->t_shirt_size ) && $contact->t_shirt_size ) {
+            $this->t_shirt_size = $contact->t_shirt_size;
+        }
+
+        //virtual mentoring
+        if ( ! isset( $this->virtual_mentoring ) && $contact->virtual_mentoring ) {
+            $this->virtual_mentoring = $contact->virtual_mentoring;
+        }
+
+        //years_at_workplace
+        if ( ! isset( $this->years_at_workplace ) && $contact->years_at_workplace ) {
+            $this->years_at_workplace = $contact->years_at_workplace;
+        }
+
+        //notes
+        if ( ! isset( $this->notes ) && $contact->notes ) {
+            $this->notes = $contact->notes;
+        }
+
 
         $this->save();
         $contact->delete();

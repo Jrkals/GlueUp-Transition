@@ -37,23 +37,15 @@ class ImportSilkStartCompanies extends Command {
 
         $newWriter      = new ExcelWriter( './storage/app/exports/newCompanies.xlsx' );
         $existingWriter = new ExcelWriter( './storage/app/exports/existingCompanies.xlsx' );
-        $updatedWriter  = new ExcelWriter( './storage/app/exports/updatedCompanies.xlsx' );
 
         $alreadyExists = [];
         $new           = [];
-        $updated       = [];
         $count         = 0;
 
         foreach ( $data as $row ) {
             $company = YcpCompany::getCompany( $row );
             if ( $company ) {
                 $alreadyExists[] = $row;
-
-                $differences = YcpCompany::companyMatches( $row, $company );
-                if ( $differences['any'] === true ) {
-                    YcpCompany::updateCompany( $row, $company, $differences );
-                    $updated[] = $row;
-                }
 
                 $count ++;
                 if ( $count % 500 === 0 ) {
@@ -72,12 +64,10 @@ class ImportSilkStartCompanies extends Command {
         }
         $this->line( 'Already Exists: ' . sizeof( $alreadyExists ) );
         $this->line( 'New Imports: ' . sizeof( $new ) );
-        $this->line( 'Updated: ' . sizeof( $updated ) );
 
 
         $newWriter->writeSingleFileExcel( $new );
         $existingWriter->writeSingleFileExcel( $alreadyExists );
-        $updatedWriter->writeSingleFileExcel( $updated );
 
         return CommandAlias::SUCCESS;
     }
