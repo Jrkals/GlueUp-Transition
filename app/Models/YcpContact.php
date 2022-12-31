@@ -244,7 +244,6 @@ class YcpContact extends Model {
         }
 
         return null;
-        //  throw ChapterException::NoChapterFound( $this );
     }
 
     /**
