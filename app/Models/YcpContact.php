@@ -763,52 +763,57 @@ class YcpContact extends Model {
         }
 
         //bio
-        if ( ! isset( $this->bio ) ) {
+        if ( empty( $this->bio ) ) {
             $this->bio = $contact->bio;
         }
 
         //industry
-        if ( ! isset( $this->industry ) ) {
+        if ( empty( $this->industry ) ) {
             $this->industry = $contact->industry;
         }
 
+        //industry
+        if ( empty( $this->nb_tags ) ) {
+            $this->nb_tags = $contact->nb_tags;
+        }
+
         //linkedin
-        if ( ! isset( $this->linkedin ) && $contact->linkedin ) {
+        if ( empty( $this->linkedin ) && $contact->linkedin ) {
             $this->linkedin = $contact->linkedin;
         }
 
         //birthday
-        if ( ! isset( $this->birthday ) && $contact->birthday ) {
+        if ( empty( $this->birthday ) && $contact->birthday ) {
             $this->birthday = $contact->birthday;
         }
 
         //spiritual
-        if ( ! isset( $this->spiritual_assessment ) && $contact->spiritual_assessment ) {
+        if ( empty( $this->spiritual_assessment ) && $contact->spiritual_assessment ) {
             $this->spiritual_assessment = $contact->spiritual_assessment;
         }
 
         //professional
-        if ( ! isset( $this->professional_assessment ) && $contact->professional_assessment ) {
+        if ( empty( $this->professional_assessment ) && $contact->professional_assessment ) {
             $this->professional_assessment = $contact->professional_assessment;
         }
 
         //t shirt size
-        if ( ! isset( $this->t_shirt_size ) && $contact->t_shirt_size ) {
+        if ( empty( $this->t_shirt_size ) && $contact->t_shirt_size ) {
             $this->t_shirt_size = $contact->t_shirt_size;
         }
 
         //virtual mentoring
-        if ( ! isset( $this->virtual_mentoring ) && $contact->virtual_mentoring ) {
+        if ( empty( $this->virtual_mentoring ) && $contact->virtual_mentoring ) {
             $this->virtual_mentoring = $contact->virtual_mentoring;
         }
 
         //years_at_workplace
-        if ( ! isset( $this->years_at_workplace ) && $contact->years_at_workplace ) {
+        if ( empty( $this->years_at_workplace ) && $contact->years_at_workplace ) {
             $this->years_at_workplace = $contact->years_at_workplace;
         }
 
         //notes
-        if ( ! isset( $this->notes ) && $contact->notes ) {
+        if ( empty( $this->notes ) && $contact->notes ) {
             $this->notes = $contact->notes;
         }
 

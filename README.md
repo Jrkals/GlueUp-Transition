@@ -47,6 +47,6 @@ Exports a list of contacts with all custom fields and information. These are exc
 * Export IsDonor or IsMentor Field?
 * umbrella only export for ss notes and bio?
 * Run test imports
-* download latest SS files
+* download latest SS files-Done Jan 2 am
 * Run final import
 * Mark Sekaz phone: 571-289-5701

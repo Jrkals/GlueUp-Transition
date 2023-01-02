@@ -89,7 +89,7 @@ class NBTagParser {
             return false;
         }
         if ( str_contains( $part, '/' ) ) {
-            return true;
+            return false;
         }
         if ( $dashCount === 2 ) {
             return true;

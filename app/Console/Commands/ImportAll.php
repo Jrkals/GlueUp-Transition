@@ -20,7 +20,7 @@ class ImportAll extends Command {
      *
      * @var string
      */
-    protected $signature = 'import:all';
+    protected $signature = 'silkstart:importAll';
 
     /**
      * The console command description.

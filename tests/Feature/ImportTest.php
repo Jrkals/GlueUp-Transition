@@ -281,9 +281,9 @@ class ImportTest extends TestCase {
             'Name'                                                     => 'Expired Chapter Leader',
             'T-shirt size'                                             => 'L',
             'Bio'                                                      => '',
-            'Notes'                                                    => 'should not show up',
+            'Notes'                                                    => 'should show up',
             'Would you be open to participating in virtual mentoring?' => "TRUE",
-            'Spiritual Assessment'                                     => 'from merge',
+            'Spiritual Assessment'                                     => 'should show up',
             'Professional Assessment'                                  => '',
             'Years at current workplace'                               => '',
             'Chapter Interest List'                                    => '',
@@ -866,15 +866,8 @@ class ImportTest extends TestCase {
     public function testMergeChapterLeaders() {
         $this->setupChapterLeaderFiles();
         $this->artisan( 'silkstart:importContacts', [ 'file' => './storage/app/' . $this->testContactDir ] );
-        $this->assertDatabaseHas( 'ycp_contacts', [
-            'email'                   => 'expired@ycpaustin.org',
-            'spiritual_assessment'    => 'Weak',
-            'professional_assessment' => 'Strong',
-            'years_at_workplace'      => '15+',
-            'nb_tags'                 => 'attendee-ess-baugh-1-20, shared, attendee-ess-Joseph-Galati',
-            'notes'                   => "Test Notes",
-            't_shirt_size'            => 'L',
-            'virtual_mentoring'       => "Yes",
+        $this->assertDatabaseMissing( 'ycp_contacts', [
+            'email' => 'expired@ycpaustin.org',
         ] );
         $this->assertDatabaseHas( 'phones', [
             'number' => '1 (214) 797-5267',
@@ -885,8 +878,15 @@ class ImportTest extends TestCase {
         $this->assertDatabaseMissing( 'ycp_contacts', [
             'email' => ''
         ] );
-        $this->assertDatabaseMissing( 'ycp_contacts', [
-            'email' => 'other@other.com'
+        $this->assertDatabaseHas( 'ycp_contacts', [
+            'email'                   => 'other@other.com',
+            'spiritual_assessment'    => 'should show up',
+            'professional_assessment' => 'Strong',
+            'years_at_workplace'      => '15+',
+            'nb_tags'                 => 'attendee-ess-baugh-1-20, shared, attendee-ess-Joseph-Galati',
+            'notes'                   => "should show up",
+            't_shirt_size'            => 'L',
+            'virtual_mentoring'       => "Yes",
         ] );
 
     }

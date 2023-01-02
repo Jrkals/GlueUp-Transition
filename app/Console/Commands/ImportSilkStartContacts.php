@@ -110,7 +110,7 @@ class ImportSilkStartContacts extends Command {
                 'home_chapter' => $leader->homeChapter()->name
             ] );
             if ( $matchingName ) {
-                $leader->mergeIn( $matchingName );
+                $matchingName->mergeIn( $leader );
             }
             $count ++;
             if ( $count % 100 === 0 ) {
