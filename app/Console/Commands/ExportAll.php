@@ -19,7 +19,7 @@ class ExportAll extends \Illuminate\Console\Command {
      *
      * @var string
      */
-    protected $signature = 'export:all';
+    protected $signature = 'glueup:exportAll';
 
     /**
      * The console command description.

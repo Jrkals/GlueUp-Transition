@@ -64,7 +64,6 @@ class ExportGlueUpContacts extends Command {
                 $row['First Name']                 = $contact->first_name ?? '';
                 $row['Last Name']                  = $contact->last_name ?? '';
                 $row['Address']                    = $address->street1 ?? '';
-                $row['Address 2']                  = $address->street2 ?? '';
                 $row['City']                       = $address->city ?? '';
                 $row['State']                      = $address->state ?? '';
                 $row['Postal Code']                = $address->postal_code ?? '';

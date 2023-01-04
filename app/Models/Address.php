@@ -10,7 +10,6 @@ class Address extends Model {
 
     protected $fillable = [
         'street1',
-        'street2',
         'postal_code',
         'country',
         'city',
@@ -45,8 +44,7 @@ class Address extends Model {
 
     private static function createFromAddress( $street1, $street2, $city, $state, $zip, $country, $addressable_type, $id, $type ): Address {
         $address                   = new Address();
-        $address->street1          = $street1;
-        $address->street2          = $street2;
+        $address->street1          = $street1 . "\n" . $street2;
         $address->city             = $city;
         $address->state            = $state;
         $address->postal_code      = $zip;
@@ -76,10 +74,6 @@ class Address extends Model {
 
     public function street1(): string {
         return $this->street1;
-    }
-
-    public function street2(): string {
-        return $this->street2;
     }
 
     public function city(): string {

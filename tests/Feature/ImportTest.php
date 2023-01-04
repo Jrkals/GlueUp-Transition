@@ -721,7 +721,6 @@ class ImportTest extends TestCase {
 
         $this->assertDatabaseHas( 'addresses', [
             'street1'          => '400 S Park Ave Ste 210',
-            'street2'          => '',
             'city'             => 'Winter Park',
             'state'            => 'TX',
             'postal_code'      => '30080',
@@ -743,8 +742,7 @@ class ImportTest extends TestCase {
         $newContact = YcpContact::query()->with( 'companies' )->where( 'email', '=', 'new@wordonfire.org' )->first();
 
         $this->assertDatabaseHas( 'addresses', [
-            'street1'          => '2041 Texas Plaza Dr',
-            'street2'          => 'Apt 4210',
+            'street1'          => "2041 Texas Plaza Dr\nApt 4210",
             'city'             => 'Irving',
             'state'            => 'TX',
             'postal_code'      => '75062',
@@ -754,8 +752,7 @@ class ImportTest extends TestCase {
             'address_type'     => 'home',
         ] );
         $this->assertDatabaseHas( 'addresses', [
-            'street1'          => '8445 Freeport Parkway',
-            'street2'          => 'Ste 360',
+            'street1'          => "8445 Freeport Parkway\nSte 360",
             'city'             => 'Irving',
             'state'            => 'TX',
             'postal_code'      => '75123',
@@ -767,7 +764,6 @@ class ImportTest extends TestCase {
         ] );
         $this->assertDatabaseHas( 'addresses', [
             'street1'          => '11020 Huebner Oaks Apt 2318',
-            'street2'          => '',
             'city'             => 'San Antonio',
             'state'            => 'TX',
             'postal_code'      => '75062',
@@ -777,8 +773,7 @@ class ImportTest extends TestCase {
             'address_type'     => 'home',
         ] );
         $this->assertDatabaseHas( 'addresses', [
-            'street1'          => '8446 Freeport Parkway',
-            'street2'          => 'Ste 360',
+            'street1'          => "8446 Freeport Parkway\nSte 360",
             'city'             => 'Irving',
             'state'            => 'TX',
             'postal_code'      => '75123',

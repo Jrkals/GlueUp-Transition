@@ -28,7 +28,11 @@ class ExcelWriter {
             return;
         }
         foreach ( array_keys( $data[0] ) as $key ) {
-            $header[ $key ] = '@'; // Type String
+            $typeString = '@'; //string
+            if ( str_contains( $key, 'date' ) ) {
+                $typeString = 'YYYY-MM-DD'; //Date
+            }
+            $header[ $key ] = $typeString;
         }
         $this->excel->writeSheetHeader( $sheetName, $header );
         foreach ( $data as $row ) {

@@ -32,7 +32,7 @@ class StringHelpers {
             return '';
         }
 
-        return strtolower( str_replace( ' ', '-', $answer ) );
+        return strtolower( str_replace( [ ' ', ',' ], '-', $answer ) );
     }
 
     public static function isIndustry( string $param ): bool {
