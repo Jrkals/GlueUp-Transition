@@ -15,7 +15,7 @@ class ExportGlueUpContacts extends Command {
      *
      * @var string
      */
-    protected $signature = 'glueup:exportContacts';
+    protected $signature = 'glueup:exportContacts {Chapter?}';
 
     /**
      * The console command description.
@@ -30,6 +30,10 @@ class ExportGlueUpContacts extends Command {
      * @return int
      */
     public function handle() {
+        $chapterFilter = $this->argument( 'Chapter' );
+        if ( $chapterFilter ) {
+            $this->line( 'Exporting only chapter ' . $chapterFilter );
+        }
         $timer = new Timer();
         $timer->start();
         $this->line( 'running query...' );
@@ -42,6 +46,11 @@ class ExportGlueUpContacts extends Command {
         ] )->get();
         $this->line( $timer->elapsed( 'Contacts Fetched' ) );
         foreach ( $chapters as $chapter ) {
+            if ( $chapterFilter ) {
+                if ( $chapter->name !== $chapterFilter ) {
+                    continue;
+                }
+            }
             $data     = [];
             $contacts = $chapter->contacts;
             $count    = 0;
@@ -61,8 +70,8 @@ class ExportGlueUpContacts extends Command {
                 $phone   = $contact->primaryPhone();
 
                 $companyName                       = $contact->companyName();
-                $row['First Name']                 = $contact->first_name ?? '';
-                $row['Last Name']                  = $contact->last_name ?? '';
+                $row['First Name']                 = $contact->first_name ? preg_replace( '/[[:^print:]]/', '', $contact->first_name ) : '';
+                $row['Last Name']                  = $contact->last_name ? preg_replace( '/[[:^print:]]/', '', $contact->last_name ) : '';
                 $row['Address']                    = $address->street1 ?? '';
                 $row['City']                       = $address->city ?? '';
                 $row['State']                      = $address->state ?? '';

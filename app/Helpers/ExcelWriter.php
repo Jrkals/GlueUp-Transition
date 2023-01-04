@@ -29,8 +29,8 @@ class ExcelWriter {
         }
         foreach ( array_keys( $data[0] ) as $key ) {
             $typeString = '@'; //string
-            if ( str_contains( $key, 'date' ) ) {
-                $typeString = 'YYYY-MM-DD'; //Date
+            if ( str_contains( strtolower( $key ), 'date' ) ) {
+                $typeString = 'MM/DD/YY'; //Date
             }
             $header[ $key ] = $typeString;
         }
