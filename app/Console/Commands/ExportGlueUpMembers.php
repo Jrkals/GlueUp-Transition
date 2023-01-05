@@ -46,12 +46,21 @@ class ExportGlueUpMembers extends Command {
                 if ( ! $member->email || $member->status === 'Unsubscribed' ) {
                     continue;
                 }
+                //For active chapter leaders, export their ycp email even if it is not with their membership in SS.
+                $email = $member->email;
+                if ( $plan->name === 'Chapter Leader' && $plan->pivot->active &&
+                     ! str_contains( $member->email, 'ycp' ) ) {
+                    $chapter = strtolower( str_replace( [ ' ', '-', 'YCP' ], '', $member->homeChapter()->name ) );
+                    $email   = $member->first_name . '.' . $member->last_name . '@ycp' . $chapter . '.org';
+                    $this->line( 'Replacing' . $member->email . ' with ' . $email );
+                }
+
                 $data[] = [
                     'Membership Start Date'        => $plan->pivot->start_date,
                     'Membership End Date'          => $plan->pivot->expiry_date,
                     'First Name'                   => $member->first_name,
                     'Last Name'                    => $member->last_name,
-                    'Email'                        => $member->email,
+                    'Email'                        => $email,
                     'Phone'                        => $member->primaryPhone()?->number,
                     'Company Name'                 => $member->companyName(),
                     'Title/Position'               => $member->title,

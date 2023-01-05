@@ -62,8 +62,8 @@ class ImportSilkStartCompanies extends Command {
                 $this->line( $count . ' Done. ' . ( sizeof( $data ) - $count ) . ' remaining' );
             }
         }
-        $this->line( 'Already Exists: ' . sizeof( $alreadyExists ) );
-        $this->line( 'New Imports: ' . sizeof( $new ) );
+        $this->line( 'Already Existing Companies: ' . sizeof( $alreadyExists ) );
+        $this->line( 'New Companies: ' . sizeof( $new ) );
 
 
         $newWriter->writeSingleFileExcel( $new );

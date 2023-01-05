@@ -694,32 +694,47 @@ class YcpContact extends Model {
         return $notes;
     }
 
-    private function mapIndustry( string $industry ): string {
+    public function mapIndustry( string $industry ): string {
         return match ( $industry ) {
-            'Finance/Accounting' => 'ACCT',
-            'Non-profit' => 'NPRMGT',
-            'Operations & Logistics' => 'LOGIST',
-            'Real Estate' => 'COMMER',
-            'Software Developer', 'Software Engineer' => 'COMPSW',
-            'Television & Media' => 'TELCO',
-            'Marketing & Advertising' => 'MKTADV',
-            'Legal' => 'LAW',
-            'Insurance' => 'INSRCE',
-            'Information Technology' => 'COMPSC',
-            'Human Resources' => 'HR',
-            'Health Care', 'Healthcare' => 'HEALTH',
-            'Government' => 'GOVT',
-            'Financial Planning' => 'FINSER',
-            'Fashion & Design' => 'FASHN',
-            'Engineering' => 'MECHAN', // COULD BE CIVIL TOO
-            'Energy' => 'ENERGY',
-            'Education' => 'EDU',
-            'Communications' => 'PUBREL',
-            default => 'OT' //OTHER
+            'Finance/Accounting', 'Financial Planning' => 'financial-services',
+            'Non-profit' => 'nonprofit-management',
+            'Operations & Logistics' => 'logistics--supply-chain',
+            'Television & Media' => 'telecommunications',
+            'Marketing & Advertising' => 'marketing--advertising',
+            'Legal', 'Law' => 'legal',
+            'Insurance' => 'insurance',
+            'Software Developer', 'Software Engineer', 'Information Technology' => 'information-technology--software',
+            'Human Resources' => 'human-resources',
+            'Health Care', 'Healthcare' => 'healthcare',
+            'Government', 'Government & Politics' => 'governmental',
+            'Fashion & Design' => 'fashion-apparel--design',
+            'Engineering' => 'engineering',
+            'Energy' => 'energy',
+            'Education' => 'education---primary--secondary',
+            'Communications' => 'communications',
+            'Transportation/Travel/Space' => 'transportation',
+            'Science' => 'life-sciences',
+            'Real Estate & Housing', 'Real Estate' => 'real-estate',
+            'Military' => 'military',
+            'Food/Beverage & Hospitality' => 'foodbeverage--hospitality',
+            'Church/Religious/Ministry' => 'religious-institutions',
+            'Architecture & Construction' => 'architecture--construction',
+            'Agriculture' => 'agriculture',
+            default => 'other-14377817',
         };
+
     }
 
     public function activeChapterLeader(): bool {
+        $leaders = YcpContact::query()->whereHas( 'plans' )->whereRelation( 'plans', 'name', '=', 'Chapter leader' )->where( 'email', 'not like', '%ycp%' )->get();
+        $leaders = YcpContact::query()->whereHas( 'plans' )->whereRelation( 'plans', 'name', '=', 'Chapter leader' )->where( 'email', 'not like', '%ycp%' )->get();
+        $count   = 0;
+        foreach ( $leaders as $leader ) {
+            $a = $leader->plans->first()->pivot->active;
+            if ( $a ) {
+                $count ++;
+            }
+        }
         if ( $this->plans->isEmpty() ) {
             return false;
         }
@@ -814,7 +829,7 @@ class YcpContact extends Model {
 
         //notes
         if ( empty( $this->notes ) && $contact->notes ) {
-            $this->notes = $contact->notes;
+            $this->notes = $this->filterNotes( $contact->notes );
         }
 
 

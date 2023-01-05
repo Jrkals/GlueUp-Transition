@@ -44,7 +44,7 @@ class Address extends Model {
 
     private static function createFromAddress( $street1, $street2, $city, $state, $zip, $country, $addressable_type, $id, $type ): Address {
         $address                   = new Address();
-        $address->street1          = $street1 . "\n" . $street2;
+        $address->street1          = ( $street2 ) ? $street1 . "\n" . $street2 : $street1;
         $address->city             = $city;
         $address->state            = $state;
         $address->postal_code      = $zip;

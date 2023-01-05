@@ -72,9 +72,9 @@ class ImportSilkStartContacts extends Command {
         $this->line( 'merging defunct leaders...' );
         $this->mergeDefunctChapterLeaders();
 
-        $this->line( 'Already Exists: ' . sizeof( $alreadyExists ) );
-        $this->line( 'New Imports: ' . sizeof( $new ) );
-        $this->line( 'Updated ' . sizeof( $updated ) );
+        $this->line( 'Already Existing Contacts: ' . sizeof( $alreadyExists ) );
+        $this->line( 'New Contacts: ' . sizeof( $new ) );
+        $this->line( 'Updated Contacts: ' . sizeof( $updated ) );
 
         $newWriter->writeSingleFileExcel( $new );
         $existingWriter->writeSingleFileExcel( $alreadyExists );

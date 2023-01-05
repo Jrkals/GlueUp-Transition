@@ -34,7 +34,12 @@ class YcpEvent extends Model {
         $event->date = Carbon::parse( $row['event_date'] )->toDateString();
         $event->type = self::getEventType( $row['event'] );
         $event->save();
-        $event->contacts()->save( YcpContact::getOrCreateContact( $row['attendee_name'], $row['email'] ),
+        $contact = YcpContact::getOrCreateContact( $row['attendee_name'], $row['email'] );
+        if ( ! empty( $row['industry'] ) ) {
+            $contact->industry = $contact->mapIndustry( $row['industry'] );
+            $contact->save();
+        }
+        $event->contacts()->save( $contact,
             [ 'attended' => $row['attended'] === 'True' ] );
     }
 

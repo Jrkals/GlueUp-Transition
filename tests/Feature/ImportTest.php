@@ -403,6 +403,7 @@ class ImportTest extends TestCase {
             'Event Date'    => '20 Oct 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => '',
+            'Industry'      => '',
             'Email'         => 'jkalan@wordonfire.org',
         ];
         $nhh_new_person   = [
@@ -410,6 +411,7 @@ class ImportTest extends TestCase {
             'Event Date'    => '20 Oct 2022',
             'Attendee Name' => 'New Smith',
             'Attended'      => '',
+            'Industry'      => '',
             'Email'         => 'csmith@test.org',
         ];
         $nhh_constance    = [
@@ -417,6 +419,7 @@ class ImportTest extends TestCase {
             'Event Date'    => '20 Oct 2022',
             'Attendee Name' => 'Constance de Monts',
             'Attended'      => '',
+            'Industry'      => '',
             'Email'         => EmailValidation::query()->where( 'valid', '=', true )->first()->email,
         ];
         $sjs              = [
@@ -424,6 +427,7 @@ class ImportTest extends TestCase {
             'Event Date'    => '10 Dec 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => 'TRUE',
+            'Industry'      => '',
             'Email'         => 'jkalan@wordonfire.org',
         ];
         $ess              = [
@@ -431,6 +435,7 @@ class ImportTest extends TestCase {
             'Event Date'    => '19 Oct 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => '',
+            'Industry'      => 'Agriculture',
             'Email'         => 'jkalan@wordonfire.org',
         ];
         $panel            = [
@@ -438,6 +443,7 @@ class ImportTest extends TestCase {
             'Event Date'    => '11 Oct 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => 'TRUE',
+            'Industry'      => '',
             'Email'         => 'jkalan@wordonfire.org',
         ];
         $panel_diff_date  = [
@@ -445,6 +451,7 @@ class ImportTest extends TestCase {
             'Event Date'    => '12 Oct 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => '',
+            'Industry'      => '',
             'Email'         => 'jkalan@wordonfire.org',
         ];
         $other            = [
@@ -452,6 +459,7 @@ class ImportTest extends TestCase {
             'Event Date'    => '29 Sep 2022',
             'Attendee Name' => 'Justin Kalan',
             'Attended'      => '',
+            'Industry'      => '',
             'Email'         => 'jkalan@wordonfire.org',
         ];
         $events           = [
@@ -594,7 +602,7 @@ class ImportTest extends TestCase {
             'first_name' => 'Constance',
             'last_name'  => 'de Monts',
             'linkedin'   => '',
-            'industry'   => 'COMPSC'
+            'industry'   => 'information-technology--software'
         ] );
         $this->assertDatabaseHas( 'plan_ycp_contact', [
             'active'      => true,
@@ -856,6 +864,8 @@ class ImportTest extends TestCase {
             'ycp_contact_id' => $constance->id,
             'ycp_event_id'   => $nhh->id
         ] );
+
+        $this->assertDatabaseHas( 'ycp_contacts', [ 'industry' => 'agriculture' ] );
     }
 
     public function testMergeChapterLeaders() {

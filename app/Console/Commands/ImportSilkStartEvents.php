@@ -55,6 +55,8 @@ class ImportSilkStartEvents extends Command {
                 $this->line( $timer->progress( $count, $total ) );
             }
         }
+        $this->line( 'New Events: ' . sizeof( $new ) );
+        $this->line( 'Existing Events: ' . sizeof( $alreadyExists ) );
 
         $newWriter->writeSingleFileExcel( $new );
         $existingWriter->writeSingleFileExcel( $alreadyExists );
