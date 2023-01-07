@@ -45,6 +45,6 @@ Exports a list of contacts with all custom fields and information. These are exc
 #### TODOS
 
 * Stripe special characters from names
-* YCP Clevelaand and Ycp - Cleveland issu
+* YCP Cleveland and Ycp - Cleveland issu
 * Run final import
 * Mark Sekaz phone: 571-289-5701

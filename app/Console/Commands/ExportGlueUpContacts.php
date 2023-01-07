@@ -70,8 +70,8 @@ class ExportGlueUpContacts extends Command {
                 $phone   = $contact->primaryPhone();
 
                 $companyName                       = $contact->companyName();
-                $row['First Name']                 = $contact->first_name ? preg_replace( '/[[:^print:]]/', '', $contact->first_name ) : '';
-                $row['Last Name']                  = $contact->last_name ? preg_replace( '/[[:^print:]]/', '', $contact->last_name ) : '';
+                $row['First Name']                 = $this->cleanupName( $contact->first_name );// ? preg_replace( '/[[:^print:]]/', '', $contact->first_name ) : '';
+                $row['Last Name']                  = $this->cleanupName( $contact->last_name );// ? preg_replace( '/[[:^print:]]/', '', $contact->last_name ) : '';
                 $row['Address']                    = $address->street1 ?? '';
                 $row['City']                       = $address->city ?? '';
                 $row['State']                      = $address->state ?? '';
@@ -91,9 +91,9 @@ class ExportGlueUpContacts extends Command {
                 $row['Chapter Interest List']      = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
                 $row['Chapter Leader Role']        = StringHelpers::glueUpSlugify( $contact->chapter_leader_role );
                 $row['Event Attendance']           = $contact->compileEventInfo();
-                $row['SilkStart Profile Notes']    = $contact->notes ?? '';
-                $row['Bio']                        = $contact->bio ?? '';
-                $row['Industry']                   = $contact->industry ?? '';
+                //     $row['SilkStart Profile Notes']    = $contact->notes ?? '';
+                $row['Bio']                   = $contact->bio ?? '';
+                $row['Professional Industry'] = $contact->industry ?? '';
 
                 $data[] = $row;
                 $count ++;
@@ -106,5 +106,14 @@ class ExportGlueUpContacts extends Command {
         }
 
         return Command::SUCCESS;
+    }
+
+    private function cleanupName( $name ): string {
+        if ( ! isset( $name ) ) {
+            return '';
+        }
+        $a = preg_replace( '/\)|\(|\^|&/', ' ', preg_replace( '/[[:^print:]]/', '', $name ) );
+
+        return $a;
     }
 }
