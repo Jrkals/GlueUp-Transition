@@ -44,9 +44,7 @@ Exports a list of contacts with all custom fields and information. These are exc
 
 #### TODOS
 
-* Export IsDonor or IsMentor Field?
-* umbrella only export for ss notes and bio?
-* Run test imports
-* download latest SS files-Done Jan 2 am
+* Stripe special characters from names
+* YCP Clevelaand and Ycp - Cleveland issu
 * Run final import
 * Mark Sekaz phone: 571-289-5701
