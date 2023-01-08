@@ -31,12 +31,12 @@ class Chapter extends Model {
     /**
      * @throws ChapterException
      */
-    public function glueUpId(): int {
+    public function glueUpId() {
         if ( $id = config( 'services.glueup.chapters.' . $this->name ) ) {
             return $id;
         }
 
-        return 0;
+        return '';
         //   throw ChapterException::NoChapterMappingFound( $this );
     }
 }
