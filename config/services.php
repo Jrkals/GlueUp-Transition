@@ -53,6 +53,7 @@ return [
             'YCP - Fort Worth'                            => 5144,
             'YCP - Houston'                               => 5145,
             'Young Catholic Professionals - Jacksonville' => 5146,
+            'YCP - Jacksonville'                          => 5146,
             'YCP - Kansas City'                           => 5147,
             'YCP - Los Angeles'                           => 5148,
             'YCP - Louisville'                            => 5149,

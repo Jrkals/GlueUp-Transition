@@ -235,15 +235,12 @@ class YcpContact extends Model {
     /**
      * @throws ChapterException
      */
-    public function homeChapter( $force = false ): ?Chapter {
+    public function homeChapter(): ?Chapter {
         $chapters = $this->chapters;
         foreach ( $chapters as $chapter ) {
             if ( $chapter->pivot->home ) {
                 return $chapter;
             }
-        }
-        if ( $force && $this->chapters->IsNotEmpty() ) {
-            return $this->chapters->first();
         }
 
         return null;

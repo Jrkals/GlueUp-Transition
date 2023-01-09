@@ -51,7 +51,7 @@ class ExportGlueUpMembers extends Command {
                 if ( $plan->name === 'Chapter Leader' && $plan->pivot->active &&
                      ! str_contains( $member->email, 'ycp' ) ) {
                     $chapter = strtolower( str_replace( [ ' ', '-', 'YCP' ], '', $member->homeChapter()->name ) );
-                    $email   = $member->first_name . '.' . $member->last_name . '@ycp' . $chapter . '.org';
+                    $email   = strtolower( str_replace( [ ' ' ], '', $member->first_name . '.' . $member->last_name . '@ycp' . $chapter . '.org' ) );
                     $this->line( 'Replacing' . $member->email . ' with ' . $email );
                 }
 
@@ -70,10 +70,11 @@ class ExportGlueUpMembers extends Command {
                     'Billing Postal Code/Zip Code' => isset( $address ) ? $address->postal_code : '',
                     'Billing City'                 => isset( $address ) ? $address->city : '',
                     'Billing Company'              => '',
-                    'Chapters'                     => $member->chapterIds(),
-                    'Primary Chapter'              => $member->homeChapter( true )->glueUpId(),
+                    'Chapters'                     => ( $plan->name === 'Chapter Leader' || $plan->name === 'Chapter Board Member' ) ? $member->homeChapter( true )->glueUpId() : $member->chapterIds(),
+                    'Primary Chapter'              => $member->homeChapter()->glueUpId(),
                 ];
                 $count ++;
+
                 if ( $count % 100 === 0 ) {
                     $this->line( $timer->progress( $count, sizeof( $members ) ) );
                 }

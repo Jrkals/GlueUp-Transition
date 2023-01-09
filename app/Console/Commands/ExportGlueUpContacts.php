@@ -88,9 +88,9 @@ class ExportGlueUpContacts extends Command {
                 $row['Virtual Mentoring']          = StringHelpers::glueUpSlugify( $contact->virtual_mentoring ) ?? '';
                 $row['Years at current workplace'] = $contact->years_at_workplace ?? '';
                 $row['LinkedIn Profile URL']       = $contact->linkedin ?? '';
-                $row['Chapter Interest List']      = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
-                $row['Chapter Leader Role']        = StringHelpers::glueUpSlugify( $contact->chapter_leader_role );
-                $row['Event Attendance']           = $contact->compileEventInfo();
+                //   $row['Chapter Interest List']      = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
+                $row['Chapter Leader Role'] = StringHelpers::glueUpSlugify( $contact->chapter_leader_role );
+                $row['Event Attendance']    = $contact->compileEventInfo();
                 //     $row['SilkStart Profile Notes']    = $contact->notes ?? '';
                 $row['Bio']                   = $contact->bio ?? '';
                 $row['Professional Industry'] = $contact->industry ?? '';
@@ -110,10 +110,15 @@ class ExportGlueUpContacts extends Command {
 
     private function cleanupName( $name ): string {
         if ( ! isset( $name ) ) {
-            return '';
+            return 'Unknown';
         }
-        $a = preg_replace( '/\)|\(|\^|&|\d/', ' ', preg_replace( '/[[:^print:]]/', '', $name ) );
-        $a = str_replace( [ ',', '@', ], '', $a );
+        if ( str_contains( $name, '@' ) ) {
+            return 'Unknown';
+        }
+        $array = [ ')', '(', '^', '@', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
+        $a     = preg_replace( '/[[:^print:]]/', '', $name );
+        $a     = str_replace( $array, '', $a );
+        $a     = str_replace( '&', 'and', $a );
 
         return $a;
     }
