@@ -69,19 +69,19 @@ class ExportGlueUpContacts extends Command {
                 $address = $contact->address;
                 $phone   = $contact->primaryPhone();
 
-                $companyName                       = $contact->companyName();
-                $row['First Name']                 = $this->cleanupName( $contact->first_name );// ? preg_replace( '/[[:^print:]]/', '', $contact->first_name ) : '';
-                $row['Last Name']                  = $this->cleanupName( $contact->last_name );// ? preg_replace( '/[[:^print:]]/', '', $contact->last_name ) : '';
-                $row['Address']                    = $address->street1 ?? '';
-                $row['City']                       = $address->city ?? '';
-                $row['State']                      = $address->state ?? '';
-                $row['Postal Code']                = $address->postal_code ?? '';
-                $row['Company']                    = $companyName;
-                $row['Phone']                      = $phone?->number;
-                $row['Email']                      = $contact->email;
-                $row['Job Title']                  = $contact->title ?? '';
-                $row['Date of Birth']              = $contact->birthday ?? '';
-                $row['Email Status']               = $contact->subscribed;
+                $companyName          = $contact->companyName();
+                $row['First Name']    = $this->cleanupName( $contact->first_name );// ? preg_replace( '/[[:^print:]]/', '', $contact->first_name ) : '';
+                $row['Last Name']     = $this->cleanupName( $contact->last_name );// ? preg_replace( '/[[:^print:]]/', '', $contact->last_name ) : '';
+                $row['Address']       = $address->street1 ?? '';
+                $row['City']          = $address->city ?? '';
+                $row['State']         = $address->state ?? '';
+                $row['Postal Code']   = $address->postal_code ?? '';
+                $row['Company']       = $companyName;
+                $row['Phone']         = $phone?->number;
+                $row['Email']         = $contact->email;
+                $row['Job Title']     = $contact->title ?? '';
+                $row['Date of Birth'] = $contact->birthday ?? '';
+                //     $row['Email Status']               = $contact->subscribed;
                 $row['Spiritual Assessment']       = StringHelpers::glueUpSlugify( $contact->spiritual_assessment ) ?? '';
                 $row['Professional Assessment']    = StringHelpers::glueUpSlugify( $contact->professional_assessment ) ?? '';
                 $row['T Shirt Size']               = StringHelpers::glueUpSlugify( $contact->t_shirt_size ) ?? '';
@@ -112,7 +112,8 @@ class ExportGlueUpContacts extends Command {
         if ( ! isset( $name ) ) {
             return '';
         }
-        $a = preg_replace( '/\)|\(|\^|&/', ' ', preg_replace( '/[[:^print:]]/', '', $name ) );
+        $a = preg_replace( '/\)|\(|\^|&|\d/', ' ', preg_replace( '/[[:^print:]]/', '', $name ) );
+        $a = str_replace( [ ',', '@', ], '', $a );
 
         return $a;
     }

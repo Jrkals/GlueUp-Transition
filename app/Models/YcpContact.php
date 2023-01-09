@@ -235,12 +235,15 @@ class YcpContact extends Model {
     /**
      * @throws ChapterException
      */
-    public function homeChapter(): ?Chapter {
+    public function homeChapter( $force = false ): ?Chapter {
         $chapters = $this->chapters;
         foreach ( $chapters as $chapter ) {
             if ( $chapter->pivot->home ) {
                 return $chapter;
             }
+        }
+        if ( $force && $this->chapters->IsNotEmpty() ) {
+            return $this->chapters->first();
         }
 
         return null;
@@ -252,9 +255,6 @@ class YcpContact extends Model {
     public function chapterIds(): string {
         $return = '';
         foreach ( $this->chapters as $chapter ) {
-            if ( $chapter->pivot->home ) {
-                continue;
-            }
             $return .= $chapter->glueUpId() . ',';
         }
 

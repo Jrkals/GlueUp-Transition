@@ -31,8 +31,13 @@ class StringHelpers {
         if ( ! $answer ) {
             return '';
         }
+        $answer = str_replace( [ '.', ',', ';' ], '', $answer );
 
-        return strtolower( str_replace( [ ' ', ',' ], '-', $answer ) );
+        return strtolower( str_replace( [ ' ', '&' ], '-', $answer ) );
+    }
+
+    public static function glueUpNamify( string $name ): string {
+        return str_replace( [ ',' ], '', $name );
     }
 
     public static function isIndustry( string $param ): bool {

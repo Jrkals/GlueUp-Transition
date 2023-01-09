@@ -43,8 +43,7 @@ class ExportGlueUpMembers extends Command {
             foreach ( $members as $member ) {
                 $address = $member->billingAddress();
                 $plan    = $member->getPlan( $plan->id );
-                if ( ! $member->email || $member->status === 'Unsubscribed' ||
-                     $member->homeChapter()->glueUpId() === '' ) { // Skip national members for now
+                if ( ! $member->email || $member->status === 'Unsubscribed' ) {
                     continue;
                 }
                 //For active chapter leaders, export their ycp email even if it is not with their membership in SS.
@@ -63,8 +62,8 @@ class ExportGlueUpMembers extends Command {
                     'Last Name'                    => $member->last_name,
                     'Email'                        => $email,
                     'Phone'                        => $member->primaryPhone()?->number,
-                    'Company Name'                 => $member->companyName(),
-                    'Title/Position'               => $member->title,
+                    //  'Company Name'                 => $member->companyName(),
+                    //   'Title/Position'               => $member->title,
                     'Billing Address'              => isset( $address ) ? $address->street1 : '',
                     'Billing Country/Region'       => isset( $address ) ? $address->country : '',
                     'Billing Province/State'       => isset( $address ) ? $address->state : '',
@@ -72,7 +71,7 @@ class ExportGlueUpMembers extends Command {
                     'Billing City'                 => isset( $address ) ? $address->city : '',
                     'Billing Company'              => '',
                     'Chapters'                     => $member->chapterIds(),
-                    'Primary Chapter'              => $member->homeChapter()->glueUpId(),
+                    'Primary Chapter'              => $member->homeChapter( true )->glueUpId(),
                 ];
                 $count ++;
                 if ( $count % 100 === 0 ) {

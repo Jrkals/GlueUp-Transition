@@ -44,7 +44,10 @@ Exports a list of contacts with all custom fields and information. These are exc
 
 #### TODOS
 
-* Stripe special characters from names
+* Stripe special characters from names: email names. remove commans from names
+* make chapter interest list valid.
+* fix chapter but no home chapter on belong import
+* no semicolons in spiritual assessment
 * YCP Cleveland and Ycp - Cleveland issu
 * Run final import
 * Mark Sekaz phone: 571-289-5701
