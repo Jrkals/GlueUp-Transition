@@ -36,8 +36,38 @@ class StringHelpers {
         return strtolower( str_replace( [ ' ', '&' ], '-', $answer ) );
     }
 
-    public static function glueUpNamify( string $name ): string {
-        return str_replace( [ ',' ], '', $name );
+    public static function mapChapterLeaderRole( string $role ): string {
+        if ( empty( $role ) ) {
+            return $role;
+        }
+        if ( ! str_contains( $role, ',' ) ) {
+            return self::mapIndividualrole( $role );
+        }
+        $parts  = explode( ',', $role );
+        $mapped = [];
+        foreach ( $parts as $part ) {
+            $mapped[] = self::mapIndividualRole( $part );
+        }
+
+        return implode( ',', $mapped );
+    }
+
+    private static function mapIndividualRole( string $role ): string {
+        $role = strtolower( $role );
+
+        return match ( $role ) {
+            '',
+            'president',
+            'technology',
+            'vp',
+            'marketing',
+            'membership',
+            'outreach',
+            'evangelization',
+            'operations',
+            'finance', => $role,
+            default => 'other-e6e4daf1'
+        };
     }
 
     public static function isIndustry( string $param ): bool {

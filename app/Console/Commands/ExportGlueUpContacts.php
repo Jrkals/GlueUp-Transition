@@ -89,7 +89,7 @@ class ExportGlueUpContacts extends Command {
                 $row['Years at current workplace'] = $contact->years_at_workplace ?? '';
                 $row['LinkedIn Profile URL']       = $contact->linkedin ?? '';
                 //   $row['Chapter Interest List']      = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
-                $row['Chapter Leader Role'] = StringHelpers::glueUpSlugify( $contact->chapter_leader_role );
+                $row['Chapter Leader Role'] = StringHelpers::mapChapterLeaderRole( $contact->chapter_leader_role );
                 $row['Event Attendance']    = $contact->compileEventInfo();
                 //     $row['SilkStart Profile Notes']    = $contact->notes ?? '';
                 $row['Bio']                   = $contact->bio ?? '';
