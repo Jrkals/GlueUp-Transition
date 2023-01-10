@@ -31,9 +31,9 @@ class StringHelpers {
         if ( ! $answer ) {
             return '';
         }
-        $answer = str_replace( [ '.', ',', ';' ], '', $answer );
+        $answer = str_replace( [ '.', ',', ';', '&' ], '', $answer );
 
-        return strtolower( str_replace( [ ' ', '&' ], '-', $answer ) );
+        return strtolower( str_replace( [ ' ' ], '-', $answer ) );
     }
 
     public static function mapChapterLeaderRole( string $role ): string {
