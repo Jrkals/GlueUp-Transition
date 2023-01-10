@@ -47,11 +47,11 @@ class ExportGlueUpUmbrellaContacts extends Command {
                 continue;
             }
 
-            $row['First Name']              = $contact->first_name ?? '';
-            $row['Last Name']               = $contact->last_name ?? '';
-            $row['Email']                   = $contact->email;
-            $row['SilkStart Profile Notes'] = $contact->notes ?? '';
-            $row['Bio']                     = $contact->bio ?? '';
+            $row['First Name']            = $contact->first_name ?? '';
+            $row['Last Name']             = $contact->last_name ?? '';
+            $row['Email']                 = $contact->email;
+            $row['Chapter Interest List'] = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
+
 
             $data[] = $row;
             $count ++;
