@@ -43,7 +43,7 @@ class ExportGlueUpMembers extends Command {
             foreach ( $members as $member ) {
                 $address = $member->billingAddress();
                 $plan    = $member->getPlan( $plan->id );
-                if ( ! $member->email || $member->status === 'Unsubscribed' ) {
+                if ( ! $member->email || $member->subscribed === 'Unsubscribed' ) {
                     continue;
                 }
                 //For active chapter leaders, export their ycp email even if it is not with their membership in SS.
