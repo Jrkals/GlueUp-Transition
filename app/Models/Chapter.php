@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Exceptions\ChapterException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Stringable;
 
 class Chapter extends Model {
     use HasFactory;
@@ -37,6 +36,5 @@ class Chapter extends Model {
         }
 
         return '';
-        //   throw ChapterException::NoChapterMappingFound( $this );
     }
 }

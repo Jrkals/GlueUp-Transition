@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Helpers\ExcelWriter;
 use App\Helpers\StringHelpers;
 use App\Helpers\Timer;
-use App\Models\Chapter;
 use App\Models\YcpContact;
 use Illuminate\Console\Command;
 
@@ -15,7 +14,7 @@ class ExportGlueUpUmbrellaContacts extends Command {
      *
      * @var string
      */
-    protected $signature = 'glueup:ExportUmbrella';
+    protected $signature = 'glueup:exportUmbrella';
 
     /**
      * The console command description.
@@ -33,7 +32,11 @@ class ExportGlueUpUmbrellaContacts extends Command {
         $timer = new Timer();
         $timer->start();
         $this->line( 'running query...' );
-        $contacts = YcpContact::query()->get();
+        $contacts = YcpContact::query()->where( 'subscribed', '=', 'Unsubscribed' )->get( [
+            'first_name',
+            'last_name',
+            'email'
+        ] );
         $this->line( $timer->elapsed( 'Contacts Fetched' ) );
 
         $data  = [];
@@ -43,15 +46,15 @@ class ExportGlueUpUmbrellaContacts extends Command {
         $this->line( 'exporting ' . sizeof( $contacts ) );
         $writer = new ExcelWriter( './storage/app/exports/contacts/umbrella.xlsx' );
         foreach ( $contacts as $contact ) {
-            if ( ! $contact->email || $contact->status === 'Unsubscribed' ) {
+            if ( ! $contact->email /*|| $contact->status !== 'Unsubscribed'*/ ) {
                 continue;
             }
 
-            $row['First Name']            = $contact->first_name ?? '';
-            $row['Last Name']             = $contact->last_name ?? '';
-            $row['Email']                 = $contact->email;
-            $row['Chapter Interest List'] = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
-
+            $row['First Name'] = $contact->first_name ?? '';
+            $row['Last Name']  = $contact->last_name ?? '';
+            $row['Email']      = $contact->email;
+            //  $row['Chapter Interest List'] = StringHelpers::glueUpSlugify( $contact->chapter_interest_list );
+            $row['Bio'] = 'UNSUBSCRIBE DELETE';
 
             $data[] = $row;
             $count ++;
