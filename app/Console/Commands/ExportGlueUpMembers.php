@@ -14,7 +14,7 @@ class ExportGlueUpMembers extends Command {
      *
      * @var string
      */
-    protected $signature = 'glueup:exportMembers';
+    protected $signature = 'glueup:exportMembers {membershipType?}';
 
     /**
      * The console command description.
@@ -31,8 +31,14 @@ class ExportGlueUpMembers extends Command {
     public function handle() {
         $timer = new Timer();
         $timer->start();
-        $memberPlans = Plan::query()->get();
+        $membershipFilter = $this->argument( 'membershipType' );
+        if ( $membershipFilter ) {
+            $memberPlans = Plan::query()->where( 'name', '=', $membershipFilter )->get();
+        } else {
+            $memberPlans = Plan::query()->get();
+        }
         $this->line( $timer->elapsed( 'fetched members' ) );
+
         foreach ( $memberPlans as $plan ) {
             $this->line( 'exporing csv for ' . $plan->name . '...' );
             $writer  = new ExcelWriter( './storage/app/exports/members/' . $plan->name . '.xlsx' );
@@ -43,7 +49,7 @@ class ExportGlueUpMembers extends Command {
             foreach ( $members as $member ) {
                 $address = $member->billingAddress();
                 $plan    = $member->getPlan( $plan->id );
-                if ( ! $member->email || $member->subscribed === 'Unsubscribed' ) {
+                if ( ! $member->email || ( $plan->name === 'Legacy' && $member->subscribed === 'Unsubscribed' ) ) {
                     continue;
                 }
                 //For active chapter leaders, export their ycp email even if it is not with their membership in SS.

@@ -69,8 +69,7 @@ class ImportSilkStartContacts extends Command {
                 $this->line( $timer->progress( $count, $total ) );
             }
         }
-        $this->line( 'merging defunct leaders...' );
-        $this->mergeDefunctChapterLeaders();
+        //  $this->mergeDefunctChapterLeaders();
 
         $this->line( 'Already Existing Contacts: ' . sizeof( $alreadyExists ) );
         $this->line( 'New Contacts: ' . sizeof( $new ) );
@@ -84,6 +83,7 @@ class ImportSilkStartContacts extends Command {
     }
 
     private function mergeDefunctChapterLeaders() {
+        $this->line( 'merging defunct leaders...' );
         $timer = new Timer();
         $timer->start();
         $leadersByEmail   = YcpContact::query()->where( 'email', 'like', '%@ycp%' )->get();

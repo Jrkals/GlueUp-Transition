@@ -38,7 +38,7 @@ class Plan extends Model {
         return match ( $name ) {
             'Admin' => 'Chapter Leader',
             'Chapter Leader', 'Belong', 'Belong Plus', 'Executive Mentor Membership',
-            'Chapter Chaplain', 'Chapter Board Member' => $name,
+            'Chapter Chaplain', 'Chapter Board Member', 'Company Recruiter Membership' => $name,
             default => 'Legacy'
         };
     }
