@@ -42,7 +42,9 @@ class ExportGlueUpMembers extends Command {
         foreach ( $memberPlans as $plan ) {
             $this->line( 'exporing csv for ' . $plan->name . '...' );
             $writer  = new ExcelWriter( './storage/app/exports/members/' . $plan->name . '.xlsx' );
-            $members = YcpContact::query()->whereRelation( 'plans', 'plan_id', '=', $plan->id )->get();
+            $members = YcpContact::query()->whereRelation( 'plans', 'plan_id', '=', $plan->id )
+                                 ->whereDate( 'date_joined', '>=', '2023-01-01' )
+                                 ->get();
             $this->line( $plan->name . ' has ' . sizeof( $members ) . ' members' );
             $data  = [];
             $count = 0;

@@ -36,6 +36,38 @@ class StringHelpers {
         return strtolower( str_replace( [ ' ' ], '-', $answer ) );
     }
 
+    public static function mapChapterInterestList( ?string $interest ): string {
+        if ( ! $interest ) {
+            return '';
+        }
+        $interest = strtolower( self::glueUpSlugify( $interest ) );
+
+        return match ( $interest ) {
+            'birmingham' => 'birmingham',
+            'brooklyn' => 'brooklyn',
+            'charlotte' => 'charlotte',
+            'colorado-springs' => 'colorado-springs',
+            'el-paso' => 'el-paso',
+            'fort-wayne' => 'fort-wayne',
+            'fresno' => 'fresno',
+            'greenville' => 'greenville',
+            'indianapolis' => 'indianapolis',
+            'knoxville' => 'knoxville',
+            'memphis' => 'memphis',
+            'new-havenhartford' => 'new-havenhartford',
+            'north-jersey' => 'north-jersey',
+            'puerto-rico' => 'puerto-rico',
+            'queens' => 'queens',
+            'san-francisco' => 'san-francisco',
+            'seattle' => 'seattle',
+            'susquehanna-valley-central-pa' => 'susquehanna-valley-central-pa',
+            'tampast-pete' => 'tampast-pete',
+            'toledo' => 'toledo',
+            'washington-dc' => 'washington-dc',
+            default => 'other-7e0f11f1',
+        };
+    }
+
     public static function mapChapterLeaderRole( string $role ): string {
         if ( empty( $role ) ) {
             return $role;

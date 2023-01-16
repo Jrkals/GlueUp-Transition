@@ -29,6 +29,7 @@ class ExportGlueUpCompanies extends Command {
     public function handle() {
         $companies       = YcpCompany::query()->with( 'address' )->get();
         $memberCompanies = YcpCompany::query()->with( [ 'contacts', 'contacts.phones', 'address' ] )
+                                     ->whereDate( 'date_joined', '>=', '2023-01-01' )
                                      ->where( 'plan', '=', 'Company Recruiter Membership' )->get();
 
         $companyContactWriter = new ExcelWriter( './storage/app/exports/companies/CompanyContactExport.xlsx' );
