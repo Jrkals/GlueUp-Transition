@@ -31,7 +31,7 @@ class StringHelpers {
         if ( ! $answer ) {
             return '';
         }
-        $answer = str_replace( [ '.', ',', ';', '&' ], '', $answer );
+        $answer = str_replace( [ '.', ',', ';', '&', ')', '(' ], '', $answer );
 
         return strtolower( str_replace( [ ' ' ], '-', $answer ) );
     }
@@ -84,6 +84,22 @@ class StringHelpers {
         return implode( ',', $mapped );
     }
 
+    public static function mapDietaryRestrictions( string $restrictions ): string {
+        if ( empty( $restrictions ) ) {
+            return $restrictions;
+        }
+        if ( ! str_contains( $restrictions, ',' ) ) {
+            return self::mapIndividualRestriction( $restrictions );
+        }
+        $parts  = explode( ',', $restrictions );
+        $mapped = [];
+        foreach ( $parts as $part ) {
+            $mapped[] = self::mapIndividualRestriction( $part );
+        }
+
+        return implode( ',', $mapped );
+    }
+
     private static function mapIndividualRole( string $role ): string {
         $role = strtolower( $role );
 
@@ -102,6 +118,19 @@ class StringHelpers {
         };
     }
 
+    private static function mapIndividualRestriction( string $restriction ): string {
+        $restriction = str( str_replace( '/', '', strtolower( $restriction ) ) )->trim()->value();
+
+        return match ( $restriction ) {
+            'glutenwheat',
+            'tree nuts',
+            'dairy',
+            'legumespeanuts',
+            'vegetarian' => $restriction,
+            'none', '' => '',
+        };
+    }
+
     public static function isIndustry( string $param ): bool {
         return match ( $param ) {
             'Non-profit', 'Operations & Logistics', 'Real Estate', 'Software Developer',
@@ -111,5 +140,14 @@ class StringHelpers {
             'Education', 'Communications' => true,
             default => false,
         };
+    }
+
+    public static function mapChapterSelection( string $chapter ): string {
+        if ( str_contains( $chapter, 'AT LARGE (No YCP Chapter in My City Currently)' ) ) {
+            return self::glueUpSlugify( 'AT LARGE (No Chapter Near Me)' );
+        }
+
+        return self::glueUpSlugify( $chapter );
+
     }
 }

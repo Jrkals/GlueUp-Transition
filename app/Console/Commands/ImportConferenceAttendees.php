@@ -35,16 +35,15 @@ class ImportConferenceAttendees extends Command {
      */
     public function handle() {
         $reader = new CSVReader( $this->argument( 'file' ) );
-        $writer = new ExcelWriter( './storage/app/exports/events/conference.csv' );
 
-        $inputData  = $reader->extract_data();
-        $outputData = [];
+        $inputData   = $reader->extract_data();
+        $ticketTypes = [];
 
         foreach ( $inputData as $row ) {
-            $contact      = YcpContact::getContact( $row );
-            $name         = Name::fromFullName( $row['attendee_name'] );
-            $address      = Address::fromFull( $row['address'] );
-            $outputData[] = [
+            $contact = YcpContact::getContact( $row );
+            $name    = Name::fromFullName( $row['attendee_name'] );
+            $address = Address::fromFull( $row['address'] );
+            $mapped  = [
                 'First Name'                                       => $name->firstName(),
                 'Last Name'                                        => $name->lastName(),
                 'Email'                                            => $row['email'],
@@ -59,12 +58,12 @@ class ImportConferenceAttendees extends Command {
                 'Pre-Conference Workshop'                          => '', //TODO figure out design your life
                 'Saturday Evening Gala'                            => StringHelpers::glueUpSlugify( $row['saturday_gala'] ),
                 'Saturday Lunch'                                   => StringHelpers::glueUpSlugify( $row['saturday_lunch'] ),
-                'Dietary Restrictions'                             => StringHelpers::glueUpSlugify( $row['dietary_restrictions'] ),
+                'Dietary Restrictions'                             => StringHelpers::mapDietaryRestrictions( $row['dietary_restrictions'] ),
                 'Hotel'                                            => StringHelpers::glueUpSlugify( $row['hotel'] ),
                 'T-Shirt Size'                                     => StringHelpers::glueUpSlugify( $row['t_shirt_size'] ),
                 'Age'                                              => StringHelpers::glueUpSlugify( $row['age'] ),
                 'Highest Professional Experience'                  => StringHelpers::glueUpSlugify( $row['highest_professional_experience'] ),
-                'Home Chapter'                                     => $contact?->homeChapter()?->glueUpId(),
+                'Home Chapter'                                     => StringHelpers::glueUpSlugify( $row['home_ycp_chapter'] ),
                 'Professional Industry'                            => ! empty( $row['industry'] ) ? ( new \App\Models\YcpContact )->mapIndustry( $row['industry'] ) : '',
                 'National Leadership Summit'                       => StringHelpers::glueUpSlugify( $row['national_leadership_summit'] ),
                 'Friday Lunch'                                     => StringHelpers::glueUpSlugify( $row['friday_lunch'] ),
@@ -81,9 +80,17 @@ class ImportConferenceAttendees extends Command {
                 //   'Chapter Chaplain',
                 'Internal Note'                                    => 'imported from Silkstart 1-18-23',
             ];
+            if ( isset( $ticketTypes[ $row['ticket_type'] ] ) ) {
+                $ticketTypes[ $row['ticket_type'] ][] = $mapped;
+            } else {
+                $ticketTypes[ $row['ticket_type'] ] = [ $mapped ];
+            }
         }
-
-        $writer->writeSingleFileExcel( $outputData );
+        foreach ( $ticketTypes as $ticketType => $data ) {
+            $ticketType = str_replace( [ '/', '(', ')', ' ' ], '', $ticketType );
+            $writer     = new ExcelWriter( './storage/app/exports/events/' . $ticketType . '.xlsx' );
+            $writer->writeSingleFileExcel( $data );
+        }
 
         return Command::SUCCESS;
     }
