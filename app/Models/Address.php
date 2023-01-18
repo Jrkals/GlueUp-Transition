@@ -38,6 +38,22 @@ class Address extends Model {
         ];
     }
 
+    public static function fromFull( string $address ): Address {
+        if ( ! $address ) {
+            return new Address();
+        }
+        $parts = explode( ',', $address );
+
+
+        return new Address( [
+            'street1'     => $parts[0],
+            'city'        => $parts[1],
+            'state'       => $parts[2],
+            'postal_code' => $parts[4],
+            'country'     => $parts[3]
+        ] );
+    }
+
     public function addressable() {
         return $this->morphTo();
     }
@@ -72,25 +88,31 @@ class Address extends Model {
             $address['work_province'], $address['work_postal'], $address['work_country'], $addressable_type, $id, 'business' );
     }
 
-    public function street1(): string {
-        return $this->street1;
-    }
-
-    public function city(): string {
-        return $this->city;
-    }
-
-    public function state(): string {
-        return $this->state;
-    }
-
-    public function postalCode(): string {
-        return $this->postal_code;
-    }
-
-    public function country(): string {
-        return $this->country;
-    }
+//    public function street1(): string {
+//        if ( isset( $this->street1 ) ) {
+//            return $this->street1;
+//        }
+//        $this->street1 = '';
+//
+//        return $this->street1;
+//        //  return $this->street1;
+//    }
+//
+//    public function city(): string {
+//        return $this->city;
+//    }
+//
+//    public function state(): string {
+//        return $this->state;
+//    }
+//
+//    public function postalCode(): string {
+//        return $this->postal_code;
+//    }
+//
+//    public function country(): string {
+//        return $this->country;
+//    }
 
     public function isSame( array $address ): bool {
         return $this->city() === $address['city'] && $this->postalCode() === $address['postal_code']
