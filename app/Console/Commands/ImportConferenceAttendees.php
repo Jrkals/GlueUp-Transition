@@ -55,7 +55,8 @@ class ImportConferenceAttendees extends Command {
                 'Postal Code/Zip Code'                             => $address->postal_code ?? '',
                 'When will you be arriving to the Conference? - 1' => StringHelpers::glueUpSlugify( $row['arrival'] ),
                 'When will you be departing the Conference? - 1'   => StringHelpers::glueUpSlugify( $row['departure'] ),
-                'Pre-Conference Workshop'                          => '', //TODO figure out design your life
+                'Pre-Conference Workshop'                          => StringHelpers::mapPreConf( $row['ticket_type'] ),
+                //TODO figure out design your life
                 'Saturday Evening Gala'                            => StringHelpers::glueUpSlugify( $row['saturday_gala'] ),
                 'Saturday Lunch'                                   => StringHelpers::glueUpSlugify( $row['saturday_lunch'] ),
                 'Dietary Restrictions'                             => StringHelpers::mapDietaryRestrictions( $row['dietary_restrictions'] ),

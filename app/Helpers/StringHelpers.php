@@ -150,4 +150,15 @@ class StringHelpers {
         return self::glueUpSlugify( $chapter );
 
     }
+
+    public static function mapPreConf( string $ticketType ): string {
+        if ( str_contains( $ticketType, 'Design Your Life' ) ) {
+            return self::glueUpSlugify( 'Design Your Life with Dina Dwyer-Owens' );
+
+        } else if ( str_contains( $ticketType, 'Ben Sands' ) ) {
+            return self::glueUpSlugify( 'Power Couples with Ben Sands' );
+        }
+
+        return '';
+    }
 }
