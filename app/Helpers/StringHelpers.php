@@ -152,7 +152,7 @@ class StringHelpers {
     }
 
     public static function mapPreConf( string $ticketType ): string {
-        if ( str_contains( $ticketType, 'Design Your Life' ) ) {
+        if ( str_contains( $ticketType, 'Design Your Life' ) || str_contains( $ticketType, 'Pre-Conference Workshop' ) ) {
             return self::glueUpSlugify( 'Design Your Life with Dina Dwyer-Owens' );
 
         } else if ( str_contains( $ticketType, 'Ben Sands' ) ) {
