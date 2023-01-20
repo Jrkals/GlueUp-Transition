@@ -617,10 +617,16 @@ class YcpContact extends Model {
     }
 
     public function billingAddress(): ?Address {
-        return Address::query()->where( [
+        $a = Address::query()->where( [
             'addressable_type' => YcpContact::class,
             'addressable_id'   => $this->id,
             'address_type'     => 'home'
+        ] )->first();;
+
+        return Address::query()->where( [
+            //     'addressable_type' => YcpContact::class,
+            'addressable_id' => $this->id,
+            //  'address_type'     => 'home'
         ] )->first();
     }
 
