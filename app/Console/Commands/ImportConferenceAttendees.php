@@ -48,9 +48,14 @@ class ImportConferenceAttendees extends Command {
             if ( ! str_contains( $row['session'], 'All Sessions' ) ) {
                 continue; //Skip pre conference work tickets
             }
+
+            //Only import missing people
+            if ( ! empty( $row['vlookup'] ) ) {
+                continue;
+            }
             $contact = YcpContact::getContact( $row );
             $name    = Name::fromFullName( $row['attendee_name'] );
-            $address = Address::fromFull( $row['address'] );
+            $address = Address::fromFull( $row['address_keep_but_hide'] );
             $mapped  = [
                 'First Name'                                   => $name->firstName(),
                 'Last Name'                                    => $name->lastName(),
@@ -95,7 +100,7 @@ class ImportConferenceAttendees extends Command {
         }
         foreach ( $ticketTypes as $ticketType => $data ) {
             $ticketType = str_replace( [ '/', '(', ')', ' ' ], '', $ticketType );
-            $writer     = new ExcelWriter( './storage/app/exports/events/' . $ticketType . '.xlsx' );
+            $writer     = new ExcelWriter( './storage/app/exports/events/2.0/' . $ticketType . '.xlsx' );
             $writer->writeSingleFileExcel( $data );
         }
 

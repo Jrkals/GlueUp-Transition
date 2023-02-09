@@ -127,7 +127,7 @@ class StringHelpers {
             'dairy',
             'legumespeanuts',
             'vegetarian' => $restriction,
-            'none', '' => '',
+            'none', '', 'attending' => '',
         };
     }
 
